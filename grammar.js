@@ -77,6 +77,7 @@ const PRECEDENCE_LEVEL_EMPHASIS = 1;
 const PRECEDENCE_LEVEL_LINK = 10;
 const PRECEDENCE_LEVEL_HTML = 100;
 const PRECEDENCE_LEVEL_CODE_SPAN = 100;
+const PRECEDENCE_LEVEL_LATEX = 1000;
 
 // !!!
 // Notice the call to `add_inline_rules` which generates some additional rules related to parsing
@@ -584,6 +585,16 @@ module.exports = grammar(add_inline_rules({
             ']]>'
         )),
 
+        latex: $ => $._latex,
+        _latex_delim_open: $ => prec.dynamic(PRECEDENCE_LEVEL_LATEX, '$'),
+        _latex: $ => seq($._latex_delim_open, $._latex_content, '$'),
+        latex_display: $ => prec.dynamic(PRECEDENCE_LEVEL_LATEX, seq($._latex_delim_open, $._latex, '$')),
+        _latex_content: $ => seq(
+            repeat(choice($._whitespace, $._soft_line_break)),
+            choice($._word, punctuation_without($, ['$'])),
+            repeat(choice($._word, punctuation_without($, ['$']), $._whitespace, $._soft_line_break)),
+        ),
+
         _whitespace_ge_2: $ => /\t| [ \t]+/,
         _whitespace: $ => seq(choice($._whitespace_ge_2, / /), optional($._last_token_whitespace)),
         _word: $ => choice($._word_no_digit, $._digits),
@@ -623,6 +634,8 @@ function add_inline_rules(grammar) {
                         alias($['_emphasis_underscore' + suffix_newline + suffix_link], $.emphasis),
                         alias($['_strong_emphasis_underscore' + suffix_newline + suffix_link], $.strong_emphasis),
                         $.image,
+                        $.latex,
+                        $.latex_display,
                     ];
                     if (newline) {
                         elements = elements.concat([
@@ -666,6 +679,7 @@ function add_inline_rules(grammar) {
                     conflicts.push(['link_label', '_text_inline' + suffix_delimiter + suffix_link]);
                     conflicts.push(['link_reference_definition', '_text_inline' + suffix_delimiter + suffix_link]);
                     conflicts.push(['hard_line_break', '_text_inline' + suffix_delimiter + suffix_link]);
+                    conflicts.push(['_latex_delim_open', '_text_inline' + suffix_delimiter + suffix_link]);
                     grammar.rules['_text_inline' + suffix_delimiter + suffix_link] = $ => {
                         let elements = [
                             $._word,
