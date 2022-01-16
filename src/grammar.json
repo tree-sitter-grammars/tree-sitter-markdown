@@ -884,7 +884,7 @@
                 "members": [
                   {
                     "type": "SYMBOL",
-                    "name": "code_fence_content"
+                    "name": "_code_fence_content"
                   },
                   {
                     "type": "BLANK"
@@ -972,7 +972,7 @@
                 "members": [
                   {
                     "type": "SYMBOL",
-                    "name": "code_fence_content"
+                    "name": "_code_fence_content"
                   },
                   {
                     "type": "BLANK"
@@ -1018,20 +1018,62 @@
         ]
       }
     },
-    "code_fence_content": {
-      "type": "REPEAT1",
+    "_code_fence_content": {
+      "type": "PREC_RIGHT",
+      "value": 0,
       "content": {
-        "type": "CHOICE",
-        "members": [
-          {
-            "type": "SYMBOL",
-            "name": "_newline"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "_text"
+        "type": "REPEAT1",
+        "content": {
+          "type": "PREC_RIGHT",
+          "value": 0,
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "_ignore_matching_tokens"
+              },
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "REPEAT1",
+                  "content": {
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "SYMBOL",
+                        "name": "_text"
+                      },
+                      {
+                        "type": "SEQ",
+                        "members": [
+                          {
+                            "type": "PATTERN",
+                            "value": "\\n|\\r\\n?"
+                          },
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "SYMBOL",
+                                "name": "_line_ending"
+                              },
+                              {
+                                "type": "BLANK"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "named": true,
+                "value": "code_fence_content"
+              }
+            ]
           }
-        ]
+        }
       }
     },
     "info_string": {
@@ -7241,34 +7283,38 @@
       "value": "\\t| [ \\t]+"
     },
     "_whitespace": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "_whitespace_ge_2"
-            },
-            {
-              "type": "PATTERN",
-              "value": " "
-            }
-          ]
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "_last_token_whitespace"
-            },
-            {
-              "type": "BLANK"
-            }
-          ]
-        }
-      ]
+      "type": "PREC_RIGHT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "_whitespace_ge_2"
+              },
+              {
+                "type": "PATTERN",
+                "value": " "
+              }
+            ]
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "_last_token_whitespace"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          }
+        ]
+      }
     },
     "_word": {
       "type": "CHOICE",

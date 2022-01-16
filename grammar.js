@@ -335,7 +335,7 @@ module.exports = grammar(add_inline_rules({
                 optional($._whitespace),
                 optional($.info_string),
                 $._newline,
-                optional($.code_fence_content),
+                optional($._code_fence_content),
                 optional(seq(alias($._fenced_code_block_end_backtick, $.fenced_code_block_delimiter), $._close_block, $._newline)),
                 $._block_close,
             ),
@@ -344,12 +344,21 @@ module.exports = grammar(add_inline_rules({
                 optional($._whitespace),
                 optional($.info_string),
                 $._newline,
-                optional($.code_fence_content),
+                optional($._code_fence_content),
                 optional(seq(alias($._fenced_code_block_end_tilde, $.fenced_code_block_delimiter), $._close_block, $._newline)),
                 $._block_close,
             ),
         )),
-        code_fence_content: $ => repeat1(choice($._newline, $._text)),
+        _code_fence_content: $ => prec.right(repeat1(prec.right(choice(
+            $._ignore_matching_tokens,
+            alias(repeat1(choice(
+                $._text,
+                seq(
+                    /\n|\r\n?/,
+                    optional($._line_ending),
+                )
+            )), $.code_fence_content),
+        )))),
         info_string: $ => choice(
             seq($.language, repeat(choice($._text, $.backslash_escape, $.entity_reference, $.numeric_character_reference))),
             repeat1(choice($._text, $.backslash_escape, $.entity_reference, $.numeric_character_reference)),
@@ -586,7 +595,7 @@ module.exports = grammar(add_inline_rules({
         )),
 
         _whitespace_ge_2: $ => /\t| [ \t]+/,
-        _whitespace: $ => seq(choice($._whitespace_ge_2, / /), optional($._last_token_whitespace)),
+        _whitespace: $ => prec.right(seq(choice($._whitespace_ge_2, / /), optional($._last_token_whitespace))),
         _word: $ => choice($._word_no_digit, $._digits),
         _word_no_digit: $ => new RegExp('[^' + PUNCTUATION_CHARACTERS + ' \\t\\n\\r0-9]+'),
         _digits: $ => /[0-9]+/,

@@ -100,17 +100,7 @@
   {
     "type": "code_fence_content",
     "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": false,
-      "types": [
-        {
-          "type": "block_quote_marker",
-          "named": true
-        }
-      ]
-    }
+    "fields": {}
   },
   {
     "type": "code_span",
