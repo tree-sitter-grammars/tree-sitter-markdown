@@ -689,6 +689,10 @@ module.exports = grammar(add_inline_rules({
         email_autolink: $ =>
             /<[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*>/,
 
+        // Not part of CommonMark or Github flavored markdown.
+        // See #29 and https://help.obsidian.md/How+to/Working+with+tags
+        tag: $ => /#([a-zA-Z_\-\/][a-zA-Z_\-\/0-9]*|[0-9]+[a-zA-Z_\-\/][a-zA-Z_\-\/]*)/,
+
         // Raw html. As with html blocks we do not emit additional information as this is best done
         // by a proper html tree-sitter grammar.
         // 
@@ -820,6 +824,7 @@ function add_inline_rules(grammar) {
                         $.hard_line_break,
                         $.uri_autolink,
                         $.email_autolink,
+                        $.tag,
                         $['_text_inline' + suffix_delimiter + suffix_link],
                         $.entity_reference,
                         $.numeric_character_reference,

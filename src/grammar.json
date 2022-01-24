@@ -5373,6 +5373,10 @@
       "type": "PATTERN",
       "value": "<[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*>"
     },
+    "tag": {
+      "type": "PATTERN",
+      "value": "#([a-zA-Z_\\-\\/][a-zA-Z_\\-\\/0-9]*|[0-9]+[a-zA-Z_\\-\\/][a-zA-Z_\\-\\/]*)"
+    },
     "html_tag": {
       "type": "CHOICE",
       "members": [
@@ -7559,6 +7563,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "tag"
+        },
+        {
+          "type": "SYMBOL",
           "name": "_text_inline"
         },
         {
@@ -7863,6 +7871,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "tag"
+        },
+        {
+          "type": "SYMBOL",
           "name": "_text_inline_no_star"
         },
         {
@@ -8160,6 +8172,10 @@
         {
           "type": "SYMBOL",
           "name": "email_autolink"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "tag"
         },
         {
           "type": "SYMBOL",
@@ -8611,6 +8627,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "tag"
+        },
+        {
+          "type": "SYMBOL",
           "name": "_text_inline_no_link"
         },
         {
@@ -8891,6 +8911,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "tag"
+        },
+        {
+          "type": "SYMBOL",
           "name": "_text_inline_no_star_no_link"
         },
         {
@@ -9164,6 +9188,10 @@
         {
           "type": "SYMBOL",
           "name": "email_autolink"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "tag"
         },
         {
           "type": "SYMBOL",
@@ -9634,6 +9662,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "tag"
+        },
+        {
+          "type": "SYMBOL",
           "name": "_text_inline"
         },
         {
@@ -9743,6 +9775,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "tag"
+        },
+        {
+          "type": "SYMBOL",
           "name": "_text_inline_no_star"
         },
         {
@@ -9849,6 +9885,10 @@
         {
           "type": "SYMBOL",
           "name": "email_autolink"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "tag"
         },
         {
           "type": "SYMBOL",
@@ -10109,6 +10149,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "tag"
+        },
+        {
+          "type": "SYMBOL",
           "name": "_text_inline_no_link"
         },
         {
@@ -10202,6 +10246,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "tag"
+        },
+        {
+          "type": "SYMBOL",
           "name": "_text_inline_no_star_no_link"
         },
         {
@@ -10292,6 +10340,10 @@
         {
           "type": "SYMBOL",
           "name": "email_autolink"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "tag"
         },
         {
           "type": "SYMBOL",

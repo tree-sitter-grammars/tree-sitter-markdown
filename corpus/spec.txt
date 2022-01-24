@@ -458,7 +458,8 @@ Example 34 - https://github.github.com/gfm/#example-34
 
 (document
   (paragraph)
-  (paragraph))
+  (paragraph
+    (tag)))
 
 ================================================================================
 Example 35 - https://github.github.com/gfm/#example-35
@@ -5162,7 +5163,9 @@ Example 324 - https://github.github.com/gfm/#example-324
 --------------------------------------------------------------------------------
 
 (document
-  (paragraph))
+  (paragraph
+    (tag)
+    (tag)))
 
 ================================================================================
 Example 325 - https://github.github.com/gfm/#example-325
@@ -9281,7 +9284,8 @@ Example 638 - https://github.github.com/gfm/#example-638
 --------------------------------------------------------------------------------
 
 (document
-  (paragraph))
+  (paragraph
+    (tag)))
 
 ================================================================================
 Example 639 - https://github.github.com/gfm/#example-639
