@@ -221,6 +221,14 @@
         {
           "type": "thematic_break",
           "named": true
+        },
+        {
+          "type": "toml_front_matter",
+          "named": true
+        },
+        {
+          "type": "yaml_front_matter",
+          "named": true
         }
       ]
     }
@@ -1614,7 +1622,15 @@
     "named": true
   },
   {
+    "type": "toml_front_matter",
+    "named": true
+  },
+  {
     "type": "uri_autolink",
+    "named": true
+  },
+  {
+    "type": "yaml_front_matter",
     "named": true
   },
   {

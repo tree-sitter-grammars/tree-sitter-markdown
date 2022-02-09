@@ -17,6 +17,18 @@
           ]
         },
         {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "_front_matter"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
           "type": "REPEAT",
           "content": {
             "type": "SYMBOL",
@@ -24,6 +36,27 @@
           }
         }
       ]
+    },
+    "_front_matter": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "yaml_front_matter"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "toml_front_matter"
+        }
+      ]
+    },
+    "yaml_front_matter": {
+      "type": "PATTERN",
+      "value": "---(\\n|\\r\\n?)([^\\r\\n]|[\\r\\n]+(-{0,2}[^-]))*(\\n|\\r\\n?)---(\\n|\\r\\n?)"
+    },
+    "toml_front_matter": {
+      "type": "PATTERN",
+      "value": "\\+\\+\\+(\\n|\\r\\n?)([^\\r\\n]|[\\r\\n]+(\\+{0,2}[^+]))*(\\n|\\r\\n?)\\+\\+\\+(\\n|\\r\\n?)"
     },
     "_block": {
       "type": "CHOICE",

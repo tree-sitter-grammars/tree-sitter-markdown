@@ -185,7 +185,17 @@ module.exports = grammar(add_inline_rules({
     extras: $ => [],
 
     rules: {
-        document: $ => seq(optional($._ignore_matching_tokens), repeat($._block)),
+        document: $ => seq(
+            optional($._ignore_matching_tokens),
+            optional($._front_matter),
+            repeat($._block)
+        ),
+
+        // YAML or TOML front matter. Not part of CommonMark or Github flavored markdown, but still
+        // supported by a lot of formats.
+        _front_matter: $ => choice($.yaml_front_matter, $.toml_front_matter),
+        yaml_front_matter: $ => /---(\n|\r\n?)([^\r\n]|[\r\n]+(-{0,2}[^-]))*(\n|\r\n?)---(\n|\r\n?)/,
+        toml_front_matter: $ => /\+\+\+(\n|\r\n?)([^\r\n]|[\r\n]+(\+{0,2}[^+]))*(\n|\r\n?)\+\+\+(\n|\r\n?)/,
 
         // BLOCK STRUCTURE
 

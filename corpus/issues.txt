@@ -41,3 +41,45 @@
     (image
       (image_description)
       (link_destination))))
+
+================================================================================
+#32 - Feature request: add front matter support - YAML
+================================================================================
+---
+tags: [foo, bar]
+summary: a short summary
+---
+
+# My blog post
+
+...
+
+--------------------------------------------------------------------------------
+
+(document
+  (yaml_front_matter)
+  (atx_heading
+    (atx_h1_marker)
+    (heading_content))
+  (paragraph))
+
+================================================================================
+#32 - Feature request: add front matter support - TOML
+================================================================================
++++
+tags = ["foo", "bar"]
+summary = "a short summary"
++++
+
+# My blog post
+
+...
+
+--------------------------------------------------------------------------------
+
+(document
+  (toml_front_matter)
+  (atx_heading
+    (atx_h1_marker)
+    (heading_content))
+  (paragraph))
