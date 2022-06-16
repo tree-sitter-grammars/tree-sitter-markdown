@@ -331,7 +331,18 @@
   {
     "type": "fenced_code_block",
     "named": true,
-    "fields": {},
+    "fields": {
+      "info_string": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "info_string",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
       "required": true,
@@ -346,10 +357,6 @@
         },
         {
           "type": "fenced_code_block_delimiter",
-          "named": true
-        },
-        {
-          "type": "info_string",
           "named": true
         }
       ]
