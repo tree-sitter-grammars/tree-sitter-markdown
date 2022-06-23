@@ -1,3 +1,5 @@
+**This branch will no longer be actively maintained. For a more stable version see the [split_parser branch](https://github.com/MDeiml/tree-sitter-markdown/tree/split_parser)**
+
 # tree-sitter-markdown
 A markdown parser for tree-sitter
 
