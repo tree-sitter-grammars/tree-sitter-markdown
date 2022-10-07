@@ -1,5 +1,3 @@
-; From nvim-treesitter/nvim-treesitter
-
 (fenced_code_block
   (info_string
     (language) @injection.language)
@@ -8,5 +6,7 @@
 ((html_block) @injection.content (#set! injection.language "html"))
 
 (document . (section . (thematic_break) (_) @injection.content (thematic_break)) (#set! injection.language "yaml"))
-((inline) @injection.content (#set! injection.language "markdown_inline"))
 
+([(minus_metadata) (plus_metadata)] @injection.content (#set! injection.language "yml"))
+
+((inline) @injection.content (#set! injection.language "markdown_inline"))
