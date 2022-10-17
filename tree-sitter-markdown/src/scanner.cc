@@ -1134,9 +1134,9 @@ struct Scanner {
         }
         char name[11];
         size_t name_length = 0;
-        while (isalpha(lexer->lookahead)) {
+        while (iswalpha(lexer->lookahead)) {
             if (name_length < 10) {
-                name[name_length++] = tolower(lexer->lookahead);
+                name[name_length++] = towlower(lexer->lookahead);
             } else {
                 name_length = 12;
             }
@@ -1194,7 +1194,7 @@ struct Scanner {
         
         if (!tag_closed) {
             // tag name (continued)
-            while (isalnum(lexer->lookahead) || lexer->lookahead == '-') {
+            while (iswalnum(lexer->lookahead) || lexer->lookahead == '-') {
                 advance(lexer);
             }
             if (!starting_slash) {
@@ -1217,12 +1217,12 @@ struct Scanner {
                     if (!had_whitespace) {
                         return false;
                     }
-                    if (!isalpha(lexer->lookahead) && lexer->lookahead != '_' && lexer->lookahead != ':') {
+                    if (!iswalpha(lexer->lookahead) && lexer->lookahead != '_' && lexer->lookahead != ':') {
                         return false;
                     }
                     had_whitespace = false;
                     advance(lexer);
-                    while (isalnum(lexer->lookahead) || lexer->lookahead == '_' || lexer->lookahead == '.' || lexer->lookahead == ':' || lexer->lookahead == '-') {
+                    while (iswalnum(lexer->lookahead) || lexer->lookahead == '_' || lexer->lookahead == '.' || lexer->lookahead == ':' || lexer->lookahead == '-') {
                         advance(lexer);
                     }
                     // attribute value specification
