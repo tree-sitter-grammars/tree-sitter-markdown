@@ -1506,6 +1506,24 @@
       "type": "CHOICE",
       "members": [
         {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_setext_heading1"
+          },
+          "named": true,
+          "value": "setext_heading"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_setext_heading2"
+          },
+          "named": true,
+          "value": "setext_heading"
+        },
+        {
           "type": "SYMBOL",
           "name": "paragraph"
         },
@@ -1583,27 +1601,13 @@
         "type": "SEQ",
         "members": [
           {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "ALIAS",
-                "content": {
-                  "type": "SYMBOL",
-                  "name": "_atx_heading1"
-                },
-                "named": true,
-                "value": "atx_heading"
-              },
-              {
-                "type": "ALIAS",
-                "content": {
-                  "type": "SYMBOL",
-                  "name": "_setext_heading1"
-                },
-                "named": true,
-                "value": "setext_heading"
-              }
-            ]
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_atx_heading1"
+            },
+            "named": true,
+            "value": "atx_heading"
           },
           {
             "type": "REPEAT",
@@ -1657,27 +1661,13 @@
         "type": "SEQ",
         "members": [
           {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "ALIAS",
-                "content": {
-                  "type": "SYMBOL",
-                  "name": "_atx_heading2"
-                },
-                "named": true,
-                "value": "atx_heading"
-              },
-              {
-                "type": "ALIAS",
-                "content": {
-                  "type": "SYMBOL",
-                  "name": "_setext_heading2"
-                },
-                "named": true,
-                "value": "setext_heading"
-              }
-            ]
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_atx_heading2"
+            },
+            "named": true,
+            "value": "atx_heading"
           },
           {
             "type": "REPEAT",

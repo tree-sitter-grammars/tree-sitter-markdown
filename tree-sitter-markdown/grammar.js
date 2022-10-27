@@ -36,6 +36,8 @@ module.exports = grammar({
             $.section,
         ),
         _block_not_section: $ => choice(
+            alias($._setext_heading1, $.setext_heading),
+            alias($._setext_heading2, $.setext_heading),
             $.paragraph,
             $.indented_code_block,
             $.block_quote,
@@ -49,20 +51,14 @@ module.exports = grammar({
         ),
         section: $ => choice($._section1, $._section2, $._section3, $._section4, $._section5, $._section6),
         _section1: $ => prec.right(seq(
-            choice(
-                alias($._atx_heading1, $.atx_heading),
-                alias($._setext_heading1, $.setext_heading),
-            ),
+            alias($._atx_heading1, $.atx_heading),
             repeat(choice(
                 alias(choice($._section6, $._section5, $._section4, $._section3, $._section2), $.section),
                 $._block_not_section
             ))
         )),
         _section2: $ => prec.right(seq(
-            choice(
-                alias($._atx_heading2, $.atx_heading),
-                alias($._setext_heading2, $.setext_heading),
-            ),
+            alias($._atx_heading2, $.atx_heading),
             repeat(choice(
                 alias(choice($._section6, $._section5, $._section4, $._section3), $.section),
                 $._block_not_section

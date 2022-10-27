@@ -107,6 +107,10 @@
           "named": true
         },
         {
+          "type": "setext_heading",
+          "named": true
+        },
+        {
           "type": "thematic_break",
           "named": true
         }
@@ -458,6 +462,10 @@
         },
         {
           "type": "section",
+          "named": true
+        },
+        {
+          "type": "setext_heading",
           "named": true
         },
         {
