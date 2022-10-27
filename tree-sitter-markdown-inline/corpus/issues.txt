@@ -13,3 +13,78 @@
   (image
     (image_description)
     (link_destination)))
+
+================================================================================
+#6 - HTML tag can sometimes be parsed as code span (1)
+================================================================================
+test `Option<T>` test `Option` and `</>`
+
+--------------------------------------------------------------------------------
+
+(inline
+  (code_span
+    (code_span_delimiter)
+    (code_span_delimiter))
+  (code_span
+    (code_span_delimiter)
+    (code_span_delimiter))
+  (code_span
+    (code_span_delimiter)
+    (code_span_delimiter)))
+
+================================================================================
+#6 - HTML tag can sometimes be parsed as code span (2)
+================================================================================
+test `Option<T>` test `Option` and `test`
+
+--------------------------------------------------------------------------------
+
+(inline
+  (code_span
+    (code_span_delimiter)
+    (code_span_delimiter))
+  (code_span
+    (code_span_delimiter)
+    (code_span_delimiter))
+  (code_span
+    (code_span_delimiter)
+    (code_span_delimiter)))
+
+================================================================================
+#36 - Multiple code spans with HTML comments does not working properly (1)
+================================================================================
+foo `<!--comment-->`
+
+--------------------------------------------------------------------------------
+
+(inline
+  (code_span
+    (code_span_delimiter)
+    (code_span_delimiter)))
+
+================================================================================
+#36 - Multiple code spans with HTML comments does not working properly (2)
+================================================================================
+`<!--comment-->` foo
+
+--------------------------------------------------------------------------------
+
+(inline
+  (code_span
+    (code_span_delimiter)
+    (code_span_delimiter)))
+
+================================================================================
+#36 - Multiple code spans with HTML comments does not working properly (3)
+================================================================================
+`<!--comment-->` foo `<!--comment-->`
+
+--------------------------------------------------------------------------------
+
+(inline
+  (code_span
+    (code_span_delimiter)
+    (code_span_delimiter))
+  (code_span
+    (code_span_delimiter)
+    (code_span_delimiter)))

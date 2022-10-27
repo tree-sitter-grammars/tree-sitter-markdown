@@ -75,7 +75,7 @@ module.exports = grammar(add_inline_rules({
     ],
     // More conflicts are defined in `add_inline_rules`
     conflicts: $ => [
-        [$.code_span, $._text_base],
+        [$.code_span, $._inline_base],
 
         [$._closing_tag, $._text_base],
         [$._open_tag, $._text_base],
@@ -121,7 +121,11 @@ module.exports = grammar(add_inline_rules({
         // This is done to reduce code duplication, as some inlines need to be parsed differently
         // depending on the context. For example inlines in ATX headings may not contain newlines.
 
-        code_span: $ => prec.dynamic(PRECEDENCE_LEVEL_CODE_SPAN, seq(alias($._code_span_start, $.code_span_delimiter), repeat(choice($._text, $._soft_line_break)), alias($._code_span_close, $.code_span_delimiter))),
+        code_span: $ => prec.dynamic(PRECEDENCE_LEVEL_CODE_SPAN, seq(
+            alias($._code_span_start, $.code_span_delimiter),
+            repeat(choice($._text_base, '[', ']', $._soft_line_break, $._html_tag)),
+            alias($._code_span_close, $.code_span_delimiter)
+        )),
 
         // Different kinds of links:
         // * inline links (https://github.github.com/gfm/#inline-link)
@@ -218,7 +222,7 @@ module.exports = grammar(add_inline_rules({
         // by a proper html tree-sitter grammar.
         // 
         // https://github.github.com/gfm/#raw-html
-        html_tag: $ => choice($._open_tag, $._closing_tag, $._html_comment, $._processing_instruction, $._declaration, $._cdata_section),
+        _html_tag: $ => choice($._open_tag, $._closing_tag, $._html_comment, $._processing_instruction, $._declaration, $._cdata_section),
         _open_tag: $ => prec.dynamic(PRECEDENCE_LEVEL_HTML, seq('<', $._tag_name, repeat($._attribute), repeat(choice($._whitespace, $._soft_line_break)), optional('/'), '>')),
         _closing_tag: $ => prec.dynamic(PRECEDENCE_LEVEL_HTML, seq('<', '/', $._tag_name, repeat(choice($._whitespace, $._soft_line_break)), '>')),
         _tag_name: $ => seq($._word_no_digit, repeat(choice($._word_no_digit, $._digits, '-'))),
@@ -325,14 +329,14 @@ module.exports = grammar(add_inline_rules({
             $.entity_reference,
             $.numeric_character_reference,
             $.code_span,
-            $.html_tag,
+            alias($._html_tag, $.html_tag),
             $._text_base,
+            $._code_span_start,
         ))),
         _text_base: $ => choice(
             $._word,
             common.punctuation_without($, ['[', ']']),
             $._whitespace,
-            $._code_span_start,
             '<!--',
             /<![A-Z]+/,
             '<?',
@@ -340,6 +344,7 @@ module.exports = grammar(add_inline_rules({
         ),
         _text_inline_no_link: $ => choice(
             $._text_base,
+            $._code_span_start,
             $._emphasis_open_star,
             $._emphasis_open_underscore,
         ),

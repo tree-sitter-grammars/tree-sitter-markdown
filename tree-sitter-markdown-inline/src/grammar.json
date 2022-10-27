@@ -1479,11 +1479,23 @@
               "members": [
                 {
                   "type": "SYMBOL",
-                  "name": "_text"
+                  "name": "_text_base"
+                },
+                {
+                  "type": "STRING",
+                  "value": "["
+                },
+                {
+                  "type": "STRING",
+                  "value": "]"
                 },
                 {
                   "type": "SYMBOL",
                   "name": "_soft_line_break"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "_html_tag"
                 }
               ]
             }
@@ -1967,7 +1979,7 @@
       "type": "PATTERN",
       "value": "<[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*>"
     },
-    "html_tag": {
+    "_html_tag": {
       "type": "CHOICE",
       "members": [
         {
@@ -4132,12 +4144,21 @@
               "name": "code_span"
             },
             {
-              "type": "SYMBOL",
-              "name": "html_tag"
+              "type": "ALIAS",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_html_tag"
+              },
+              "named": true,
+              "value": "html_tag"
             },
             {
               "type": "SYMBOL",
               "name": "_text_base"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "_code_span_start"
             }
           ]
         }
@@ -4297,10 +4318,6 @@
           "name": "_whitespace"
         },
         {
-          "type": "SYMBOL",
-          "name": "_code_span_start"
-        },
-        {
           "type": "STRING",
           "value": "<!--"
         },
@@ -4324,6 +4341,10 @@
         {
           "type": "SYMBOL",
           "name": "_text_base"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_code_span_start"
         },
         {
           "type": "SYMBOL",
@@ -5466,7 +5487,7 @@
   "conflicts": [
     [
       "code_span",
-      "_text_base"
+      "_inline_base"
     ],
     [
       "_closing_tag",
