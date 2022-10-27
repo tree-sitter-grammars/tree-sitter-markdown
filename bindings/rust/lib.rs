@@ -14,7 +14,7 @@
 
 use std::collections::HashMap;
 
-use tree_sitter::{InputEdit, Language, Node, Parser, Query, QueryCursor, Range, Tree};
+use tree_sitter::{InputEdit, Language, Node, Parser, Point, Range, Tree, TreeCursor};
 
 extern "C" {
     fn tree_sitter_markdown() -> Language;
@@ -55,9 +55,6 @@ pub const NODE_TYPES_BLOCK: &str = include_str!("../../tree-sitter-markdown/src/
 pub const NODE_TYPES_INLINE: &str =
     include_str!("../../tree-sitter-markdown-inline/src/node-types.json");
 
-/// The matches of this query are the ranges that should be passed to the inline grammar
-pub const INLINE_INJECTION_QUERY: &str = "(inline) @inline";
-
 /// A parser that produces [`MarkdownTree`]s.
 ///
 /// This is a convenience wrapper around [`language`] and [`inline_language`].
@@ -65,8 +62,168 @@ pub struct MarkdownParser {
     parser: Parser,
     block_language: Language,
     inline_language: Language,
-    inline_injection_query: Query,
-    query_cursor: QueryCursor,
+}
+
+/// A stateful object for walking a [`MarkdownTree`] efficiently.
+///
+/// This exposes the same methdos as [`TreeCursor`], but abstracts away the
+/// double block / inline structure of [`MarkdownTree`].
+pub struct MarkdownCursor<'a> {
+    markdown_tree: &'a MarkdownTree,
+    block_cursor: TreeCursor<'a>,
+    inline_cursor: Option<TreeCursor<'a>>,
+}
+
+impl<'a> MarkdownCursor<'a> {
+    /// Get the cursor's current [`Node`].
+    pub fn node(&self) -> Node<'a> {
+        match &self.inline_cursor {
+            Some(cursor) => cursor.node(),
+            None => self.block_cursor.node(),
+        }
+    }
+
+    /// Returns `true` if the current node is from the (inline language)[inline_language]
+    ///
+    /// This information is needed to handle "tree-sitter internal" data like
+    /// [`field_id`](Self::field_id) correctly.
+    pub fn is_inline(&self) -> bool {
+        self.inline_cursor.is_some()
+    }
+
+    /// Get the numerical field id of this tree cursor’s current node.
+    ///
+    /// You will need to call [`is_inline`](Self::is_inline) to find out if the
+    /// current node is an inline or block node.
+    ///
+    /// See also [`field_name`](Self::field_name).
+    pub fn field_id(&self) -> Option<u16> {
+        match &self.inline_cursor {
+            Some(cursor) => cursor.field_id(),
+            None => self.block_cursor.field_id(),
+        }
+    }
+
+    /// Get the field name of this tree cursor’s current node.
+    ///
+    /// You will need to call [`is_inline`](Self::is_inline) to find out if the
+    /// current node is an inline or block node.
+    pub fn field_name(&self) -> Option<&'static str> {
+        match &self.inline_cursor {
+            Some(cursor) => cursor.field_name(),
+            None => self.block_cursor.field_name(),
+        }
+    }
+
+    fn move_to_inline_tree(&mut self) -> bool {
+        let node = self.block_cursor.node();
+        match node.kind() {
+            "inline" | "pipe_table_cell" => {
+                if let Some(inline_tree) = self.markdown_tree.inline_tree(&node) {
+                    self.inline_cursor = Some(inline_tree.walk());
+                    return true;
+                }
+            }
+            _ => (),
+        }
+        false
+    }
+
+    fn move_to_block_tree(&mut self) {
+        self.inline_cursor = None;
+    }
+
+    /// Move this cursor to the first child of its current node.
+    ///
+    /// This returns `true` if the cursor successfully moved, and returns `false` if there were no
+    /// children.
+    /// If the cursor is currently at a node in the block tree and it has an associated inline tree, it
+    /// will descend into the inline tree.
+    pub fn goto_first_child(&mut self) -> bool {
+        match &mut self.inline_cursor {
+            Some(cursor) => cursor.goto_first_child(),
+            None => {
+                if self.move_to_inline_tree() {
+                    self.inline_cursor.as_mut().unwrap().goto_first_child()
+                } else {
+                    self.block_cursor.goto_first_child()
+                }
+            }
+        }
+    }
+
+    /// Move this cursor to the parent of its current node.
+    ///
+    /// This returns true if the cursor successfully moved, and returns false if there was no
+    /// parent node (the cursor was already on the root node).
+    /// If the cursor moves to the root node of an inline tree, the it ascents to the associated
+    /// node in the block tree.
+    pub fn goto_parent(&mut self) -> bool {
+        match &mut self.inline_cursor {
+            Some(inline_cursor) => {
+                if inline_cursor.goto_parent() {
+                    if inline_cursor.node().parent().is_none() {
+                        self.move_to_block_tree();
+                    }
+                }
+                true
+            }
+            None => self.block_cursor.goto_parent(),
+        }
+    }
+
+    /// Move this cursor to the next sibling of its current node.
+    ///
+    /// This returns true if the cursor successfully moved, and returns false if there was no next
+    /// sibling node.
+    pub fn goto_next_sibling(&mut self) -> bool {
+        match &mut self.inline_cursor {
+            Some(inline_cursor) => inline_cursor.goto_next_sibling(),
+            None => self.block_cursor.goto_next_sibling(),
+        }
+    }
+
+    /// Move this cursor to the first child of its current node that extends beyond the given byte offset.
+    ///
+    /// This returns the index of the child node if one was found, and returns None if no such child was found.
+    /// If the cursor is currently at a node in the block tree and it has an associated inline tree, it
+    /// will descend into the inline tree.
+    pub fn goto_first_child_for_byte(&mut self, index: usize) -> Option<usize> {
+        match &mut self.inline_cursor {
+            Some(cursor) => cursor.goto_first_child_for_byte(index),
+            None => {
+                if self.move_to_inline_tree() {
+                    self.inline_cursor
+                        .as_mut()
+                        .unwrap()
+                        .goto_first_child_for_byte(index)
+                } else {
+                    self.block_cursor.goto_first_child_for_byte(index)
+                }
+            }
+        }
+    }
+
+    /// Move this cursor to the first child of its current node that extends beyond the given point.
+    ///
+    /// This returns the index of the child node if one was found, and returns None if no such child was found.
+    /// If the cursor is currently at a node in the block tree and it has an associated inline tree, it
+    /// will descend into the inline tree.
+    pub fn goto_first_child_for_point(&mut self, index: Point) -> Option<usize> {
+        match &mut self.inline_cursor {
+            Some(cursor) => cursor.goto_first_child_for_point(index),
+            None => {
+                if self.move_to_inline_tree() {
+                    self.inline_cursor
+                        .as_mut()
+                        .unwrap()
+                        .goto_first_child_for_point(index)
+                } else {
+                    self.block_cursor.goto_first_child_for_point(index)
+                }
+            }
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -102,6 +259,15 @@ impl MarkdownTree {
         let index = *self.inline_indices.get(&parent.id())?;
         Some(&self.inline_trees[index])
     }
+
+    /// Create a new [`MarkdownCursor`] starting from the root of the tree.
+    pub fn walk(&self) -> MarkdownCursor {
+        MarkdownCursor {
+            markdown_tree: &self,
+            block_cursor: self.block_tree.walk(),
+            inline_cursor: None,
+        }
+    }
 }
 
 impl Default for MarkdownParser {
@@ -109,15 +275,10 @@ impl Default for MarkdownParser {
         let block_language = language();
         let inline_language = inline_language();
         let parser = Parser::new();
-        let inline_injection_query = Query::new(block_language, INLINE_INJECTION_QUERY)
-            .expect("Could not load injection query");
-        let query_cursor = QueryCursor::new();
         MarkdownParser {
             parser,
             block_language,
             inline_language,
-            inline_injection_query,
-            query_cursor,
         }
     }
 }
@@ -135,13 +296,15 @@ impl MarkdownParser {
     /// Returns a [MarkdownTree] if parsing succeeded, or `None` if:
     ///  * The timeout set with [tree_sitter::Parser::set_timeout_micros] expired
     ///  * The cancellation flag set with [tree_sitter::Parser::set_cancellation_flag] was flipped
-    pub fn parse(&mut self, text: &[u8], old_tree: Option<&MarkdownTree>) -> Option<MarkdownTree> {
+    pub fn parse_with<T: AsRef<[u8]>, F: FnMut(usize, Point) -> T>(
+        &mut self,
+        callback: &mut F,
+        old_tree: Option<&MarkdownTree>,
+    ) -> Option<MarkdownTree> {
         let MarkdownParser {
             parser,
             block_language,
             inline_language,
-            inline_injection_query,
-            query_cursor,
         } = self;
         parser
             .set_included_ranges(&[])
@@ -149,44 +312,63 @@ impl MarkdownParser {
         parser
             .set_language(*block_language)
             .expect("Could not load block grammar");
-        let block_tree = parser.parse(text, old_tree.map(|tree| &tree.block_tree))?;
+        let block_tree = parser.parse_with(callback, old_tree.map(|tree| &tree.block_tree))?;
         let (mut inline_trees, mut inline_indices) = if let Some(old_tree) = old_tree {
             let len = old_tree.inline_trees.len();
             (Vec::with_capacity(len), HashMap::with_capacity(len))
         } else {
             (Vec::new(), HashMap::new())
         };
-        let mut tree_cursor = block_tree.walk();
         parser
             .set_language(*inline_language)
             .expect("Could not load inline grammar");
-        for (i, capture) in query_cursor
-            .matches(inline_injection_query, block_tree.root_node(), text)
-            .flat_map(|query_match| query_match.captures)
-            .enumerate()
-        {
-            let mut range = capture.node.range();
-            let children_iter = capture.node.named_children(&mut tree_cursor);
-            let mut ranges = Vec::with_capacity(children_iter.size_hint().0 + 1);
-            for child in children_iter {
-                let child_range = child.range();
-                ranges.push(Range {
-                    start_byte: range.start_byte,
-                    start_point: range.start_point,
-                    end_byte: child_range.start_byte,
-                    end_point: child_range.start_point,
-                });
-                range.start_byte = child_range.end_byte;
-                range.start_point = child_range.end_point;
+        let mut tree_cursor = block_tree.walk();
+
+        let mut i = 0;
+        'outer: loop {
+            let node = loop {
+                let kind = tree_cursor.node().kind();
+                if kind == "inline" || kind == "pipe_table_cell" || !tree_cursor.goto_first_child()
+                {
+                    while !tree_cursor.goto_next_sibling() {
+                        if !tree_cursor.goto_parent() {
+                            break 'outer;
+                        }
+                    }
+                }
+                let kind = tree_cursor.node().kind();
+                if kind == "inline" || kind == "pipe_table_cell" {
+                    break tree_cursor.node();
+                }
+            };
+            let mut range = node.range();
+            let mut ranges = Vec::new();
+            if tree_cursor.goto_first_child() {
+                while tree_cursor.goto_next_sibling() {
+                    if !tree_cursor.node().is_named() {
+                        continue;
+                    }
+                    let child_range = tree_cursor.node().range();
+                    ranges.push(Range {
+                        start_byte: range.start_byte,
+                        start_point: range.start_point,
+                        end_byte: child_range.start_byte,
+                        end_point: child_range.start_point,
+                    });
+                    range.start_byte = child_range.end_byte;
+                    range.start_point = child_range.end_point;
+                }
+                tree_cursor.goto_parent();
             }
             ranges.push(range);
             parser.set_included_ranges(&ranges).ok()?;
-            let inline_tree = parser.parse(
-                text,
+            let inline_tree = parser.parse_with(
+                callback,
                 old_tree.and_then(|old_tree| old_tree.inline_trees.get(i)),
             )?;
             inline_trees.push(inline_tree);
-            inline_indices.insert(capture.node.id(), i);
+            inline_indices.insert(node.id(), i);
+            i += 1;
         }
         drop(tree_cursor);
         inline_trees.shrink_to_fit();
@@ -196,6 +378,22 @@ impl MarkdownParser {
             inline_trees,
             inline_indices,
         })
+    }
+
+    /// Parse a slice of UTF8 text.
+    ///
+    /// # Arguments:
+    /// * `text` The UTF8-encoded text to parse.
+    /// * `old_tree` A previous syntax tree parsed from the same document.
+    ///   If the text of the document has changed since `old_tree` was
+    ///   created, then you must edit `old_tree` to match the new text using
+    ///   [MarkdownTree::edit].
+    ///
+    /// Returns a [MarkdownTree] if parsing succeeded, or `None` if:
+    ///  * The timeout set with [tree_sitter::Parser::set_timeout_micros] expired
+    ///  * The cancellation flag set with [tree_sitter::Parser::set_cancellation_flag] was flipped
+    pub fn parse(&mut self, text: &[u8], old_tree: Option<&MarkdownTree>) -> Option<MarkdownTree> {
+        self.parse_with(&mut |byte, _| &text[byte..], old_tree)
     }
 }
 
@@ -222,7 +420,6 @@ mod tests {
         let code = "# title\n\nInline [content].\n";
         let mut parser = MarkdownParser::default();
         let mut tree = parser.parse(code.as_bytes(), None).unwrap();
-        dbg!(&tree);
 
         let section = tree.block_tree().root_node().child(0).unwrap();
         assert_eq!(section.kind(), "section");
@@ -270,5 +467,53 @@ mod tests {
                 .kind(),
             "shortcut_link"
         );
+    }
+
+    #[test]
+    fn markdown_cursor() {
+        let code = "# title\n\nInline [content].\n";
+        let mut parser = MarkdownParser::default();
+        let tree = parser.parse(code.as_bytes(), None).unwrap();
+        let mut cursor = tree.walk();
+        assert_eq!(cursor.node().kind(), "document");
+        assert!(cursor.goto_first_child());
+        assert_eq!(cursor.node().kind(), "section");
+        assert!(cursor.goto_first_child());
+        assert_eq!(cursor.node().kind(), "atx_heading");
+        assert!(cursor.goto_next_sibling());
+        assert_eq!(cursor.node().kind(), "paragraph");
+        assert!(cursor.goto_first_child());
+        assert_eq!(cursor.node().kind(), "inline");
+        assert!(cursor.goto_first_child());
+        assert_eq!(cursor.node().kind(), "shortcut_link");
+        assert!(cursor.goto_parent());
+        assert!(cursor.goto_parent());
+        assert!(cursor.goto_parent());
+        assert!(cursor.goto_parent());
+        assert_eq!(cursor.node().kind(), "document");
+    }
+
+    #[test]
+    fn table() {
+        let code = "| foo |\n| --- |\n| *bar*|\n";
+        let mut parser = MarkdownParser::default();
+        let tree = parser.parse(code.as_bytes(), None).unwrap();
+        dbg!(&tree.inline_trees);
+        let mut cursor = tree.walk();
+
+        assert_eq!(cursor.node().kind(), "document");
+        assert!(cursor.goto_first_child());
+        assert_eq!(cursor.node().kind(), "section");
+        assert!(cursor.goto_first_child());
+        assert_eq!(cursor.node().kind(), "pipe_table");
+        assert!(cursor.goto_first_child());
+        assert!(cursor.goto_next_sibling());
+        assert!(cursor.goto_next_sibling());
+        assert_eq!(cursor.node().kind(), "pipe_table_row");
+        assert!(cursor.goto_first_child());
+        assert!(cursor.goto_next_sibling());
+        assert_eq!(cursor.node().kind(), "pipe_table_cell");
+        assert!(cursor.goto_first_child());
+        assert_eq!(cursor.node().kind(), "emphasis");
     }
 }
