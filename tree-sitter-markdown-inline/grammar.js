@@ -10,6 +10,7 @@ const PRECEDENCE_LEVEL_EMPHASIS = 1;
 const PRECEDENCE_LEVEL_LINK = 10;
 const PRECEDENCE_LEVEL_HTML = 100;
 const PRECEDENCE_LEVEL_CODE_SPAN = 100;
+const PRECEDENCE_LEVEL_LATEX = 1000;
 
 // Punctuation characters as specified in
 // https://github.github.com/gfm/#ascii-punctuation-character
@@ -76,6 +77,7 @@ module.exports = grammar(add_inline_rules({
     // More conflicts are defined in `add_inline_rules`
     conflicts: $ => [
         [$.code_span, $._inline_base],
+        [$.latex, $._inline_base],
 
         [$._closing_tag, $._text_base],
         [$._open_tag, $._text_base],
@@ -125,6 +127,12 @@ module.exports = grammar(add_inline_rules({
             alias($._code_span_start, $.code_span_delimiter),
             repeat(choice($._text_base, '[', ']', $._soft_line_break, $._html_tag)),
             alias($._code_span_close, $.code_span_delimiter)
+        )),
+
+        latex: $ => prec.dynamic(PRECEDENCE_LEVEL_LATEX, seq(
+            '$$',
+            repeat(choice($._text_base, '[', ']', $._soft_line_break, $._html_tag)),
+            '$$'
         )),
 
         // Different kinds of links:
@@ -330,6 +338,7 @@ module.exports = grammar(add_inline_rules({
             $.numeric_character_reference,
             $.code_span,
             alias($._html_tag, $.html_tag),
+            $.latex,
             $._text_base,
             $._code_span_start,
             common.EXTENSION_TAGS ? $.tag : choice(),
