@@ -63,3 +63,30 @@
       (code_fence_content
         (block_continuation))
       (fenced_code_block_delimiter))))
+
+================================================================================
+#72 -  Can't create list item after a list item with a newline and indent
+================================================================================
+1. a
+1. b
+   c
+2. d
+
+--------------------------------------------------------------------------------
+
+(document
+  (section
+    (list
+      (list_item
+        (list_marker_dot)
+        (paragraph
+          (inline)))
+      (list_item
+        (list_marker_dot)
+        (paragraph
+          (inline
+            (block_continuation))))
+      (list_item
+        (list_marker_dot)
+        (paragraph
+          (inline))))))

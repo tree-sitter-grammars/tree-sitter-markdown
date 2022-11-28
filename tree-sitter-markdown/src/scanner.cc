@@ -474,8 +474,8 @@ struct Scanner {
                     }
                 }
                 bool all_will_be_matched = matched == open_blocks.size();
-                matched = matched_temp;
                 if (!lexer->eof(lexer) && !scan(lexer, paragraph_interrupt_symbols)) {
+                    matched = matched_temp;
                     // If the last line break ended a paragraph and no new block opened, the last line
                     // break should have been a soft line break
                     // Reset the counter for matched blocks
@@ -501,6 +501,8 @@ struct Scanner {
                         state |= STATE_WAS_SOFT_LINE_BREAK;
                         return true;
                     }
+                } else {
+                    matched = matched_temp;
                 }
                 indentation = 0;
                 column = 0;
@@ -908,7 +910,7 @@ struct Scanner {
     }
 
     bool parse_ordered_list_marker(TSLexer *lexer, const bool *valid_symbols) {
-        if (indentation <= 3 && (valid_symbols[LIST_MARKER_PARENTHESIS] || valid_symbols[LIST_MARKER_DOT])) {
+        if (indentation <= 3 && (valid_symbols[LIST_MARKER_PARENTHESIS] || valid_symbols[LIST_MARKER_DOT] || valid_symbols[LIST_MARKER_PARENTHESIS_DONT_INTERRUPT] || valid_symbols[LIST_MARKER_DOT_DONT_INTERRUPT])) {
             size_t digits = 1;
             bool dont_interrupt = lexer->lookahead != '1';
             advance(lexer);
