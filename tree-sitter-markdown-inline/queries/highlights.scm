@@ -29,7 +29,7 @@
   (hard_line_break)
 ] @string.escape
 
-; "(" not part of query because of
+; ")" not part of query because of
 ; https://github.com/nvim-treesitter/nvim-treesitter/issues/2206
 ; TODO: Find better fix for this
 (image ["!" "[" "]" "("] @punctuation.delimiter)
