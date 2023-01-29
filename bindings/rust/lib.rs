@@ -144,7 +144,12 @@ impl<'a> MarkdownCursor<'a> {
             Some(cursor) => cursor.goto_first_child(),
             None => {
                 if self.move_to_inline_tree() {
-                    self.inline_cursor.as_mut().unwrap().goto_first_child()
+                    if !self.inline_cursor.as_mut().unwrap().goto_first_child() {
+                        self.move_to_block_tree();
+                        false
+                    } else {
+                        true
+                    }
                 } else {
                     self.block_cursor.goto_first_child()
                 }
@@ -258,6 +263,11 @@ impl MarkdownTree {
     pub fn inline_tree(&self, parent: &Node) -> Option<&Tree> {
         let index = *self.inline_indices.get(&parent.id())?;
         Some(&self.inline_trees[index])
+    }
+
+    /// Returns the list of all inline trees
+    pub fn inline_trees(&self) -> &[Tree] {
+        &self.inline_trees
     }
 
     /// Create a new [`MarkdownCursor`] starting from the root of the tree.

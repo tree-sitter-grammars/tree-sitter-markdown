@@ -4159,6 +4159,10 @@
             {
               "type": "SYMBOL",
               "name": "_code_span_start"
+            },
+            {
+              "type": "CHOICE",
+              "members": []
             }
           ]
         }

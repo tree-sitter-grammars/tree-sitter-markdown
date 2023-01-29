@@ -332,6 +332,7 @@ module.exports = grammar(add_inline_rules({
             alias($._html_tag, $.html_tag),
             $._text_base,
             $._code_span_start,
+            common.EXTENSION_TAGS ? $.tag : choice(),
         ))),
         _text_base: $ => choice(
             $._word,
@@ -348,6 +349,11 @@ module.exports = grammar(add_inline_rules({
             $._emphasis_open_star,
             $._emphasis_open_underscore,
         ),
+
+        ...(common.EXTENSION_TAGS ? {
+            tag: $ => /#[0-9]*[a-zA-Z_\-\/][a-zA-Z_\-\/0-9]*/,
+        } : {}),
+        
     },
 }));
 
