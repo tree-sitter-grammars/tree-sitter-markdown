@@ -5,9 +5,12 @@ $$This$$ has $$an odd$$ number of instances of $$.
 
 -------------------------------------------------------------------------------
 (inline
-  (latex) 
-  (latex)
-  (ERROR))
+  (latex_block
+    (latex_span_delimiter)
+    (latex_span_delimiter))
+  (latex_block
+    (latex_span_delimiter)
+    (latex_span_delimiter)))
 
 ================================================================================
 LaTeX and markup clashes.
@@ -16,7 +19,9 @@ $$This should prevent *this from parsing$$ the bold.*
 
 -------------------------------------------------------------------------------
 (inline
-  (latex))
+  (latex_block
+    (latex_span_delimiter)
+    (latex_span_delimiter)))
 
 ================================================================================
 LaTeX and link clashes
@@ -25,7 +30,9 @@ $$This should prevent [this from parsing$$ the link](https://google.com)
 
 -------------------------------------------------------------------------------
 (inline
-  (latex))
+  (latex_block
+    (latex_span_delimiter)
+    (latex_span_delimiter)))
 ================================================================================
 LaTeX inside markup
 ================================================================================
@@ -35,7 +42,9 @@ LaTeX inside markup
 (inline 
   (emphasis
     (emphasis_delimiter)
-    (latex)
+    (latex_block
+      (latex_span_delimiter)
+      (latex_span_delimiter))
     (emphasis_delimiter)))
 ================================================================================
 LaTeX within one paragraph
@@ -48,5 +57,9 @@ $$This presumably
 should not, but will because we need the blocks.$$
 --------------------------------------------------------------------------------
 (inline
-  (latex)
-  (latex))
+  (latex_block
+    (latex_span_delimiter)
+    (latex_span_delimiter))
+  (latex_block
+    (latex_span_delimiter)
+    (latex_span_delimiter)))

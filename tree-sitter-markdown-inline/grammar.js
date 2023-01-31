@@ -10,7 +10,7 @@ const PRECEDENCE_LEVEL_EMPHASIS = 1;
 const PRECEDENCE_LEVEL_LINK = 10;
 const PRECEDENCE_LEVEL_HTML = 100;
 const PRECEDENCE_LEVEL_CODE_SPAN = 100;
-const PRECEDENCE_LEVEL_LATEX = 1000;
+const PRECEDENCE_LEVEL_LATEX = 100;
 
 // Punctuation characters as specified in
 // https://github.github.com/gfm/#ascii-punctuation-character
@@ -348,6 +348,7 @@ module.exports = grammar(add_inline_rules({
             $._text_base,
             $._code_span_start,
             common.EXTENSION_TAGS ? $.tag : choice(),
+            $._latex_span_start,
         ))),
         _text_base: $ => choice(
             $._word,

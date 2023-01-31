@@ -1514,7 +1514,7 @@
     },
     "latex_block": {
       "type": "PREC_DYNAMIC",
-      "value": 1000,
+      "value": 100,
       "content": {
         "type": "SEQ",
         "members": [
@@ -4222,6 +4222,10 @@
             {
               "type": "CHOICE",
               "members": []
+            },
+            {
+              "type": "SYMBOL",
+              "name": "_latex_span_start"
             }
           ]
         }
