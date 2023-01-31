@@ -91,7 +91,7 @@
           "named": true
         },
         {
-          "type": "latex",
+          "type": "latex_block",
           "named": true
         },
         {
@@ -226,7 +226,7 @@
           "named": true
         },
         {
-          "type": "latex",
+          "type": "latex_block",
           "named": true
         },
         {
@@ -305,7 +305,7 @@
           "named": true
         },
         {
-          "type": "latex",
+          "type": "latex_block",
           "named": true
         },
         {
@@ -355,9 +355,19 @@
     }
   },
   {
-    "type": "latex",
+    "type": "latex_block",
     "named": true,
-    "fields": {}
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "latex_span_delimiter",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "link_destination",
@@ -446,7 +456,7 @@
           "named": true
         },
         {
-          "type": "latex",
+          "type": "latex_block",
           "named": true
         },
         {
@@ -563,7 +573,7 @@
           "named": true
         },
         {
-          "type": "latex",
+          "type": "latex_block",
           "named": true
         },
         {
@@ -646,7 +656,7 @@
           "named": true
         },
         {
-          "type": "latex",
+          "type": "latex_block",
           "named": true
         },
         {
@@ -686,10 +696,6 @@
   },
   {
     "type": "$",
-    "named": false
-  },
-  {
-    "type": "$$",
     "named": false
   },
   {
@@ -826,6 +832,10 @@
   },
   {
     "type": "entity_reference",
+    "named": true
+  },
+  {
+    "type": "latex_span_delimiter",
     "named": true
   },
   {

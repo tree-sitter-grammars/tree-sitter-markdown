@@ -23,6 +23,8 @@ namespace TreeSitterMarkdownInline {
         LAST_TOKEN_PUNCTUATION,
         STRIKETHROUGH_OPEN,
         STRIKETHROUGH_CLOSE,
+        LATEX_SPAN_START,
+        LATEX_SPAN_CLOSE
     };
 
     // Determines if a character is punctuation as defined by the markdown spec.
@@ -51,6 +53,7 @@ namespace TreeSitterMarkdownInline {
         // Parser state flags
         uint8_t state;
         uint8_t code_span_delimiter_length;
+        uint8_t latex_span_delimiter_length;
         // The number of characters remaining in the currrent emphasis delimiter run.
         uint8_t num_emphasis_delimiters_left;
 
@@ -63,6 +66,7 @@ namespace TreeSitterMarkdownInline {
             size_t i = 0;
             buffer[i++] = state;
             buffer[i++] = code_span_delimiter_length;
+            buffer[i++] = latex_span_delimiter_length;
             buffer[i++] = num_emphasis_delimiters_left;
             return i;
         }
@@ -72,11 +76,13 @@ namespace TreeSitterMarkdownInline {
         void deserialize(const char *buffer, unsigned length) {
             state = 0;
             code_span_delimiter_length = 0;
+            latex_span_delimiter_length = 0;
             num_emphasis_delimiters_left = 0;
             if (length > 0) {
                 size_t i = 0;
                 state = buffer[i++];
                 code_span_delimiter_length = buffer[i++];
+                latex_span_delimiter_length = buffer[i++];
                 num_emphasis_delimiters_left = buffer[i++];
             }
         }
@@ -109,6 +115,9 @@ namespace TreeSitterMarkdownInline {
                     // code block.
                     return parse_backtick(lexer, valid_symbols);
                     break;
+                case '$':
+                    return parse_dollar(lexer, valid_symbols);
+                    break;
                 case '*':
                     // A star could either mark the beginning or ending of emphasis, a list item or
                     // thematic break.
@@ -139,6 +148,25 @@ namespace TreeSitterMarkdownInline {
             } else if (valid_symbols[CODE_SPAN_START]) {
                 code_span_delimiter_length = level;
                 lexer->result_symbol = CODE_SPAN_START;
+                return true;
+            }
+            return false;
+        }
+        
+        bool parse_dollar(TSLexer *lexer, const bool *valid_symbols) {
+            size_t level = 0;
+            while (lexer->lookahead == '$') {
+                lexer->advance(lexer, false);
+                level++;
+            }
+            lexer->mark_end(lexer);
+            if (level == latex_span_delimiter_length && valid_symbols[LATEX_SPAN_CLOSE]) {
+                latex_span_delimiter_length = 0;
+                lexer->result_symbol = LATEX_SPAN_CLOSE;
+                return true;
+            } else if (valid_symbols[LATEX_SPAN_START]) {
+                latex_span_delimiter_length = level;
+                lexer->result_symbol = LATEX_SPAN_START;
                 return true;
             }
             return false;

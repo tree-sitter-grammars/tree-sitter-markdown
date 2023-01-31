@@ -1512,15 +1512,20 @@
         ]
       }
     },
-    "latex": {
+    "latex_block": {
       "type": "PREC_DYNAMIC",
       "value": 1000,
       "content": {
         "type": "SEQ",
         "members": [
           {
-            "type": "STRING",
-            "value": "$$"
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_latex_span_start"
+            },
+            "named": true,
+            "value": "latex_span_delimiter"
           },
           {
             "type": "REPEAT",
@@ -1551,8 +1556,13 @@
             }
           },
           {
-            "type": "STRING",
-            "value": "$$"
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_latex_span_close"
+            },
+            "named": true,
+            "value": "latex_span_delimiter"
           }
         ]
       }
@@ -4186,6 +4196,10 @@
             },
             {
               "type": "SYMBOL",
+              "name": "latex_block"
+            },
+            {
+              "type": "SYMBOL",
               "name": "code_span"
             },
             {
@@ -4196,10 +4210,6 @@
               },
               "named": true,
               "value": "html_tag"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "latex"
             },
             {
               "type": "SYMBOL",
@@ -4398,6 +4408,10 @@
         {
           "type": "SYMBOL",
           "name": "_code_span_start"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_latex_span_start"
         },
         {
           "type": "SYMBOL",
@@ -5543,7 +5557,7 @@
       "_inline_base"
     ],
     [
-      "latex",
+      "latex_block",
       "_inline_base"
     ],
     [
@@ -5862,6 +5876,14 @@
     {
       "type": "SYMBOL",
       "name": "_strikethrough_close"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_latex_span_start"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_latex_span_close"
     }
   ],
   "inline": [],
