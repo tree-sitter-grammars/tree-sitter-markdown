@@ -191,7 +191,7 @@ module.exports = grammar({
                 ))
             )
         ),
-        language: $ => prec.right(repeat1(choice($._word, common.punctuation_without($, ['{', '}']), $.backslash_escape, $.entity_reference, $.numeric_character_reference))),
+        language: $ => prec.right(repeat1(choice($._word, common.punctuation_without($, ['{', '}', ',']), $.backslash_escape, $.entity_reference, $.numeric_character_reference))),
 
         // An HTML block. We do not emit addition nodes relating to the kind or structure or of the
         // html block as this is best done using language injections and a proper html parsers.
