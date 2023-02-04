@@ -1,0 +1,65 @@
+================================================================================
+Basic LaTeX parsing.
+================================================================================
+$$This$$ has $$an odd$$ number of instances of $$.
+
+-------------------------------------------------------------------------------
+(inline
+  (latex_block
+    (latex_span_delimiter)
+    (latex_span_delimiter))
+  (latex_block
+    (latex_span_delimiter)
+    (latex_span_delimiter)))
+
+================================================================================
+LaTeX and markup clashes.
+================================================================================
+$$This should prevent *this from parsing$$ the bold.*
+
+-------------------------------------------------------------------------------
+(inline
+  (latex_block
+    (latex_span_delimiter)
+    (latex_span_delimiter)))
+
+================================================================================
+LaTeX and link clashes
+================================================================================
+$$This should prevent [this from parsing$$ the link](https://google.com)
+
+-------------------------------------------------------------------------------
+(inline
+  (latex_block
+    (latex_span_delimiter)
+    (latex_span_delimiter)))
+================================================================================
+LaTeX inside markup
+================================================================================
+*This bold $$should still parse $$*.
+
+-------------------------------------------------------------------------------
+(inline 
+  (emphasis
+    (emphasis_delimiter)
+    (latex_block
+      (latex_span_delimiter)
+      (latex_span_delimiter))
+    (emphasis_delimiter)))
+================================================================================
+LaTeX within one paragraph
+================================================================================
+$$This should all be captured 
+as one instance of LaTeX.$$
+
+$$This presumably
+
+should not, but will because we need the blocks.$$
+--------------------------------------------------------------------------------
+(inline
+  (latex_block
+    (latex_span_delimiter)
+    (latex_span_delimiter))
+  (latex_block
+    (latex_span_delimiter)
+    (latex_span_delimiter)))

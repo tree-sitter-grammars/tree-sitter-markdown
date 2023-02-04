@@ -1512,6 +1512,61 @@
         ]
       }
     },
+    "latex_block": {
+      "type": "PREC_DYNAMIC",
+      "value": 100,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_latex_span_start"
+            },
+            "named": true,
+            "value": "latex_span_delimiter"
+          },
+          {
+            "type": "REPEAT",
+            "content": {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "_text_base"
+                },
+                {
+                  "type": "STRING",
+                  "value": "["
+                },
+                {
+                  "type": "STRING",
+                  "value": "]"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "_soft_line_break"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "_html_tag"
+                }
+              ]
+            }
+          },
+          {
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_latex_span_close"
+            },
+            "named": true,
+            "value": "latex_span_delimiter"
+          }
+        ]
+      }
+    },
     "_link_text": {
       "type": "PREC_DYNAMIC",
       "value": 10,
@@ -4141,6 +4196,10 @@
             },
             {
               "type": "SYMBOL",
+              "name": "latex_block"
+            },
+            {
+              "type": "SYMBOL",
               "name": "code_span"
             },
             {
@@ -4163,6 +4222,10 @@
             {
               "type": "CHOICE",
               "members": []
+            },
+            {
+              "type": "SYMBOL",
+              "name": "_latex_span_start"
             }
           ]
         }
@@ -4349,6 +4412,10 @@
         {
           "type": "SYMBOL",
           "name": "_code_span_start"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_latex_span_start"
         },
         {
           "type": "SYMBOL",
@@ -5494,6 +5561,10 @@
       "_inline_base"
     ],
     [
+      "latex_block",
+      "_inline_base"
+    ],
+    [
       "_closing_tag",
       "_text_base"
     ],
@@ -5809,6 +5880,14 @@
     {
       "type": "SYMBOL",
       "name": "_strikethrough_close"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_latex_span_start"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_latex_span_close"
     }
   ],
   "inline": [],

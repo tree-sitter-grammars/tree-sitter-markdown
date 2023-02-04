@@ -10,6 +10,7 @@ const PRECEDENCE_LEVEL_EMPHASIS = 1;
 const PRECEDENCE_LEVEL_LINK = 10;
 const PRECEDENCE_LEVEL_HTML = 100;
 const PRECEDENCE_LEVEL_CODE_SPAN = 100;
+const PRECEDENCE_LEVEL_LATEX = 100;
 
 // Punctuation characters as specified in
 // https://github.github.com/gfm/#ascii-punctuation-character
@@ -64,6 +65,11 @@ module.exports = grammar(add_inline_rules({
 
         $._strikethrough_open,
         $._strikethrough_close,
+
+        // Opening and closing delimiters for latex. These are sequences of one or more dollar signs.
+        // An opening token does not mean the text after has to be latex if there is no closing token
+        $._latex_span_start,
+        $._latex_span_close,
     ],
     precedences: $ => [
         // [$._strong_emphasis_star, $._inline_element_no_star],
@@ -76,6 +82,7 @@ module.exports = grammar(add_inline_rules({
     // More conflicts are defined in `add_inline_rules`
     conflicts: $ => [
         [$.code_span, $._inline_base],
+        [$.latex_block, $._inline_base],
 
         [$._closing_tag, $._text_base],
         [$._open_tag, $._text_base],
@@ -115,6 +122,7 @@ module.exports = grammar(add_inline_rules({
         //
         // * collections of inlines
         // * code spans
+        // * latex spans
         // * emphasis
         // * textual content
         // 
@@ -125,6 +133,12 @@ module.exports = grammar(add_inline_rules({
             alias($._code_span_start, $.code_span_delimiter),
             repeat(choice($._text_base, '[', ']', $._soft_line_break, $._html_tag)),
             alias($._code_span_close, $.code_span_delimiter)
+        )),
+
+        latex_block: $ => prec.dynamic(PRECEDENCE_LEVEL_LATEX, seq(
+            alias($._latex_span_start, $.latex_span_delimiter),
+            repeat(choice($._text_base, '[', ']', $._soft_line_break, $._html_tag)),
+            alias($._latex_span_close, $.latex_span_delimiter),
         )),
 
         // Different kinds of links:
@@ -328,11 +342,13 @@ module.exports = grammar(add_inline_rules({
             $.email_autolink,
             $.entity_reference,
             $.numeric_character_reference,
+            (common.EXTENSION_LATEX ? $.latex_block : choice()),
             $.code_span,
             alias($._html_tag, $.html_tag),
             $._text_base,
             $._code_span_start,
             common.EXTENSION_TAGS ? $.tag : choice(),
+            (common.EXTENSION_LATEX ? $._latex_span_start : choice()),
         ))),
         _text_base: $ => choice(
             $._word,
@@ -346,6 +362,7 @@ module.exports = grammar(add_inline_rules({
         _text_inline_no_link: $ => choice(
             $._text_base,
             $._code_span_start,
+            $._latex_span_start,
             $._emphasis_open_star,
             $._emphasis_open_underscore,
         ),
