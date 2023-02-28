@@ -1,6 +1,8 @@
 # tree-sitter-markdown
 A markdown parser for [tree-sitter].
 
+![](https://github.com/MDeiml/tree-sitter-markdown/blob/split_parser/contrib/screenshot.png)
+
 The parser is designed to read markdown according to the [CommonMark Spec],
 but some extensions to the spec from different sources such as [Github flavored
 markdown] are also included. These can be toggled on or off at compile time.
