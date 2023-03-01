@@ -9,8 +9,6 @@
 using std::vector;
 using std::memcpy;
 
-namespace TreeSitterMarkdown {
-
 // For explanation of the tokens see grammar.js
 enum TokenType {
     LINE_ENDING,
@@ -1417,11 +1415,9 @@ struct Scanner {
 
 };
 
-}
-
 extern "C" {
     void *tree_sitter_markdown_external_scanner_create() {
-        return new TreeSitterMarkdown::Scanner();
+        return new Scanner();
     }
 
     bool tree_sitter_markdown_external_scanner_scan(
@@ -1429,7 +1425,7 @@ extern "C" {
         TSLexer *lexer,
         const bool *valid_symbols
     ) {
-        TreeSitterMarkdown::Scanner *scanner = static_cast<TreeSitterMarkdown::Scanner *>(payload);
+        Scanner *scanner = static_cast<Scanner *>(payload);
         scanner->simulate = false;
         return scanner->scan(lexer, valid_symbols);
     }
@@ -1438,7 +1434,7 @@ extern "C" {
         void *payload,
         char* buffer
     ) {
-        TreeSitterMarkdown::Scanner *scanner = static_cast<TreeSitterMarkdown::Scanner *>(payload);
+        Scanner *scanner = static_cast<Scanner *>(payload);
         return scanner->serialize(buffer);
     }
 
@@ -1447,12 +1443,12 @@ extern "C" {
         char* buffer,
         unsigned length
     ) {
-        TreeSitterMarkdown::Scanner *scanner = static_cast<TreeSitterMarkdown::Scanner *>(payload);
+        Scanner *scanner = static_cast<Scanner *>(payload);
         scanner->deserialize(buffer, length);
     }
 
     void tree_sitter_markdown_external_scanner_destroy(void *payload) {
-        TreeSitterMarkdown::Scanner *scanner = static_cast<TreeSitterMarkdown::Scanner *>(payload);
+        Scanner *scanner = static_cast<Scanner *>(payload);
         delete scanner;
     }
 }
