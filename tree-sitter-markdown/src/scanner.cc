@@ -1,10 +1,5 @@
 #include <tree_sitter/parser.h>
-#include <cctype>
-#include <cassert>
 #include <vector>
-#include <cstring>
-#include <algorithm>
-#include <iostream>
 
 using std::vector;
 using std::memcpy;
