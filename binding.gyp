@@ -9,9 +9,9 @@
       ],
       "sources": [
         "tree-sitter-markdown/src/parser.c",
-        "tree-sitter-markdown/src/scanner.cc",
+        "tree-sitter-markdown/src/scanner.c",
         "tree-sitter-markdown-inline/src/parser.c",
-        "tree-sitter-markdown-inline/src/scanner.cc",
+        "tree-sitter-markdown-inline/src/scanner.c",
         "bindings/node/binding.cc"
       ],
       "cflags_c": [

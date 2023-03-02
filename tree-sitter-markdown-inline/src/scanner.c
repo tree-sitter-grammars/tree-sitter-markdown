@@ -19,7 +19,7 @@ typedef enum {
 } TokenType;
 
 // Determines if a character is punctuation as defined by the markdown spec.
-bool is_punctuation(char c) {
+static bool is_punctuation(char c) {
     return
         (c >= '!' && c <= '/') ||
         (c >= ':' && c <= '@') ||
@@ -28,7 +28,7 @@ bool is_punctuation(char c) {
 }
 
 // Determines if a character is ascii whitespace as defined by the markdown spec.
-bool is_whitespace(char c) {
+static bool is_whitespace(char c) {
     return c == ' ' || c == '\t' || c == '\n' || c == '\r';
 }
 
