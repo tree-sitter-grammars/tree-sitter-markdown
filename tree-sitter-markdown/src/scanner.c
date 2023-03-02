@@ -220,7 +220,7 @@ static void push_block(Scanner *s, Block b)
 
   if (*size == *capacity) {
     *capacity = *capacity ? *capacity << 1 : 8;
-    *items = realloc(*items, sizeof(Block) * *capacity);
+    *items = (Block*) realloc(*items, sizeof(Block) * *capacity);
   }
 
   (*items)[(*size)++] = b;
@@ -274,7 +274,7 @@ static void deserialize(Scanner *s, const char *buffer, unsigned length) {
         if (blocks_size > 0) {
           size_t blocks_count = blocks_size / sizeof(Block);
           s->open_blocks.capacity = roundup_32(blocks_count);
-          s->open_blocks.items = malloc(sizeof(Block) * s->open_blocks.capacity);
+          s->open_blocks.items = (Block*) malloc(sizeof(Block) * s->open_blocks.capacity);
           memcpy(s->open_blocks.items, &buffer[i], blocks_size);
           s->open_blocks.size = blocks_count;
         }
@@ -521,7 +521,7 @@ static bool parse_star(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
             s->indentation = extra_indentation;
             extra_indentation = temp;
         }
-        if (!s->simulate) push_block(s, LIST_ITEM + extra_indentation);
+        if (!s->simulate) push_block(s, (Block) (LIST_ITEM + extra_indentation));
         lexer->result_symbol =
             dont_interrupt ? LIST_MARKER_STAR_DONT_INTERRUPT : LIST_MARKER_STAR;
         return true;
@@ -687,7 +687,7 @@ static bool parse_plus(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
                     s->indentation = extra_indentation;
                     extra_indentation = temp;
                 }
-                if (!s->simulate) push_block(s, LIST_ITEM + extra_indentation);
+                if (!s->simulate) push_block(s, (Block) (LIST_ITEM + extra_indentation));
                 return true;
             }
         }
@@ -737,7 +737,7 @@ static bool parse_ordered_list_marker(Scanner *s, TSLexer *lexer, const bool *va
                         s->indentation = extra_indentation;
                         extra_indentation = temp;
                     }
-                    if (!s->simulate) push_block(s, LIST_ITEM + extra_indentation + digits);
+                    if (!s->simulate) push_block(s, (Block) (LIST_ITEM + extra_indentation + digits));
                     return true;
                 }
             }
@@ -807,7 +807,7 @@ static bool parse_minus(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
                 s->indentation = extra_indentation;
                 extra_indentation = temp;
             }
-            if (!s->simulate) push_block(s, LIST_ITEM + extra_indentation);
+            if (!s->simulate) push_block(s, (Block) (LIST_ITEM + extra_indentation));
             lexer->result_symbol = dont_interrupt ? LIST_MARKER_MINUS_DONT_INTERRUPT : LIST_MARKER_MINUS;
             return true;
         }
