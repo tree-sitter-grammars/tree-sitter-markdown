@@ -90,42 +90,34 @@ static void deserialize(Scanner *s, const char *buffer, unsigned length) {
     }
 }
 
-static bool parse_backtick(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
+static bool parse_leaf_delimiter(TSLexer *lexer, uint8_t* delimiter_length, const bool *valid_symbols,
+                                 const char delimiter, const TokenType open_token, const TokenType close_token) {
     size_t level = 0;
-    while (lexer->lookahead == '`') {
+    while (lexer->lookahead == delimiter) {
         lexer->advance(lexer, false);
         level++;
     }
     lexer->mark_end(lexer);
-    if (level == s->code_span_delimiter_length && valid_symbols[CODE_SPAN_CLOSE]) {
-        s->code_span_delimiter_length = 0;
-        lexer->result_symbol = CODE_SPAN_CLOSE;
+    if (level == *delimiter_length && valid_symbols[close_token]) {
+        *delimiter_length = 0;
+        lexer->result_symbol = close_token;
         return true;
-    } else if (valid_symbols[CODE_SPAN_START]) {
-        s->code_span_delimiter_length = level;
-        lexer->result_symbol = CODE_SPAN_START;
+    } else if (valid_symbols[open_token]) {
+        *delimiter_length = level;
+        lexer->result_symbol = open_token;
         return true;
     }
     return false;
 }
 
+static bool parse_backtick(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
+    return parse_leaf_delimiter(lexer, &s->code_span_delimiter_length, valid_symbols, '`',
+                                CODE_SPAN_START, CODE_SPAN_CLOSE);
+}
+
 static bool parse_dollar(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
-    size_t level = 0;
-    while (lexer->lookahead == '$') {
-        lexer->advance(lexer, false);
-        level++;
-    }
-    lexer->mark_end(lexer);
-    if (level == s->latex_span_delimiter_length && valid_symbols[LATEX_SPAN_CLOSE]) {
-        s->latex_span_delimiter_length = 0;
-        lexer->result_symbol = LATEX_SPAN_CLOSE;
-        return true;
-    } else if (valid_symbols[LATEX_SPAN_START]) {
-        s->latex_span_delimiter_length = level;
-        lexer->result_symbol = LATEX_SPAN_START;
-        return true;
-    }
-    return false;
+    return parse_leaf_delimiter(lexer, &s->latex_span_delimiter_length, valid_symbols, '$',
+                                LATEX_SPAN_START, LATEX_SPAN_CLOSE);
 }
 
 static bool parse_star(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
