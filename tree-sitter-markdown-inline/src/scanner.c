@@ -15,7 +15,8 @@ typedef enum {
     STRIKETHROUGH_OPEN,
     STRIKETHROUGH_CLOSE,
     LATEX_SPAN_START,
-    LATEX_SPAN_CLOSE
+    LATEX_SPAN_CLOSE,
+    UNCLOSED_SPAN
 } TokenType;
 
 // Determines if a character is punctuation as defined by the markdown spec.
@@ -103,9 +104,29 @@ static bool parse_leaf_delimiter(TSLexer *lexer, uint8_t* delimiter_length, cons
         lexer->result_symbol = close_token;
         return true;
     } else if (valid_symbols[open_token]) {
-        *delimiter_length = level;
-        lexer->result_symbol = open_token;
-        return true;
+        // Parse ahead to check if there is a closing delimiter
+        size_t close_level = 0;
+        while (!lexer->eof(lexer)) {
+            if (lexer->lookahead == delimiter) {
+                close_level++;
+            } else {
+                if (close_level == level) {
+                    // Found a matching delimiter
+                    break;
+                } else {
+                    close_level = 0;
+                }
+            }
+            lexer->advance(lexer, false);
+        }
+        if (close_level == level) {
+            *delimiter_length = level;
+            lexer->result_symbol = open_token;
+            return true;
+        } else if (valid_symbols[UNCLOSED_SPAN]) {
+            lexer->result_symbol = UNCLOSED_SPAN;
+            return true;
+        }
     }
     return false;
 }

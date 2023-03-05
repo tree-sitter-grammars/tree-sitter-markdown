@@ -9,8 +9,6 @@ const common = require('../common/grammar.js');
 const PRECEDENCE_LEVEL_EMPHASIS = 1;
 const PRECEDENCE_LEVEL_LINK = 10;
 const PRECEDENCE_LEVEL_HTML = 100;
-const PRECEDENCE_LEVEL_CODE_SPAN = 100;
-const PRECEDENCE_LEVEL_LATEX = 100;
 
 // Punctuation characters as specified in
 // https://github.github.com/gfm/#ascii-punctuation-character
@@ -70,6 +68,10 @@ module.exports = grammar(add_inline_rules({
         // An opening token does not mean the text after has to be latex if there is no closing token
         $._latex_span_start,
         $._latex_span_close,
+
+        // Token emmited when encountering opening delimiters for a leaf span
+        // e.g. a code span, that does not have a matching closing span
+        $._unclosed_span
     ],
     precedences: $ => [
         // [$._strong_emphasis_star, $._inline_element_no_star],
@@ -81,8 +83,6 @@ module.exports = grammar(add_inline_rules({
     ],
     // More conflicts are defined in `add_inline_rules`
     conflicts: $ => [
-        [$.code_span, $._inline_base],
-        [$.latex_block, $._inline_base],
 
         [$._closing_tag, $._text_base],
         [$._open_tag, $._text_base],
@@ -121,25 +121,23 @@ module.exports = grammar(add_inline_rules({
         // A lot of inlines are defined in `add_inline_rules`, including:
         //
         // * collections of inlines
-        // * code spans
-        // * latex spans
         // * emphasis
         // * textual content
         // 
         // This is done to reduce code duplication, as some inlines need to be parsed differently
         // depending on the context. For example inlines in ATX headings may not contain newlines.
 
-        code_span: $ => prec.dynamic(PRECEDENCE_LEVEL_CODE_SPAN, seq(
+        code_span: $ => seq(
             alias($._code_span_start, $.code_span_delimiter),
             repeat(choice($._text_base, '[', ']', $._soft_line_break, $._html_tag)),
             alias($._code_span_close, $.code_span_delimiter)
-        )),
+        ),
 
-        latex_block: $ => prec.dynamic(PRECEDENCE_LEVEL_LATEX, seq(
+        latex_block: $ => seq(
             alias($._latex_span_start, $.latex_span_delimiter),
             repeat(choice($._text_base, '[', ']', $._soft_line_break, $._html_tag)),
             alias($._latex_span_close, $.latex_span_delimiter),
-        )),
+        ),
 
         // Different kinds of links:
         // * inline links (https://github.github.com/gfm/#inline-link)
@@ -346,9 +344,8 @@ module.exports = grammar(add_inline_rules({
             $.code_span,
             alias($._html_tag, $.html_tag),
             $._text_base,
-            $._code_span_start,
             common.EXTENSION_TAGS ? $.tag : choice(),
-            (common.EXTENSION_LATEX ? $._latex_span_start : choice()),
+            $._unclosed_span,
         ))),
         _text_base: $ => choice(
             $._word,
@@ -361,10 +358,9 @@ module.exports = grammar(add_inline_rules({
         ),
         _text_inline_no_link: $ => choice(
             $._text_base,
-            $._code_span_start,
-            $._latex_span_start,
             $._emphasis_open_star,
             $._emphasis_open_underscore,
+            $._unclosed_span,
         ),
 
         ...(common.EXTENSION_TAGS ? {

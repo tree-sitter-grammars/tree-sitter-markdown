@@ -1458,114 +1458,106 @@
       "value": "\\n|\\r\\n?"
     },
     "code_span": {
-      "type": "PREC_DYNAMIC",
-      "value": 100,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "ALIAS",
-            "content": {
-              "type": "SYMBOL",
-              "name": "_code_span_start"
-            },
-            "named": true,
-            "value": "code_span_delimiter"
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_code_span_start"
           },
-          {
-            "type": "REPEAT",
-            "content": {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "_text_base"
-                },
-                {
-                  "type": "STRING",
-                  "value": "["
-                },
-                {
-                  "type": "STRING",
-                  "value": "]"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "_soft_line_break"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "_html_tag"
-                }
-              ]
-            }
-          },
-          {
-            "type": "ALIAS",
-            "content": {
-              "type": "SYMBOL",
-              "name": "_code_span_close"
-            },
-            "named": true,
-            "value": "code_span_delimiter"
+          "named": true,
+          "value": "code_span_delimiter"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "_text_base"
+              },
+              {
+                "type": "STRING",
+                "value": "["
+              },
+              {
+                "type": "STRING",
+                "value": "]"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "_soft_line_break"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "_html_tag"
+              }
+            ]
           }
-        ]
-      }
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_code_span_close"
+          },
+          "named": true,
+          "value": "code_span_delimiter"
+        }
+      ]
     },
     "latex_block": {
-      "type": "PREC_DYNAMIC",
-      "value": 100,
-      "content": {
-        "type": "SEQ",
-        "members": [
-          {
-            "type": "ALIAS",
-            "content": {
-              "type": "SYMBOL",
-              "name": "_latex_span_start"
-            },
-            "named": true,
-            "value": "latex_span_delimiter"
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_latex_span_start"
           },
-          {
-            "type": "REPEAT",
-            "content": {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "_text_base"
-                },
-                {
-                  "type": "STRING",
-                  "value": "["
-                },
-                {
-                  "type": "STRING",
-                  "value": "]"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "_soft_line_break"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "_html_tag"
-                }
-              ]
-            }
-          },
-          {
-            "type": "ALIAS",
-            "content": {
-              "type": "SYMBOL",
-              "name": "_latex_span_close"
-            },
-            "named": true,
-            "value": "latex_span_delimiter"
+          "named": true,
+          "value": "latex_span_delimiter"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "_text_base"
+              },
+              {
+                "type": "STRING",
+                "value": "["
+              },
+              {
+                "type": "STRING",
+                "value": "]"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "_soft_line_break"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "_html_tag"
+              }
+            ]
           }
-        ]
-      }
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_latex_span_close"
+          },
+          "named": true,
+          "value": "latex_span_delimiter"
+        }
+      ]
     },
     "_link_text": {
       "type": "PREC_DYNAMIC",
@@ -4216,16 +4208,12 @@
               "name": "_text_base"
             },
             {
-              "type": "SYMBOL",
-              "name": "_code_span_start"
-            },
-            {
               "type": "CHOICE",
               "members": []
             },
             {
               "type": "SYMBOL",
-              "name": "_latex_span_start"
+              "name": "_unclosed_span"
             }
           ]
         }
@@ -4411,19 +4399,15 @@
         },
         {
           "type": "SYMBOL",
-          "name": "_code_span_start"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_latex_span_start"
-        },
-        {
-          "type": "SYMBOL",
           "name": "_emphasis_open_star"
         },
         {
           "type": "SYMBOL",
           "name": "_emphasis_open_underscore"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_unclosed_span"
         }
       ]
     },
@@ -5557,14 +5541,6 @@
   "extras": [],
   "conflicts": [
     [
-      "code_span",
-      "_inline_base"
-    ],
-    [
-      "latex_block",
-      "_inline_base"
-    ],
-    [
       "_closing_tag",
       "_text_base"
     ],
@@ -5888,6 +5864,10 @@
     {
       "type": "SYMBOL",
       "name": "_latex_span_close"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_unclosed_span"
     }
   ],
   "inline": [],
