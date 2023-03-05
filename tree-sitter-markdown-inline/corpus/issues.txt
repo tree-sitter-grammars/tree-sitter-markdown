@@ -88,3 +88,19 @@ foo `<!--comment-->`
   (code_span
     (code_span_delimiter)
     (code_span_delimiter)))
+
+================================================================================
+#75 - code spans with `[x][]`
+================================================================================
+`some code`
+normal text (or even nothing) `[index][]`
+
+--------------------------------------------------------------------------------
+
+(inline
+  (code_span
+    (code_span_delimiter)
+    (code_span_delimiter))
+  (code_span
+    (code_span_delimiter)
+    (code_span_delimiter)))
