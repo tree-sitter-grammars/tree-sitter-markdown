@@ -707,9 +707,13 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "link_destination",
+          "named": true
+        },
         {
           "type": "link_text",
           "named": true
