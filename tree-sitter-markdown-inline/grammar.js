@@ -109,6 +109,11 @@ module.exports = grammar(add_inline_rules({
         [$.shortcut_link, $._link_text],
         [$.link_destination, $.link_title],
         [$._link_destination_parenthesis, $.link_title],
+
+        [$.wiki_link, $._inline_element],
+        [$.wiki_link, $._inline_element_no_star],
+        [$.wiki_link, $._inline_element_no_underscore],
+        [$.wiki_link, $._inline_element_no_tilde],
     ],
     extras: $ => [],
 
@@ -183,6 +188,13 @@ module.exports = grammar(add_inline_rules({
             )),
             ')'
         )),
+
+        wiki_link: $ => prec.dynamic(3 * PRECEDENCE_LEVEL_LINK, seq(
+            '[', '[',
+            alias($._inline_no_link, $.link_text),
+            ']', ']'
+            )
+        ),
 
         // Images work exactly like links with a '!' added in front.
         //
@@ -407,6 +419,7 @@ function add_inline_rules(grammar) {
                         $.full_reference_link,
                         $.collapsed_reference_link,
                         $.inline_link,
+                        $.wiki_link,
                         seq(choice('[', ']'), optional($._last_token_punctuation)),
                     ]);
                 }

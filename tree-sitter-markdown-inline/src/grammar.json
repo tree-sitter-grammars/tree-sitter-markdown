@@ -1770,6 +1770,40 @@
         ]
       }
     },
+    "wiki_link": {
+      "type": "PREC_DYNAMIC",
+      "value": 30,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "["
+          },
+          {
+            "type": "STRING",
+            "value": "["
+          },
+          {
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_inline_no_link"
+            },
+            "named": true,
+            "value": "link_text"
+          },
+          {
+            "type": "STRING",
+            "value": "]"
+          },
+          {
+            "type": "STRING",
+            "value": "]"
+          }
+        ]
+      }
+    },
     "image": {
       "type": "CHOICE",
       "members": [
@@ -4492,6 +4526,10 @@
           "name": "inline_link"
         },
         {
+          "type": "SYMBOL",
+          "name": "wiki_link"
+        },
+        {
           "type": "SEQ",
           "members": [
             {
@@ -4605,6 +4643,10 @@
         {
           "type": "SYMBOL",
           "name": "inline_link"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "wiki_link"
         },
         {
           "type": "SEQ",
@@ -4722,6 +4764,10 @@
           "name": "inline_link"
         },
         {
+          "type": "SYMBOL",
+          "name": "wiki_link"
+        },
+        {
           "type": "SEQ",
           "members": [
             {
@@ -4835,6 +4881,10 @@
         {
           "type": "SYMBOL",
           "name": "inline_link"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "wiki_link"
         },
         {
           "type": "SEQ",
@@ -5616,6 +5666,22 @@
     [
       "_link_destination_parenthesis",
       "link_title"
+    ],
+    [
+      "wiki_link",
+      "_inline_element"
+    ],
+    [
+      "wiki_link",
+      "_inline_element_no_star"
+    ],
+    [
+      "wiki_link",
+      "_inline_element_no_underscore"
+    ],
+    [
+      "wiki_link",
+      "_inline_element_no_tilde"
     ],
     [
       "_emphasis_star",
