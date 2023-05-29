@@ -4864,10 +4864,6 @@
           "name": "inline_link"
         },
         {
-          "type": "SYMBOL",
-          "name": "wiki_link"
-        },
-        {
           "type": "SEQ",
           "members": [
             {
@@ -4981,10 +4977,6 @@
         {
           "type": "SYMBOL",
           "name": "inline_link"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "wiki_link"
         },
         {
           "type": "SEQ",
@@ -5102,10 +5094,6 @@
           "name": "inline_link"
         },
         {
-          "type": "SYMBOL",
-          "name": "wiki_link"
-        },
-        {
           "type": "SEQ",
           "members": [
             {
@@ -5219,10 +5207,6 @@
         {
           "type": "SYMBOL",
           "name": "inline_link"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "wiki_link"
         },
         {
           "type": "SEQ",

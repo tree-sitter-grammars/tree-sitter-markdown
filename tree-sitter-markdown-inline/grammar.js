@@ -435,9 +435,12 @@ function add_inline_rules(grammar) {
                         $.full_reference_link,
                         $.collapsed_reference_link,
                         $.inline_link,
-                        (common.EXTENSION_WIKI_LINK && $.wiki_link),
+                        // (common.EXTENSION_WIKI_LINK && $.wiki_link),
                         seq(choice('[', ']'), optional($._last_token_punctuation)),
                     ]);
+                    if (common.EXTENSION_WIKI_LINK) {
+                        elements.push($.wiki_link);
+                    }
                 }
                 return choice(...elements);
             };

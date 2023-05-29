@@ -113,10 +113,6 @@
         {
           "type": "uri_autolink",
           "named": true
-        },
-        {
-          "type": "wiki_link",
-          "named": true
         }
       ]
     }
@@ -252,10 +248,6 @@
         {
           "type": "uri_autolink",
           "named": true
-        },
-        {
-          "type": "wiki_link",
-          "named": true
         }
       ]
     }
@@ -334,10 +326,6 @@
         },
         {
           "type": "uri_autolink",
-          "named": true
-        },
-        {
-          "type": "wiki_link",
           "named": true
         }
       ]
@@ -607,10 +595,6 @@
         {
           "type": "uri_autolink",
           "named": true
-        },
-        {
-          "type": "wiki_link",
-          "named": true
         }
       ]
     }
@@ -693,29 +677,6 @@
         },
         {
           "type": "uri_autolink",
-          "named": true
-        },
-        {
-          "type": "wiki_link",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "wiki_link",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "link_destination",
-          "named": true
-        },
-        {
-          "type": "link_text",
           "named": true
         }
       ]
