@@ -38,6 +38,7 @@ of them are on by default, these can be disabled with the environment variable
 | YAML metadata | `EXTENSION_MINUS_METADATA` | [link](https://gohugo.io/content-management/front-matter/) | ✓ |  |
 | TOML metadata | `EXTENSION_PLUS_METADATA` | [link](https://gohugo.io/content-management/front-matter/) | ✓ |  |
 | Tags | `EXTENSION_TAGS` | [link](https://help.obsidian.md/Editing+and+formatting/Tags#Tag+format) |  |  |
+| Wiki Link | `EXTENSION_WIKI_LINK` | [link](https://help.obsidian.md/Linking+notes+and+files/Internal+links) |  |  |
 
 ## Usage in Editors
 
