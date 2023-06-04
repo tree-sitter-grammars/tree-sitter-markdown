@@ -19,7 +19,7 @@
     "node-pre-gyp": "^0.17.0"
   },
   "devDependencies": {
-    "tree-sitter-cli": "^0.20.0"
+    "tree-sitter-cli": "^0.20.8"
   },
   "scripts": {
     "test": "(cd tree-sitter-markdown && tree-sitter test) && (cd tree-sitter-markdown-inline && tree-sitter test)",
