@@ -159,6 +159,9 @@ const bool paragraph_interrupt_symbols[] = {
     false, // NO_INDENTED_CHUNK,
     false, // ERROR,
     false, // TRIGGER_ERROR,
+    false, // EOF,
+    false, // MINUS_METADATA,
+    false, // PLUS_METADATA,
     true, // PIPE_TABLE_START,
     false, // PIPE_TABLE_LINE_ENDING,
 };
@@ -257,7 +260,6 @@ static unsigned serialize(Scanner *s, char *buffer) {
 static void deserialize(Scanner *s, const char *buffer, unsigned length) {
     s->open_blocks.size = 0;
     s->open_blocks.capacity = 0;
-    s->open_blocks.items = NULL;
     s->state = 0;
     s->matched = 0;
     s->indentation = 0;
@@ -274,7 +276,6 @@ static void deserialize(Scanner *s, const char *buffer, unsigned length) {
         if (blocks_size > 0) {
           size_t blocks_count = blocks_size / sizeof(Block);
           s->open_blocks.capacity = roundup_32(blocks_count);
-          s->open_blocks.items = (Block*) malloc(sizeof(Block) * s->open_blocks.capacity);
           memcpy(s->open_blocks.items, &buffer[i], blocks_size);
           s->open_blocks.size = blocks_count;
         }
@@ -1451,6 +1452,7 @@ static bool scan(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
 
 void *tree_sitter_markdown_external_scanner_create() {
     Scanner *s = (Scanner *)malloc(sizeof(Scanner));
+    s->open_blocks.items = (Block *)calloc(1, sizeof(Block));
 
     assert(ATX_H6_MARKER == ATX_H1_MARKER + 5);
     deserialize(s, NULL, 0);
@@ -1487,5 +1489,6 @@ void tree_sitter_markdown_external_scanner_deserialize(
 
 void tree_sitter_markdown_external_scanner_destroy(void *payload) {
     Scanner *scanner = (Scanner *)payload;
+    free(scanner->open_blocks.items);
     free(scanner);
 }
