@@ -20,25 +20,20 @@ typedef enum {
 } TokenType;
 
 // Determines if a character is punctuation as defined by the markdown spec.
-static bool is_punctuation(char c) {
+static bool is_punctuation(char chr) {
     return
-        (c >= '!' && c <= '/') ||
-        (c >= ':' && c <= '@') ||
-        (c >= '[' && c <= '`') ||
-        (c >= '{' && c <= '~');
-}
-
-// Determines if a character is ascii whitespace as defined by the markdown spec.
-static bool is_whitespace(char c) {
-    return c == ' ' || c == '\t' || c == '\n' || c == '\r';
+        (chr >= '!' && chr <= '/') ||
+        (chr >= ':' && chr <= '@') ||
+        (chr >= '[' && chr <= '`') ||
+        (chr >= '{' && chr <= '~');
 }
 
 // State bitflags used with `Scanner.state`
 
 // TODO
-const uint8_t STATE_EMPHASIS_DELIMITER_MOD_3 = 0x3;
+static const uint8_t STATE_EMPHASIS_DELIMITER_MOD_3 = 0x3;
 // Current delimiter run is opening
-const uint8_t STATE_EMPHASIS_DELIMITER_IS_OPEN = 0x1 << 2;
+static const uint8_t STATE_EMPHASIS_DELIMITER_IS_OPEN = 0x1 << 2;
 
 // Convenience function to emit the error token. This is done to stop invalid parse branches.
 // Specifically:
@@ -67,12 +62,12 @@ typedef struct {
 
 // Write the whole state of a Scanner to a byte buffer
 static unsigned serialize(Scanner *s, char *buffer) {
-    size_t i = 0;
-    buffer[i++] = s->state;
-    buffer[i++] = s->code_span_delimiter_length;
-    buffer[i++] = s->latex_span_delimiter_length;
-    buffer[i++] = s->num_emphasis_delimiters_left;
-    return i;
+    unsigned size = 0;
+    buffer[size++] = (char)s->state;
+    buffer[size++] = (char)s->code_span_delimiter_length;
+    buffer[size++] = (char)s->latex_span_delimiter_length;
+    buffer[size++] = (char)s->num_emphasis_delimiters_left;
+    return size;
 }
 
 // Read the whole state of a Scanner from a byte buffer
@@ -83,17 +78,17 @@ static void deserialize(Scanner *s, const char *buffer, unsigned length) {
     s->latex_span_delimiter_length = 0;
     s->num_emphasis_delimiters_left = 0;
     if (length > 0) {
-        size_t i = 0;
-        s->state = buffer[i++];
-        s->code_span_delimiter_length = buffer[i++];
-        s->latex_span_delimiter_length = buffer[i++];
-        s->num_emphasis_delimiters_left = buffer[i++];
+        size_t size = 0;
+        s->state = (uint8_t)buffer[size++];
+        s->code_span_delimiter_length = (uint8_t)buffer[size++];
+        s->latex_span_delimiter_length = (uint8_t)buffer[size++];
+        s->num_emphasis_delimiters_left = (uint8_t)buffer[size++];
     }
 }
 
 static bool parse_leaf_delimiter(TSLexer *lexer, uint8_t* delimiter_length, const bool *valid_symbols,
                                  const char delimiter, const TokenType open_token, const TokenType close_token) {
-    size_t level = 0;
+    uint8_t level = 0;
     while (lexer->lookahead == delimiter) {
         lexer->advance(lexer, false);
         level++;
@@ -103,7 +98,8 @@ static bool parse_leaf_delimiter(TSLexer *lexer, uint8_t* delimiter_length, cons
         *delimiter_length = 0;
         lexer->result_symbol = close_token;
         return true;
-    } else if (valid_symbols[open_token]) {
+    }
+    if (valid_symbols[open_token]) {
         // Parse ahead to check if there is a closing delimiter
         size_t close_level = 0;
         while (!lexer->eof(lexer)) {
@@ -113,9 +109,8 @@ static bool parse_leaf_delimiter(TSLexer *lexer, uint8_t* delimiter_length, cons
                 if (close_level == level) {
                     // Found a matching delimiter
                     break;
-                } else {
-                    close_level = 0;
                 }
+                close_level = 0;
             }
             lexer->advance(lexer, false);
         }
@@ -123,7 +118,8 @@ static bool parse_leaf_delimiter(TSLexer *lexer, uint8_t* delimiter_length, cons
             *delimiter_length = level;
             lexer->result_symbol = open_token;
             return true;
-        } else if (valid_symbols[UNCLOSED_SPAN]) {
+        }
+        if (valid_symbols[UNCLOSED_SPAN]) {
             lexer->result_symbol = UNCLOSED_SPAN;
             return true;
         }
@@ -153,7 +149,8 @@ static bool parse_star(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
             lexer->result_symbol = EMPHASIS_OPEN_STAR;
             s->num_emphasis_delimiters_left--;
             return true;
-        } else if (valid_symbols[EMPHASIS_CLOSE_STAR]) {
+        }
+        if (valid_symbols[EMPHASIS_CLOSE_STAR]) {
             lexer->result_symbol = EMPHASIS_CLOSE_STAR;
             s->num_emphasis_delimiters_left--;
             return true;
@@ -161,7 +158,7 @@ static bool parse_star(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
     }
     lexer->mark_end(lexer);
     // Otherwise count the number of stars
-    size_t star_count = 1;
+    uint8_t star_count = 1;
     while (lexer->lookahead == '*') {
         star_count++;
         lexer->advance(lexer, false);
@@ -174,7 +171,7 @@ static bool parse_star(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
         // Look ahead to the next symbol (after the last star) to find out if it is whitespace
         // punctuation or other.
         bool next_symbol_whitespace = line_end || lexer->lookahead == ' ' || lexer->lookahead == '\t';
-        bool next_symbol_punctuation = is_punctuation(lexer->lookahead);
+        bool next_symbol_punctuation = is_punctuation((char)lexer->lookahead);
         // Information about the last token is in valid_symbols. See grammar.js for these
         // tokens for how this is done.
         if (
@@ -189,7 +186,8 @@ static bool parse_star(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
             s->state &= ~STATE_EMPHASIS_DELIMITER_IS_OPEN;
             lexer->result_symbol = EMPHASIS_CLOSE_STAR;
             return true;
-        } else if (
+        }
+        if (
             !next_symbol_whitespace && (
                 !next_symbol_punctuation ||
                 valid_symbols[LAST_TOKEN_PUNCTUATION] ||
@@ -216,7 +214,8 @@ static bool parse_tilde(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
             lexer->result_symbol = STRIKETHROUGH_OPEN;
             s->num_emphasis_delimiters_left--;
             return true;
-        } else if (valid_symbols[STRIKETHROUGH_CLOSE]) {
+        }
+        if (valid_symbols[STRIKETHROUGH_CLOSE]) {
             lexer->result_symbol = STRIKETHROUGH_CLOSE;
             s->num_emphasis_delimiters_left--;
             return true;
@@ -224,7 +223,7 @@ static bool parse_tilde(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
     }
     lexer->mark_end(lexer);
     // Otherwise count the number of tildes
-    size_t star_count = 1;
+    uint8_t star_count = 1;
     while (lexer->lookahead == '~') {
         star_count++;
         lexer->advance(lexer, false);
@@ -237,7 +236,7 @@ static bool parse_tilde(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
         // Look ahead to the next symbol (after the last star) to find out if it is whitespace
         // punctuation or other.
         bool next_symbol_whitespace = line_end || lexer->lookahead == ' ' || lexer->lookahead == '\t';
-        bool next_symbol_punctuation = is_punctuation(lexer->lookahead);
+        bool next_symbol_punctuation = is_punctuation((char)lexer->lookahead);
         // Information about the last token is in valid_symbols. See grammar.js for these
         // tokens for how this is done.
         if (
@@ -252,7 +251,8 @@ static bool parse_tilde(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
             s->state &= ~STATE_EMPHASIS_DELIMITER_IS_OPEN;
             lexer->result_symbol = STRIKETHROUGH_CLOSE;
             return true;
-        } else if (
+        }
+        if (
             !next_symbol_whitespace && (
                 !next_symbol_punctuation ||
                 valid_symbols[LAST_TOKEN_PUNCTUATION] ||
@@ -278,7 +278,8 @@ static bool parse_underscore(Scanner *s, TSLexer *lexer, const bool *valid_symbo
             lexer->result_symbol = EMPHASIS_OPEN_UNDERSCORE;
             s->num_emphasis_delimiters_left--;
             return true;
-        } else if (valid_symbols[EMPHASIS_CLOSE_UNDERSCORE]) {
+        }
+        if (valid_symbols[EMPHASIS_CLOSE_UNDERSCORE]) {
             lexer->result_symbol = EMPHASIS_CLOSE_UNDERSCORE;
             s->num_emphasis_delimiters_left--;
             return true;
@@ -286,7 +287,7 @@ static bool parse_underscore(Scanner *s, TSLexer *lexer, const bool *valid_symbo
     }
     lexer->mark_end(lexer);
     // Otherwise count the number of stars
-    size_t underscore_count = 1;
+    uint8_t underscore_count = 1;
     while (lexer->lookahead == '_') {
         underscore_count++;
         lexer->advance(lexer, false);
@@ -295,7 +296,7 @@ static bool parse_underscore(Scanner *s, TSLexer *lexer, const bool *valid_symbo
     if (valid_symbols[EMPHASIS_OPEN_UNDERSCORE] || valid_symbols[EMPHASIS_CLOSE_UNDERSCORE]) {
         s->num_emphasis_delimiters_left = underscore_count - 1;
         bool next_symbol_whitespace = line_end || lexer->lookahead == ' ' || lexer->lookahead == '\t';
-        bool next_symbol_punctuation = is_punctuation(lexer->lookahead);
+        bool next_symbol_punctuation = is_punctuation((char)lexer->lookahead);
         bool right_flanking = !valid_symbols[LAST_TOKEN_WHITESPACE] &&
             (!valid_symbols[LAST_TOKEN_PUNCTUATION] || next_symbol_punctuation || next_symbol_whitespace);
         bool left_flanking = !next_symbol_whitespace &&
@@ -304,7 +305,8 @@ static bool parse_underscore(Scanner *s, TSLexer *lexer, const bool *valid_symbo
             s->state &= ~STATE_EMPHASIS_DELIMITER_IS_OPEN;
             lexer->result_symbol = EMPHASIS_CLOSE_UNDERSCORE;
             return true;
-        } else if (left_flanking && (!right_flanking || valid_symbols[LAST_TOKEN_PUNCTUATION])) {
+        }
+        if (left_flanking && (!right_flanking || valid_symbols[LAST_TOKEN_PUNCTUATION])) {
             s->state |= STATE_EMPHASIS_DELIMITER_IS_OPEN;
             lexer->result_symbol = EMPHASIS_OPEN_UNDERSCORE;
             return true;
@@ -326,22 +328,17 @@ static bool scan(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
             // A backtick could mark the beginning or ending of a code span or a fenced
             // code block.
             return parse_backtick(s, lexer, valid_symbols);
-            break;
         case '$':
             return parse_dollar(s,lexer, valid_symbols);
-            break;
         case '*':
             // A star could either mark the beginning or ending of emphasis, a list item or
             // thematic break.
             // This code is similar to the code for '_' and '+'.
             return parse_star(s,lexer, valid_symbols);
-            break;
         case '_':
             return parse_underscore(s, lexer, valid_symbols);
-            break;
         case '~':
             return parse_tilde(s, lexer, valid_symbols);
-            break;
     }
     return false;
 }
