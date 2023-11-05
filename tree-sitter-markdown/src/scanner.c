@@ -1557,7 +1557,7 @@ void *tree_sitter_markdown_external_scanner_create() {
     Scanner *s = (Scanner *)malloc(sizeof(Scanner));
     s->open_blocks.items = (Block *)calloc(1, sizeof(Block));
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
-    static_assert(ATX_H6_MARKER == ATX_H1_MARKER + 5, "");
+    _Static_assert(ATX_H6_MARKER == ATX_H1_MARKER + 5, "");
 #else
     assert(ATX_H6_MARKER == ATX_H1_MARKER + 5);
 #endif
