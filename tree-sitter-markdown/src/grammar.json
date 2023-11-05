@@ -1910,17 +1910,8 @@
             "type": "CHOICE",
             "members": [
               {
-                "type": "FIELD",
-                "name": "heading_content",
-                "content": {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "_line"
-                  },
-                  "named": true,
-                  "value": "inline"
-                }
+                "type": "SYMBOL",
+                "name": "_atx_heading_content"
               },
               {
                 "type": "BLANK"
@@ -1948,17 +1939,8 @@
             "type": "CHOICE",
             "members": [
               {
-                "type": "FIELD",
-                "name": "heading_content",
-                "content": {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "_line"
-                  },
-                  "named": true,
-                  "value": "inline"
-                }
+                "type": "SYMBOL",
+                "name": "_atx_heading_content"
               },
               {
                 "type": "BLANK"
@@ -1986,17 +1968,8 @@
             "type": "CHOICE",
             "members": [
               {
-                "type": "FIELD",
-                "name": "heading_content",
-                "content": {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "_line"
-                  },
-                  "named": true,
-                  "value": "inline"
-                }
+                "type": "SYMBOL",
+                "name": "_atx_heading_content"
               },
               {
                 "type": "BLANK"
@@ -2024,17 +1997,8 @@
             "type": "CHOICE",
             "members": [
               {
-                "type": "FIELD",
-                "name": "heading_content",
-                "content": {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "_line"
-                  },
-                  "named": true,
-                  "value": "inline"
-                }
+                "type": "SYMBOL",
+                "name": "_atx_heading_content"
               },
               {
                 "type": "BLANK"
@@ -2062,17 +2026,8 @@
             "type": "CHOICE",
             "members": [
               {
-                "type": "FIELD",
-                "name": "heading_content",
-                "content": {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "_line"
-                  },
-                  "named": true,
-                  "value": "inline"
-                }
+                "type": "SYMBOL",
+                "name": "_atx_heading_content"
               },
               {
                 "type": "BLANK"
@@ -2100,17 +2055,8 @@
             "type": "CHOICE",
             "members": [
               {
-                "type": "FIELD",
-                "name": "heading_content",
-                "content": {
-                  "type": "ALIAS",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "_line"
-                  },
-                  "named": true,
-                  "value": "inline"
-                }
+                "type": "SYMBOL",
+                "name": "_atx_heading_content"
               },
               {
                 "type": "BLANK"
@@ -2120,6 +2066,40 @@
           {
             "type": "SYMBOL",
             "name": "_newline"
+          }
+        ]
+      }
+    },
+    "_atx_heading_content": {
+      "type": "PREC",
+      "value": 1,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "_whitespace"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          },
+          {
+            "type": "FIELD",
+            "name": "heading_content",
+            "content": {
+              "type": "ALIAS",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_line"
+              },
+              "named": true,
+              "value": "inline"
+            }
           }
         ]
       }
