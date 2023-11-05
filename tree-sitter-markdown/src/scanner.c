@@ -1452,12 +1452,7 @@ static bool scan(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
         }
 
         if (!(s->state & STATE_WAS_SOFT_LINE_BREAK)) {
-            Block block = last_block(s);
             lexer->result_symbol = BLOCK_CLOSE;
-            if (block == FENCED_CODE_BLOCK) {
-                mark_end(s, lexer);
-                s->indentation = 0;
-            }
             pop_block(s);
             if (s->matched == s->open_blocks.size) {
                 s->state &= (~STATE_MATCHING);
