@@ -276,7 +276,16 @@ static void deserialize(Scanner *s, const char *buffer, unsigned length) {
         size_t blocks_size = length - size;
         if (blocks_size > 0) {
             size_t blocks_count = blocks_size / sizeof(Block);
-            s->open_blocks.capacity = roundup_32(blocks_count);
+
+            // ensure open blocks has enough room
+            if (s->open_blocks.capacity < blocks_count) {
+              size_t capacity = roundup_32(blocks_count);
+              void *tmp = realloc(s->open_blocks.items,
+                            sizeof(Block) * capacity);
+              assert(tmp != NULL);
+              s->open_blocks.items = tmp;
+              s->open_blocks.capacity = capacity;
+            }
             memcpy(s->open_blocks.items, &buffer[size], blocks_size);
             s->open_blocks.size = blocks_count;
         }
