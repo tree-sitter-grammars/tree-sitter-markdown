@@ -454,9 +454,14 @@ module.exports = grammar({
                 choice(
                     seq(
                         repeat1(prec.right(seq(
-                            optional($._whitespace),
-                            optional($.pipe_table_cell),
-                            optional($._whitespace),
+                            choice(
+                                seq(
+                                    optional($._whitespace),
+                                    $.pipe_table_cell,
+                                    optional($._whitespace)
+                                ),
+                                alias($._whitespace, $.pipe_table_cell)
+                            ),
                             '|',
                         ))),
                         optional($._whitespace),
