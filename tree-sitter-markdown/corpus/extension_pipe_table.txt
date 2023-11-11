@@ -180,3 +180,25 @@ Example 205 - https://github.github.com/gfm/#example-205
       (pipe_table_delimiter_row
         (pipe_table_delimiter_cell)
         (pipe_table_delimiter_cell)))))
+
+================================================================================
+#112 - Works with table cells that only contain whitespce
+================================================================================
+| foo | bar |
+| --- | --- |
+|     | bim |
+
+--------------------------------------------------------------------------------
+
+(document
+  (section
+    (pipe_table
+      (pipe_table_header
+        (pipe_table_cell)
+        (pipe_table_cell))
+      (pipe_table_delimiter_row
+        (pipe_table_delimiter_cell)
+        (pipe_table_delimiter_cell))
+      (pipe_table_row
+        (pipe_table_cell)
+        (pipe_table_cell)))))
