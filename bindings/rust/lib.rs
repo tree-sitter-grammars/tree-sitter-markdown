@@ -166,10 +166,9 @@ impl<'a> MarkdownCursor<'a> {
     pub fn goto_parent(&mut self) -> bool {
         match &mut self.inline_cursor {
             Some(inline_cursor) => {
-                if inline_cursor.goto_parent() {
-                    if inline_cursor.node().parent().is_none() {
-                        self.move_to_block_tree();
-                    }
+                inline_cursor.goto_parent();
+                if inline_cursor.node().parent().is_none() {
+                    self.move_to_block_tree();
                 }
                 true
             }
