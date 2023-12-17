@@ -395,7 +395,7 @@ module.exports = grammar({
         _word: $ => choice(
             new RegExp('[^' + PUNCTUATION_CHARACTERS_REGEX + ' \\t\\n\\r]+'),
             common.EXTENSION_TASK_LIST ? choice(
-                '[x]',
+                /\[[xX]\]/,
                 /\[[ \t]\]/,
             ) : choice()
         ),
@@ -403,7 +403,7 @@ module.exports = grammar({
         _whitespace: $ => /[ \t]+/,
 
         ...(common.EXTENSION_TASK_LIST ? {
-            task_list_marker_checked: $ => prec(1, '[x]'),
+            task_list_marker_checked: $ => prec(1, /\[[xX]\]/),
             task_list_marker_unchecked: $ => prec(1, /\[[ \t]\]/),
         } : {}),
         
