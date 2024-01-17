@@ -56,6 +56,10 @@ These parts are marked as `inline` nodes. Children of those inline nodes should
 be excluded from these ranges. For an example implementation see `lib.rs` in
 the `bindings` folder.
 
+### Usage with WASM
+
+Unfortunately using this parser with WASM/web-tree-sitter does not work out of the box at the moment. This is because the parser uses some C functions that are not exported by tree-sitter by default. To fix this you can statically link the parser to tree-sitter. See also https://github.com/tree-sitter/tree-sitter/issues/949, https://github.com/MDeiml/tree-sitter-markdown/issues/126, and https://github.com/MDeiml/tree-sitter-markdown/issues/93
+
 [CommonMark Spec]: https://spec.commonmark.org/
 [Github flavored markdown]: https://github.github.com/gfm/
 [tree-sitter]: https://tree-sitter.github.io/tree-sitter/
