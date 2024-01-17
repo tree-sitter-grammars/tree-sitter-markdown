@@ -56,3 +56,25 @@ Example 280 - https://github.github.com/gfm/#example-280
         (task_list_marker_unchecked)
         (paragraph
           (inline))))))
+
+================================================================================
+task list item marker … the letter x in either lowercase or UPPERCASE
+================================================================================
+- [ ] foo
+- [X] bar
+
+--------------------------------------------------------------------------------
+
+(document
+  (section
+    (list
+      (list_item
+        (list_marker_minus)
+        (task_list_marker_unchecked)
+        (paragraph
+          (inline)))
+      (list_item
+        (list_marker_minus)
+        (task_list_marker_checked)
+        (paragraph
+          (inline))))))

@@ -4339,8 +4339,8 @@
           "type": "CHOICE",
           "members": [
             {
-              "type": "STRING",
-              "value": "[x]"
+              "type": "PATTERN",
+              "value": "\\[[xX]\\]"
             },
             {
               "type": "PATTERN",
@@ -4358,8 +4358,8 @@
       "type": "PREC",
       "value": 1,
       "content": {
-        "type": "STRING",
-        "value": "[x]"
+        "type": "PATTERN",
+        "value": "\\[[xX]\\]"
       }
     },
     "task_list_marker_unchecked": {
