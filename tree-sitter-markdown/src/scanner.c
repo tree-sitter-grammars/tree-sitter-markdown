@@ -97,7 +97,7 @@ static bool is_punctuation(char chr) {
 // minimum. Should only be called with blocks for which `is_list_item` returns
 // true.
 static uint8_t list_item_indentation(Block block) {
-    return block - LIST_ITEM + 2;
+    return (uint8_t)(block - LIST_ITEM + 2);
 }
 
 #define NUM_HTML_TAG_NAMES_RULE_1 3
@@ -233,10 +233,6 @@ static void push_block(Scanner *s, Block b) {
 
 static inline Block pop_block(Scanner *s) {
     return s->open_blocks.items[--s->open_blocks.size];
-}
-
-static inline Block last_block(Scanner *s) {
-    return s->open_blocks.items[s->open_blocks.size - 1];
 }
 
 // Write the whole state of a Scanner to a byte buffer
@@ -1176,6 +1172,10 @@ static bool parse_html_block(Scanner *s, TSLexer *lexer,
 
 static bool parse_pipe_table(Scanner *s, TSLexer *lexer,
                              const bool *valid_symbols) {
+
+    // unused
+    (void)(valid_symbols);
+
     // PIPE_TABLE_START is zero width
     mark_end(s, lexer);
     // count number of cells
@@ -1557,7 +1557,7 @@ static bool scan(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
     return false;
 }
 
-void *tree_sitter_markdown_external_scanner_create() {
+void *tree_sitter_markdown_external_scanner_create(void) {
     Scanner *s = (Scanner *)malloc(sizeof(Scanner));
     s->open_blocks.items = (Block *)calloc(1, sizeof(Block));
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201112L)
