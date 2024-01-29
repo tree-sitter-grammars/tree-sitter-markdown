@@ -4491,11 +4491,11 @@
     },
     "_word_no_digit": {
       "type": "PATTERN",
-      "value": "[^!-/:-@\\[-`\\{-~ \\t\\n\\r0-9]+"
+      "value": "[^!-/:-@\\[-`\\{-~ \\t\\n\\r0-9]+(_+[^!-/:-@\\[-`\\{-~ \\t\\n\\r0-9]+)*"
     },
     "_digits": {
       "type": "PATTERN",
-      "value": "[0-9]+"
+      "value": "[0-9][0-9_]*"
     },
     "_soft_line_break": {
       "type": "SEQ",
