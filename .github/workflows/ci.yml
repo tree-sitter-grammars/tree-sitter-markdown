@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [split_parser]
+    paths:
+      - "scripts/*"
+      - "common/*"
+      - "*/grammar.js"
+      - "*/src/**"
+      - "*/test/**"
+      - "bindings/**"
+      - "binding.gyp"
+  pull_request:
+    paths:
+      - "scripts/*"
+      - "common/*"
+      - "*/grammar.js"
+      - "*/src/**"
+      - "*/test/**"
+      - "bindings/**"
+      - "binding.gyp"
+
+jobs:
+  test:
+    name: Test parsers
+    runs-on: ${{matrix.os}}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-14]
+    steps:
+      - name: Set up repository
+        uses: tree-sitter/parser-setup-action@v1.2
+        with:
+          node-version: ${{vars.NODE_VERSION}}
+      - name: Build with all extensions
+        run: npm run build
+        env:
+          ALL_EXTENSIONS: 1
+      - name: Run tests
+        uses: tree-sitter/parser-test-action@v1.2
+      - name: Rebuild with default extensions
+        run: npm run build
+        env:
+          EXTENSION_DEFAULT: 1
+      - name: Verify grammar consistency
+        run: git diff --exit-code -- */src/grammar.json
+  fuzz:
+    name: Fuzz parsers
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        parser: [tree-sitter-markdown, tree-sitter-markdown-inline]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Check for scanner changes
+        id: scanner-changes
+        run: |-
+          if git diff --quiet HEAD^ -- '${{matrix.parser}}/src/scanner.c'; then
+            printf 'changed=false\n' >> "$GITHUB_OUTPUT"
+          else
+            printf 'changed=true\n' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Fuzz ${{matrix.parser}} parser
+        uses: tree-sitter/fuzz-action@v4
+        if: steps.scanner-changes.outputs.changed == 'true'
+        with:
+          directory: ${{matrix.parser}}
