@@ -1,4 +1,10 @@
-#include <tree_sitter/parser.h>
+#include "tree_sitter/parser.h"
+
+#ifdef _MSC_VER
+#define UNUSED __pragma(warning(suppress : 4101))
+#else
+#define UNUSED __attribute__((unused))
+#endif
 
 // For explanation of the tokens see grammar.js
 typedef enum {
@@ -28,7 +34,7 @@ static bool is_punctuation(char chr) {
 // State bitflags used with `Scanner.state`
 
 // TODO
-static const uint8_t STATE_EMPHASIS_DELIMITER_MOD_3 = 0x3;
+static UNUSED const uint8_t STATE_EMPHASIS_DELIMITER_MOD_3 = 0x3;
 // Current delimiter run is opening
 static const uint8_t STATE_EMPHASIS_DELIMITER_IS_OPEN = 0x1 << 2;
 

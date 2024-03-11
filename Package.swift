@@ -13,7 +13,7 @@ let package = Package(
         .target(name: "TreeSitterMarkdown",
                 path: "tree-sitter-markdown",
                 exclude: [
-                    "corpus",
+                    "test",
                     "grammar.js",
                 ],
                 sources: [
@@ -28,7 +28,7 @@ let package = Package(
         .target(name: "TreeSitterMarkdownInline",
                 path: "tree-sitter-markdown-inline",
                 exclude: [
-                    "corpus",
+                    "test",
                     "grammar.js",
                 ],
                 sources: [
@@ -40,5 +40,6 @@ let package = Package(
                 ],
                 publicHeadersPath: "bindings/swift",
                 cSettings: [.headerSearchPath("src")])
-    ]
+    ],
+    cLanguageStandard: .c11
 )
