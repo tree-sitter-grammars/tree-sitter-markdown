@@ -12,7 +12,7 @@
 //! [Tree]: https://docs.rs/tree-sitter/*/tree_sitter/struct.Tree.html
 //! [tree-sitter]: https://tree-sitter.github.io/
 
-use std::collections::HashMap;
+use std::{collections::HashMap, num::NonZeroU16};
 
 use tree_sitter::{InputEdit, Language, Node, Parser, Point, Range, Tree, TreeCursor};
 
@@ -97,7 +97,7 @@ impl<'a> MarkdownCursor<'a> {
     /// current node is an inline or block node.
     ///
     /// See also [`field_name`](Self::field_name).
-    pub fn field_id(&self) -> Option<u16> {
+    pub fn field_id(&self) -> Option<NonZeroU16> {
         match &self.inline_cursor {
             Some(cursor) => cursor.field_id(),
             None => self.block_cursor.field_id(),
@@ -272,7 +272,7 @@ impl MarkdownTree {
     /// Create a new [`MarkdownCursor`] starting from the root of the tree.
     pub fn walk(&self) -> MarkdownCursor {
         MarkdownCursor {
-            markdown_tree: &self,
+            markdown_tree: self,
             block_cursor: self.block_tree.walk(),
             inline_cursor: None,
         }
@@ -319,7 +319,7 @@ impl MarkdownParser {
             .set_included_ranges(&[])
             .expect("Can not set included ranges to whole document");
         parser
-            .set_language(*block_language)
+            .set_language(block_language)
             .expect("Could not load block grammar");
         let block_tree = parser.parse_with(callback, old_tree.map(|tree| &tree.block_tree))?;
         let (mut inline_trees, mut inline_indices) = if let Some(old_tree) = old_tree {
@@ -329,7 +329,7 @@ impl MarkdownParser {
             (Vec::new(), HashMap::new())
         };
         parser
-            .set_language(*inline_language)
+            .set_language(inline_language)
             .expect("Could not load inline grammar");
         let mut tree_cursor = block_tree.walk();
 
@@ -408,20 +408,18 @@ impl MarkdownParser {
 
 #[cfg(test)]
 mod tests {
-    use tree_sitter::Point;
-
     use super::*;
 
     #[test]
     fn can_load_grammar() {
         let mut parser = tree_sitter::Parser::new();
         parser
-            .set_language(language())
-            .expect("Error loading markdown language");
+            .set_language(&language())
+            .expect("Error loading Markdown language");
         let mut inline_parser = tree_sitter::Parser::new();
         inline_parser
-            .set_language(inline_language())
-            .expect("Error loading markdown language");
+            .set_language(&inline_language())
+            .expect("Error loading Markdown language");
     }
 
     #[test]

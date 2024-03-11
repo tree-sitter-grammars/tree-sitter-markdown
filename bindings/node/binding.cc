@@ -1,35 +1,29 @@
-#include "tree_sitter/parser.h"
-#include <node.h>
-#include "nan.h"
+#include <napi.h>
 
-using namespace v8;
+typedef struct TSLanguage TSLanguage;
 
 extern "C" TSLanguage * tree_sitter_markdown();
 extern "C" TSLanguage * tree_sitter_markdown_inline();
 
-namespace {
+// "tree-sitter", "language" hashed with BLAKE2
+const napi_type_tag LANGUAGE_TYPE_TAG = {
+  0x8AF2E5212AD58ABF, 0xD5006CAD83ABBA16
+};
 
-NAN_METHOD(New) {}
+Napi::Object Init(Napi::Env env, Napi::Object exports) {
+    exports["name"] = Napi::String::New(env, "markdown");
+    auto markdown_language = Napi::External<TSLanguage>::New(env, tree_sitter_markdown());
+    markdown_language.TypeTag(&LANGUAGE_TYPE_TAG);
+    exports["language"] = markdown_language;
 
-void Init(Local<Object> exports, Local<Object> module) {
-  Local<FunctionTemplate> tpl = Nan::New<FunctionTemplate>(New);
-  tpl->SetClassName(Nan::New("Language").ToLocalChecked());
-  tpl->InstanceTemplate()->SetInternalFieldCount(1);
+    auto md_inline = Napi::Object::New(env);
+    md_inline["name"] = Napi::String::New(env, "markdown_inline");
+    auto md_inline_language = Napi::External<TSLanguage>::New(env, tree_sitter_markdown_inline());
+    md_inline_language.TypeTag(&LANGUAGE_TYPE_TAG);
+    md_inline["language"] = md_inline_language;
+    exports["inline"] = md_inline;
 
-  Local<Function> constructor = Nan::GetFunction(tpl).ToLocalChecked();
-
-  Local<Object> instance_block = constructor->NewInstance(Nan::GetCurrentContext()).ToLocalChecked();
-  Nan::SetInternalFieldPointer(instance_block, 0, tree_sitter_markdown());
-  Nan::Set(instance_block, Nan::New("name").ToLocalChecked(), Nan::New("markdown").ToLocalChecked());
-  Nan::Set(exports, Nan::New("markdown").ToLocalChecked(), instance_block);
-
-  Local<Object> instance_inline = constructor->NewInstance(Nan::GetCurrentContext()).ToLocalChecked();
-  Nan::SetInternalFieldPointer(instance_inline, 0, tree_sitter_markdown_inline());
-  Nan::Set(instance_inline, Nan::New("name").ToLocalChecked(), Nan::New("markdown_inline").ToLocalChecked());
-  Nan::Set(exports, Nan::New("markdown_inline").ToLocalChecked(), instance_inline);
+    return exports;
 }
 
-NODE_MODULE(tree_sitter_markdown_binding, Init)
-
-}  // namespace
-
+NODE_API_MODULE(tree_sitter_markdown_binding, Init);

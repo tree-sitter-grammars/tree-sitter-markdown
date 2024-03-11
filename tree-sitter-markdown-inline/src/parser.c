@@ -1,7 +1,6 @@
-#include <tree_sitter/parser.h>
+#include "tree_sitter/parser.h"
 
 #if defined(__GNUC__) || defined(__clang__)
-#pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #endif
 
@@ -24,7 +23,7 @@
 #define MAX_ALIAS_SEQUENCE_LENGTH 8
 #define PRODUCTION_ID_COUNT 6
 
-enum {
+enum ts_symbol_identifiers {
   sym__backslash_escape = 1,
   sym_entity_reference = 2,
   sym_numeric_character_reference = 3,
@@ -13311,227 +13310,6 @@ static const TSLexMode ts_lex_modes[STATE_COUNT] = {
   [1157] = {.lex_state = 0},
   [1158] = {.lex_state = 0, .external_lex_state = 26},
   [1159] = {.lex_state = 0},
-};
-
-enum {
-  ts_external_token__error = 0,
-  ts_external_token__trigger_error = 1,
-  ts_external_token__code_span_start = 2,
-  ts_external_token__code_span_close = 3,
-  ts_external_token__emphasis_open_star = 4,
-  ts_external_token__emphasis_open_underscore = 5,
-  ts_external_token__emphasis_close_star = 6,
-  ts_external_token__emphasis_close_underscore = 7,
-  ts_external_token__last_token_whitespace = 8,
-  ts_external_token__last_token_punctuation = 9,
-  ts_external_token__strikethrough_open = 10,
-  ts_external_token__strikethrough_close = 11,
-  ts_external_token__latex_span_start = 12,
-  ts_external_token__latex_span_close = 13,
-  ts_external_token__unclosed_span = 14,
-};
-
-static const TSSymbol ts_external_scanner_symbol_map[EXTERNAL_TOKEN_COUNT] = {
-  [ts_external_token__error] = sym__error,
-  [ts_external_token__trigger_error] = sym__trigger_error,
-  [ts_external_token__code_span_start] = sym__code_span_start,
-  [ts_external_token__code_span_close] = sym__code_span_close,
-  [ts_external_token__emphasis_open_star] = sym__emphasis_open_star,
-  [ts_external_token__emphasis_open_underscore] = sym__emphasis_open_underscore,
-  [ts_external_token__emphasis_close_star] = sym__emphasis_close_star,
-  [ts_external_token__emphasis_close_underscore] = sym__emphasis_close_underscore,
-  [ts_external_token__last_token_whitespace] = sym__last_token_whitespace,
-  [ts_external_token__last_token_punctuation] = sym__last_token_punctuation,
-  [ts_external_token__strikethrough_open] = sym__strikethrough_open,
-  [ts_external_token__strikethrough_close] = sym__strikethrough_close,
-  [ts_external_token__latex_span_start] = sym__latex_span_start,
-  [ts_external_token__latex_span_close] = sym__latex_span_close,
-  [ts_external_token__unclosed_span] = sym__unclosed_span,
-};
-
-static const bool ts_external_scanner_states[27][EXTERNAL_TOKEN_COUNT] = {
-  [1] = {
-    [ts_external_token__error] = true,
-    [ts_external_token__trigger_error] = true,
-    [ts_external_token__code_span_start] = true,
-    [ts_external_token__code_span_close] = true,
-    [ts_external_token__emphasis_open_star] = true,
-    [ts_external_token__emphasis_open_underscore] = true,
-    [ts_external_token__emphasis_close_star] = true,
-    [ts_external_token__emphasis_close_underscore] = true,
-    [ts_external_token__last_token_whitespace] = true,
-    [ts_external_token__last_token_punctuation] = true,
-    [ts_external_token__strikethrough_open] = true,
-    [ts_external_token__strikethrough_close] = true,
-    [ts_external_token__latex_span_start] = true,
-    [ts_external_token__latex_span_close] = true,
-    [ts_external_token__unclosed_span] = true,
-  },
-  [2] = {
-    [ts_external_token__code_span_start] = true,
-    [ts_external_token__emphasis_open_star] = true,
-    [ts_external_token__emphasis_open_underscore] = true,
-    [ts_external_token__last_token_whitespace] = true,
-    [ts_external_token__strikethrough_open] = true,
-    [ts_external_token__latex_span_start] = true,
-    [ts_external_token__unclosed_span] = true,
-  },
-  [3] = {
-    [ts_external_token__code_span_start] = true,
-    [ts_external_token__emphasis_open_star] = true,
-    [ts_external_token__emphasis_open_underscore] = true,
-    [ts_external_token__emphasis_close_underscore] = true,
-    [ts_external_token__last_token_punctuation] = true,
-    [ts_external_token__strikethrough_open] = true,
-    [ts_external_token__latex_span_start] = true,
-    [ts_external_token__unclosed_span] = true,
-  },
-  [4] = {
-    [ts_external_token__code_span_start] = true,
-    [ts_external_token__emphasis_open_star] = true,
-    [ts_external_token__emphasis_open_underscore] = true,
-    [ts_external_token__last_token_punctuation] = true,
-    [ts_external_token__strikethrough_open] = true,
-    [ts_external_token__latex_span_start] = true,
-    [ts_external_token__unclosed_span] = true,
-  },
-  [5] = {
-    [ts_external_token__code_span_start] = true,
-    [ts_external_token__emphasis_open_star] = true,
-    [ts_external_token__emphasis_open_underscore] = true,
-    [ts_external_token__last_token_punctuation] = true,
-    [ts_external_token__strikethrough_open] = true,
-    [ts_external_token__strikethrough_close] = true,
-    [ts_external_token__latex_span_start] = true,
-    [ts_external_token__unclosed_span] = true,
-  },
-  [6] = {
-    [ts_external_token__code_span_start] = true,
-    [ts_external_token__emphasis_open_star] = true,
-    [ts_external_token__emphasis_open_underscore] = true,
-    [ts_external_token__emphasis_close_star] = true,
-    [ts_external_token__last_token_punctuation] = true,
-    [ts_external_token__strikethrough_open] = true,
-    [ts_external_token__latex_span_start] = true,
-    [ts_external_token__unclosed_span] = true,
-  },
-  [7] = {
-    [ts_external_token__code_span_start] = true,
-    [ts_external_token__emphasis_open_star] = true,
-    [ts_external_token__emphasis_open_underscore] = true,
-    [ts_external_token__emphasis_close_star] = true,
-    [ts_external_token__strikethrough_open] = true,
-    [ts_external_token__latex_span_start] = true,
-    [ts_external_token__unclosed_span] = true,
-  },
-  [8] = {
-    [ts_external_token__code_span_start] = true,
-    [ts_external_token__emphasis_open_star] = true,
-    [ts_external_token__emphasis_open_underscore] = true,
-    [ts_external_token__emphasis_close_underscore] = true,
-    [ts_external_token__strikethrough_open] = true,
-    [ts_external_token__latex_span_start] = true,
-    [ts_external_token__unclosed_span] = true,
-  },
-  [9] = {
-    [ts_external_token__code_span_start] = true,
-    [ts_external_token__emphasis_open_star] = true,
-    [ts_external_token__emphasis_open_underscore] = true,
-    [ts_external_token__strikethrough_open] = true,
-    [ts_external_token__strikethrough_close] = true,
-    [ts_external_token__latex_span_start] = true,
-    [ts_external_token__unclosed_span] = true,
-  },
-  [10] = {
-    [ts_external_token__code_span_start] = true,
-    [ts_external_token__emphasis_open_star] = true,
-    [ts_external_token__emphasis_open_underscore] = true,
-    [ts_external_token__strikethrough_open] = true,
-    [ts_external_token__latex_span_start] = true,
-    [ts_external_token__unclosed_span] = true,
-  },
-  [11] = {
-    [ts_external_token__code_span_start] = true,
-    [ts_external_token__emphasis_open_star] = true,
-    [ts_external_token__emphasis_open_underscore] = true,
-    [ts_external_token__emphasis_close_underscore] = true,
-    [ts_external_token__last_token_whitespace] = true,
-    [ts_external_token__strikethrough_open] = true,
-    [ts_external_token__latex_span_start] = true,
-    [ts_external_token__unclosed_span] = true,
-  },
-  [12] = {
-    [ts_external_token__code_span_start] = true,
-    [ts_external_token__emphasis_open_star] = true,
-    [ts_external_token__emphasis_open_underscore] = true,
-    [ts_external_token__emphasis_close_star] = true,
-    [ts_external_token__last_token_whitespace] = true,
-    [ts_external_token__strikethrough_open] = true,
-    [ts_external_token__latex_span_start] = true,
-    [ts_external_token__unclosed_span] = true,
-  },
-  [13] = {
-    [ts_external_token__code_span_start] = true,
-    [ts_external_token__emphasis_open_star] = true,
-    [ts_external_token__emphasis_open_underscore] = true,
-    [ts_external_token__last_token_whitespace] = true,
-    [ts_external_token__strikethrough_open] = true,
-    [ts_external_token__strikethrough_close] = true,
-    [ts_external_token__latex_span_start] = true,
-    [ts_external_token__unclosed_span] = true,
-  },
-  [14] = {
-    [ts_external_token__code_span_close] = true,
-  },
-  [15] = {
-    [ts_external_token__latex_span_close] = true,
-  },
-  [16] = {
-    [ts_external_token__emphasis_open_star] = true,
-    [ts_external_token__emphasis_open_underscore] = true,
-    [ts_external_token__unclosed_span] = true,
-  },
-  [17] = {
-    [ts_external_token__last_token_punctuation] = true,
-  },
-  [18] = {
-    [ts_external_token__emphasis_open_star] = true,
-    [ts_external_token__emphasis_open_underscore] = true,
-    [ts_external_token__last_token_whitespace] = true,
-    [ts_external_token__unclosed_span] = true,
-  },
-  [19] = {
-    [ts_external_token__emphasis_open_star] = true,
-    [ts_external_token__emphasis_open_underscore] = true,
-    [ts_external_token__last_token_punctuation] = true,
-    [ts_external_token__unclosed_span] = true,
-  },
-  [20] = {
-    [ts_external_token__last_token_punctuation] = true,
-    [ts_external_token__latex_span_close] = true,
-  },
-  [21] = {
-    [ts_external_token__code_span_close] = true,
-    [ts_external_token__last_token_punctuation] = true,
-  },
-  [22] = {
-    [ts_external_token__code_span_close] = true,
-    [ts_external_token__last_token_whitespace] = true,
-  },
-  [23] = {
-    [ts_external_token__last_token_whitespace] = true,
-    [ts_external_token__latex_span_close] = true,
-  },
-  [24] = {
-    [ts_external_token__last_token_whitespace] = true,
-  },
-  [25] = {
-    [ts_external_token__trigger_error] = true,
-    [ts_external_token__last_token_whitespace] = true,
-  },
-  [26] = {
-    [ts_external_token__trigger_error] = true,
-  },
 };
 
 static const uint16_t ts_parse_table[LARGE_STATE_COUNT][SYMBOL_COUNT] = {
@@ -75186,6 +74964,227 @@ static const TSParseActionEntry ts_parse_actions[] = {
   [4943] = {.entry = {.count = 1, .reusable = true}}, SHIFT(881),
 };
 
+enum ts_external_scanner_symbol_identifiers {
+  ts_external_token__error = 0,
+  ts_external_token__trigger_error = 1,
+  ts_external_token__code_span_start = 2,
+  ts_external_token__code_span_close = 3,
+  ts_external_token__emphasis_open_star = 4,
+  ts_external_token__emphasis_open_underscore = 5,
+  ts_external_token__emphasis_close_star = 6,
+  ts_external_token__emphasis_close_underscore = 7,
+  ts_external_token__last_token_whitespace = 8,
+  ts_external_token__last_token_punctuation = 9,
+  ts_external_token__strikethrough_open = 10,
+  ts_external_token__strikethrough_close = 11,
+  ts_external_token__latex_span_start = 12,
+  ts_external_token__latex_span_close = 13,
+  ts_external_token__unclosed_span = 14,
+};
+
+static const TSSymbol ts_external_scanner_symbol_map[EXTERNAL_TOKEN_COUNT] = {
+  [ts_external_token__error] = sym__error,
+  [ts_external_token__trigger_error] = sym__trigger_error,
+  [ts_external_token__code_span_start] = sym__code_span_start,
+  [ts_external_token__code_span_close] = sym__code_span_close,
+  [ts_external_token__emphasis_open_star] = sym__emphasis_open_star,
+  [ts_external_token__emphasis_open_underscore] = sym__emphasis_open_underscore,
+  [ts_external_token__emphasis_close_star] = sym__emphasis_close_star,
+  [ts_external_token__emphasis_close_underscore] = sym__emphasis_close_underscore,
+  [ts_external_token__last_token_whitespace] = sym__last_token_whitespace,
+  [ts_external_token__last_token_punctuation] = sym__last_token_punctuation,
+  [ts_external_token__strikethrough_open] = sym__strikethrough_open,
+  [ts_external_token__strikethrough_close] = sym__strikethrough_close,
+  [ts_external_token__latex_span_start] = sym__latex_span_start,
+  [ts_external_token__latex_span_close] = sym__latex_span_close,
+  [ts_external_token__unclosed_span] = sym__unclosed_span,
+};
+
+static const bool ts_external_scanner_states[27][EXTERNAL_TOKEN_COUNT] = {
+  [1] = {
+    [ts_external_token__error] = true,
+    [ts_external_token__trigger_error] = true,
+    [ts_external_token__code_span_start] = true,
+    [ts_external_token__code_span_close] = true,
+    [ts_external_token__emphasis_open_star] = true,
+    [ts_external_token__emphasis_open_underscore] = true,
+    [ts_external_token__emphasis_close_star] = true,
+    [ts_external_token__emphasis_close_underscore] = true,
+    [ts_external_token__last_token_whitespace] = true,
+    [ts_external_token__last_token_punctuation] = true,
+    [ts_external_token__strikethrough_open] = true,
+    [ts_external_token__strikethrough_close] = true,
+    [ts_external_token__latex_span_start] = true,
+    [ts_external_token__latex_span_close] = true,
+    [ts_external_token__unclosed_span] = true,
+  },
+  [2] = {
+    [ts_external_token__code_span_start] = true,
+    [ts_external_token__emphasis_open_star] = true,
+    [ts_external_token__emphasis_open_underscore] = true,
+    [ts_external_token__last_token_whitespace] = true,
+    [ts_external_token__strikethrough_open] = true,
+    [ts_external_token__latex_span_start] = true,
+    [ts_external_token__unclosed_span] = true,
+  },
+  [3] = {
+    [ts_external_token__code_span_start] = true,
+    [ts_external_token__emphasis_open_star] = true,
+    [ts_external_token__emphasis_open_underscore] = true,
+    [ts_external_token__emphasis_close_underscore] = true,
+    [ts_external_token__last_token_punctuation] = true,
+    [ts_external_token__strikethrough_open] = true,
+    [ts_external_token__latex_span_start] = true,
+    [ts_external_token__unclosed_span] = true,
+  },
+  [4] = {
+    [ts_external_token__code_span_start] = true,
+    [ts_external_token__emphasis_open_star] = true,
+    [ts_external_token__emphasis_open_underscore] = true,
+    [ts_external_token__last_token_punctuation] = true,
+    [ts_external_token__strikethrough_open] = true,
+    [ts_external_token__latex_span_start] = true,
+    [ts_external_token__unclosed_span] = true,
+  },
+  [5] = {
+    [ts_external_token__code_span_start] = true,
+    [ts_external_token__emphasis_open_star] = true,
+    [ts_external_token__emphasis_open_underscore] = true,
+    [ts_external_token__last_token_punctuation] = true,
+    [ts_external_token__strikethrough_open] = true,
+    [ts_external_token__strikethrough_close] = true,
+    [ts_external_token__latex_span_start] = true,
+    [ts_external_token__unclosed_span] = true,
+  },
+  [6] = {
+    [ts_external_token__code_span_start] = true,
+    [ts_external_token__emphasis_open_star] = true,
+    [ts_external_token__emphasis_open_underscore] = true,
+    [ts_external_token__emphasis_close_star] = true,
+    [ts_external_token__last_token_punctuation] = true,
+    [ts_external_token__strikethrough_open] = true,
+    [ts_external_token__latex_span_start] = true,
+    [ts_external_token__unclosed_span] = true,
+  },
+  [7] = {
+    [ts_external_token__code_span_start] = true,
+    [ts_external_token__emphasis_open_star] = true,
+    [ts_external_token__emphasis_open_underscore] = true,
+    [ts_external_token__emphasis_close_star] = true,
+    [ts_external_token__strikethrough_open] = true,
+    [ts_external_token__latex_span_start] = true,
+    [ts_external_token__unclosed_span] = true,
+  },
+  [8] = {
+    [ts_external_token__code_span_start] = true,
+    [ts_external_token__emphasis_open_star] = true,
+    [ts_external_token__emphasis_open_underscore] = true,
+    [ts_external_token__emphasis_close_underscore] = true,
+    [ts_external_token__strikethrough_open] = true,
+    [ts_external_token__latex_span_start] = true,
+    [ts_external_token__unclosed_span] = true,
+  },
+  [9] = {
+    [ts_external_token__code_span_start] = true,
+    [ts_external_token__emphasis_open_star] = true,
+    [ts_external_token__emphasis_open_underscore] = true,
+    [ts_external_token__strikethrough_open] = true,
+    [ts_external_token__strikethrough_close] = true,
+    [ts_external_token__latex_span_start] = true,
+    [ts_external_token__unclosed_span] = true,
+  },
+  [10] = {
+    [ts_external_token__code_span_start] = true,
+    [ts_external_token__emphasis_open_star] = true,
+    [ts_external_token__emphasis_open_underscore] = true,
+    [ts_external_token__strikethrough_open] = true,
+    [ts_external_token__latex_span_start] = true,
+    [ts_external_token__unclosed_span] = true,
+  },
+  [11] = {
+    [ts_external_token__code_span_start] = true,
+    [ts_external_token__emphasis_open_star] = true,
+    [ts_external_token__emphasis_open_underscore] = true,
+    [ts_external_token__emphasis_close_underscore] = true,
+    [ts_external_token__last_token_whitespace] = true,
+    [ts_external_token__strikethrough_open] = true,
+    [ts_external_token__latex_span_start] = true,
+    [ts_external_token__unclosed_span] = true,
+  },
+  [12] = {
+    [ts_external_token__code_span_start] = true,
+    [ts_external_token__emphasis_open_star] = true,
+    [ts_external_token__emphasis_open_underscore] = true,
+    [ts_external_token__emphasis_close_star] = true,
+    [ts_external_token__last_token_whitespace] = true,
+    [ts_external_token__strikethrough_open] = true,
+    [ts_external_token__latex_span_start] = true,
+    [ts_external_token__unclosed_span] = true,
+  },
+  [13] = {
+    [ts_external_token__code_span_start] = true,
+    [ts_external_token__emphasis_open_star] = true,
+    [ts_external_token__emphasis_open_underscore] = true,
+    [ts_external_token__last_token_whitespace] = true,
+    [ts_external_token__strikethrough_open] = true,
+    [ts_external_token__strikethrough_close] = true,
+    [ts_external_token__latex_span_start] = true,
+    [ts_external_token__unclosed_span] = true,
+  },
+  [14] = {
+    [ts_external_token__code_span_close] = true,
+  },
+  [15] = {
+    [ts_external_token__latex_span_close] = true,
+  },
+  [16] = {
+    [ts_external_token__emphasis_open_star] = true,
+    [ts_external_token__emphasis_open_underscore] = true,
+    [ts_external_token__unclosed_span] = true,
+  },
+  [17] = {
+    [ts_external_token__last_token_punctuation] = true,
+  },
+  [18] = {
+    [ts_external_token__emphasis_open_star] = true,
+    [ts_external_token__emphasis_open_underscore] = true,
+    [ts_external_token__last_token_whitespace] = true,
+    [ts_external_token__unclosed_span] = true,
+  },
+  [19] = {
+    [ts_external_token__emphasis_open_star] = true,
+    [ts_external_token__emphasis_open_underscore] = true,
+    [ts_external_token__last_token_punctuation] = true,
+    [ts_external_token__unclosed_span] = true,
+  },
+  [20] = {
+    [ts_external_token__last_token_punctuation] = true,
+    [ts_external_token__latex_span_close] = true,
+  },
+  [21] = {
+    [ts_external_token__code_span_close] = true,
+    [ts_external_token__last_token_punctuation] = true,
+  },
+  [22] = {
+    [ts_external_token__code_span_close] = true,
+    [ts_external_token__last_token_whitespace] = true,
+  },
+  [23] = {
+    [ts_external_token__last_token_whitespace] = true,
+    [ts_external_token__latex_span_close] = true,
+  },
+  [24] = {
+    [ts_external_token__last_token_whitespace] = true,
+  },
+  [25] = {
+    [ts_external_token__trigger_error] = true,
+    [ts_external_token__last_token_whitespace] = true,
+  },
+  [26] = {
+    [ts_external_token__trigger_error] = true,
+  },
+};
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -75196,10 +75195,12 @@ unsigned tree_sitter_markdown_inline_external_scanner_serialize(void *, char *);
 void tree_sitter_markdown_inline_external_scanner_deserialize(void *, const char *, unsigned);
 
 #ifdef _WIN32
-#define extern __declspec(dllexport)
+#define TS_PUBLIC __declspec(dllexport)
+#else
+#define TS_PUBLIC __attribute__((visibility("default")))
 #endif
 
-extern const TSLanguage *tree_sitter_markdown_inline(void) {
+TS_PUBLIC const TSLanguage *tree_sitter_markdown_inline() {
   static const TSLanguage language = {
     .version = LANGUAGE_VERSION,
     .symbol_count = SYMBOL_COUNT,
