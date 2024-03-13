@@ -12,3 +12,4 @@ setup.py linguist-generated
 Package.swift linguist-generated
 
 bindings/rust/lib.rs -linguist-generated
+bindings/rust/benchmark.rs -linguist-generated
