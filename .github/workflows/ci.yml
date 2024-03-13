@@ -42,8 +42,6 @@ jobs:
         uses: tree-sitter/parser-test-action@v1.2
       - name: Rebuild with default extensions
         run: npm run build
-        env:
-          EXTENSION_DEFAULT: 1
       - name: Verify grammar consistency
         run: git diff --exit-code -- */src/grammar.json
   fuzz:
