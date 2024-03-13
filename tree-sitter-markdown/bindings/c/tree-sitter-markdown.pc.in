@@ -3,7 +3,7 @@ libdir=@LIBDIR@
 includedir=@INCLUDEDIR@
 
 Name: tree-sitter-markdown
-Description: Markdown grammar for tree-sitter
+Description: Markdown grammar for tree-sitter (block)
 URL: @URL@
 Version: @VERSION@
 Requires: @REQUIRES@
