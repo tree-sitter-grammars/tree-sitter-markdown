@@ -14,7 +14,11 @@
     "markdown"
   ],
   "files": [
-    "grammar.js",
+    "common/grammar.js",
+    "tree-sitter-markdown/grammar.js",
+    "tree-sitter-markdown/src/grammar.json",
+    "tree-sitter-markdown-inline/grammar.js",
+    "tree-sitter-markdown-inline/src/grammar.json",
     "binding.gyp",
     "prebuilds/**",
     "bindings/node/*",
