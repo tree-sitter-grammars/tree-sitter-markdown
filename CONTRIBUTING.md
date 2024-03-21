@@ -62,6 +62,16 @@ Before submitting any code please check the following:
 * You deleted any auto-generated bindings and files for debugging purposes
   like `log.html`
 
+## Tests
+
+To run the tests, first install the development dependencies (see above), then
+execute:
+
+```sh
+ALL_EXTENSIONS=1 npm run build
+npm test
+```
+
 [issue]: https://github.com/tree-sitter-grammars/tree-sitter-markdown/issues/new
 [pull request]: https://github.com/tree-sitter-grammars/tree-sitter-markdown/compare
 [gfm]: https://github.github.com/gfm/
