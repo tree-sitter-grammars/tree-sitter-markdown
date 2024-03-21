@@ -2,7 +2,10 @@
   "name": "@tree-sitter-grammars/tree-sitter-markdown",
   "version": "0.2.1",
   "description": "Markdown grammar for tree-sitter",
-  "repository": "github:tree-sitter-grammars/tree-sitter-markdown",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tree-sitter-grammars/tree-sitter-markdown.git"
+  },
   "author": "MDeiml (https://github.com/MDeiml)",
   "license": "MIT",
   "main": "bindings/node",
