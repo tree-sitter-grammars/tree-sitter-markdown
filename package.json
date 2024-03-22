@@ -1,6 +1,6 @@
 {
   "name": "@tree-sitter-grammars/tree-sitter-markdown",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Markdown grammar for tree-sitter",
   "repository": "github:tree-sitter-grammars/tree-sitter-markdown",
   "author": "MDeiml (https://github.com/MDeiml)",
@@ -19,7 +19,9 @@
     "bindings/node/*",
     "tree-sitter-*/grammar.js",
     "tree-sitter-*/queries/*",
-    "tree-sitter-*/src/**"
+    "tree-sitter-*/src/**",
+    "common/grammar.js",
+    "common/html_entities.json"
   ],
   "dependencies": {
     "node-addon-api": "^7.1.0",
