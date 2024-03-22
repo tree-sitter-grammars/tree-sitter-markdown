@@ -28,7 +28,7 @@ module.exports = grammar({
         ),
 
         ...common.rules,
-        _last_token_punctuation: $ => choice(), // needed for compatability wiht common rules
+        _last_token_punctuation: $ => choice(), // needed for compatability with common rules
 
         // BLOCK STRUCTURE
 
