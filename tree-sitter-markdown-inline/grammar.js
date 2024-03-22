@@ -16,23 +16,7 @@ const PRECEDENCE_LEVEL_HTML = 100;
 // Punctuation characters as specified in
 // https://github.github.com/gfm/#ascii-punctuation-character
 const PUNCTUATION_CHARACTERS_REGEX = '!-/:-@\\[-`\\{-~';
-const PUNCTUATION_CHARACTERS_ARRAY = [
-    '!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '<',
-    '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~'
-];
 
-// (https://github.github.com/gfm/#html-blocks)
-// tag names for html blocks of type 1
-const HTML_TAG_NAMES_RULE_1 = ['pre', 'script', 'style'];
-// tag names for html blocks of type 6
-const HTML_TAG_NAMES_RULE_7 = [
-    'address', 'article', 'aside', 'base', 'basefont', 'blockquote', 'body', 'caption', 'center',
-    'col', 'colgroup', 'dd', 'details', 'dialog', 'dir', 'div', 'dl', 'dt', 'fieldset', 'figcaption',
-    'figure', 'footer', 'form', 'frame', 'frameset', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'head',
-    'header', 'hr', 'html', 'iframe', 'legend', 'li', 'link', 'main', 'menu', 'menuitem', 'nav',
-    'noframes', 'ol', 'optgroup', 'option', 'p', 'param', 'section', 'source', 'summary', 'table',
-    'tbody', 'td', 'tfoot', 'th', 'thead', 'title', 'tr', 'track', 'ul'
-];
 
 // !!!
 // Notice the call to `add_inline_rules` which generates some additional rules related to parsing

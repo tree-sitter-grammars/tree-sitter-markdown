@@ -9,10 +9,6 @@ const common = require('../common/grammar.js');
 const PRECEDENCE_LEVEL_LINK = common.PRECEDENCE_LEVEL_LINK;
 
 const PUNCTUATION_CHARACTERS_REGEX = '!-/:-@\\[-`\\{-~';
-const PUNCTUATION_CHARACTERS_ARRAY = [
-    '!', '"', '#', '$', '%', '&', "'", '(', ')', '*', '+', ',', '-', '.', '/', ':', ';', '<',
-    '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~'
-];
 
 module.exports = grammar({
     name: 'markdown',
