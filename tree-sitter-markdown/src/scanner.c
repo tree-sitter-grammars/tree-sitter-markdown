@@ -1584,7 +1584,7 @@ unsigned tree_sitter_markdown_external_scanner_serialize(void *payload,
 }
 
 void tree_sitter_markdown_external_scanner_deserialize(void *payload,
-                                                       char *buffer,
+                                                       const char *buffer,
                                                        unsigned length) {
     Scanner *scanner = (Scanner *)payload;
     deserialize(scanner, buffer, length);

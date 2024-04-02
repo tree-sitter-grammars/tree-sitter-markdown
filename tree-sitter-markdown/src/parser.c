@@ -59595,7 +59595,9 @@ bool tree_sitter_markdown_external_scanner_scan(void *, TSLexer *, const bool *)
 unsigned tree_sitter_markdown_external_scanner_serialize(void *, char *);
 void tree_sitter_markdown_external_scanner_deserialize(void *, const char *, unsigned);
 
-#ifdef _WIN32
+#ifdef TREE_SITTER_HIDE_SYMBOLS
+#define TS_PUBLIC
+#elif defined(_WIN32)
 #define TS_PUBLIC __declspec(dllexport)
 #else
 #define TS_PUBLIC __attribute__((visibility("default")))
