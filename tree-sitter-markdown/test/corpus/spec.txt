@@ -1988,8 +1988,10 @@ Example 117 - https://github.github.com/gfm/#example-117
     (fenced_code_block
       (fenced_code_block_delimiter)
       (block_continuation)
-      (code_fence_content
-        (block_continuation))
+      (ERROR
+        (fenced_code_block_delimiter))
+      (code_fence_content))
+    (fenced_code_block
       (fenced_code_block_delimiter))))
 
 ================================================================================
