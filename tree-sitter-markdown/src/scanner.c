@@ -415,7 +415,7 @@ static bool parse_fenced_code_block(Scanner *s, const char delimiter,
     if ((delimiter == '`' ? valid_symbols[FENCED_CODE_BLOCK_END_BACKTICK]
                           : valid_symbols[FENCED_CODE_BLOCK_END_TILDE]) &&
         s->indentation < 4 && level >= s->fenced_code_block_delimiter_length &&
-        (lexer->lookahead == '\n' || lexer->lookahead == '\r')) {
+        iswspace(lexer->lookahead)) {
         s->fenced_code_block_delimiter_length = 0;
         lexer->result_symbol = delimiter == '`' ? FENCED_CODE_BLOCK_END_BACKTICK
                                                 : FENCED_CODE_BLOCK_END_TILDE;
