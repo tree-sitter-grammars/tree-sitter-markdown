@@ -6,7 +6,7 @@
 //! It also supplies [`MarkdownParser`] as a convenience wrapper around the two grammars.
 //! [`MarkdownParser::parse`] returns a [`MarkdownTree`] instread of a [`Tree`][Tree]. This struct
 //! contains a block tree and an inline tree for each node in the block tree that has inline
-//! content
+//! content.
 //!
 //! [Language]: https://docs.rs/tree-sitter/*/tree_sitter/struct.Language.html
 //! [Tree]: https://docs.rs/tree-sitter/*/tree_sitter/struct.Tree.html
@@ -66,7 +66,7 @@ pub struct MarkdownParser {
 
 /// A stateful object for walking a [`MarkdownTree`] efficiently.
 ///
-/// This exposes the same methdos as [`TreeCursor`], but abstracts away the
+/// This exposes the same methods as [`TreeCursor`], but abstracts away the
 /// double block / inline structure of [`MarkdownTree`].
 pub struct MarkdownCursor<'a> {
     markdown_tree: &'a MarkdownTree,
@@ -83,7 +83,7 @@ impl<'a> MarkdownCursor<'a> {
         }
     }
 
-    /// Returns `true` if the current node is from the (inline language)[inline_language]
+    /// Returns `true` if the current node is from the [inline language](inline_language)
     ///
     /// This information is needed to handle "tree-sitter internal" data like
     /// [`field_id`](Self::field_id) correctly.
