@@ -6,12 +6,12 @@ TSLanguage *tree_sitter_markdown(void);
 
 TSLanguage *tree_sitter_markdown_inline(void);
 
-static PyObject* _binding_language(PyObject *self, PyObject *args) {
-    return PyLong_FromVoidPtr(tree_sitter_markdown());
+static PyObject* _binding_language(PyObject *Py_UNUSED(self), PyObject *Py_UNUSED(args)) {
+    return PyCapsule_New(tree_sitter_markdown(), "tree_sitter.Language", NULL);
 }
 
-static PyObject* _binding_inline_language(PyObject *self, PyObject *args) {
-    return PyLong_FromVoidPtr(tree_sitter_markdown_inline());
+static PyObject* _binding_inline_language(PyObject *Py_UNUSED(self), PyObject *Py_UNUSED(args)) {
+    return PyCapsule_New(tree_sitter_markdown_inline(), "tree_sitter.Language", NULL);
 }
 
 static PyMethodDef methods[] = {

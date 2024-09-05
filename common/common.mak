@@ -1,4 +1,4 @@
-VERSION := 0.2.3
+VERSION := 0.3.0
 
 # repository
 SRC_DIR := src
@@ -13,7 +13,7 @@ ifeq ($(shell echo $(PARSER_URL) | grep '^[a-z][-+.0-9a-z]*://'),)
 endif
 endif
 
-TS ?= tree-sitter
+TS ?= npx tree-sitter-cli
 
 # ABI versioning
 SONAME_MAJOR := $(word 1,$(subst ., ,$(VERSION)))
