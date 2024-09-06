@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "tree-sitter-markdown"
 description = "Markdown grammar for tree-sitter"
-version = "0.2.3"
+version = "0.3.0"
 keywords = ["incremental", "parsing", "tree-sitter", "markdown"]
 classifiers = [
   "Intended Audience :: Developers",
@@ -25,7 +25,7 @@ readme = "README.md"
 Homepage = "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
 
 [project.optional-dependencies]
-core = ["tree-sitter~=0.21"]
+core = ["tree-sitter~=0.23"]
 
 [tool.cibuildwheel]
 build = "cp38-*"
