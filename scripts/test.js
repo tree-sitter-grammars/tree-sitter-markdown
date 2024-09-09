@@ -8,7 +8,7 @@ const parsers = ["tree-sitter-markdown", "tree-sitter-markdown-inline"];
 for (const dir of parsers) {
   console.log(`testing ${dir}`);
   try {
-    execSync("npx tree-sitter-cli test", {
+    execSync("tree-sitter test", {
       stdio: "inherit",
       cwd: join(__dirname, "..", dir)
     });
