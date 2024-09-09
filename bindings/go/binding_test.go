@@ -3,8 +3,8 @@ package tree_sitter_markdown_test
 import (
 	"testing"
 
-	tree_sitter "github.com/smacker/go-tree-sitter"
-	"github.com/tree-sitter-grammars/tree-sitter-markdown"
+	tree_sitter "github.com/tree-sitter/go-tree-sitter"
+	tree_sitter_markdown "github.com/tree-sitter/tree-sitter-markdown/bindings/go"
 )
 
 func TestCanLoadBlockGrammar(t *testing.T) {
