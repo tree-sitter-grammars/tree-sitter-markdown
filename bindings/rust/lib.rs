@@ -54,11 +54,9 @@ pub const NODE_TYPES_INLINE: &str =
     include_str!("../../tree-sitter-markdown-inline/src/node-types.json");
 
 #[cfg(feature = "parser")]
-#[cfg_attr(docsrs, doc(cfg(feature = "parser")))]
 mod parser;
 
 #[cfg(feature = "parser")]
-#[cfg_attr(docsrs, doc(cfg(feature = "parser")))]
 pub use parser::*;
 
 #[cfg(test)]

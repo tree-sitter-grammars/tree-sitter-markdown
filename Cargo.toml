@@ -47,3 +47,6 @@ required-features = ["parser"]
 
 [profile.release]
 debug = true
+
+[package.metadata.docs.rs]
+features = ["parser"]
