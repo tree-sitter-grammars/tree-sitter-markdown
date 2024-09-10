@@ -2,7 +2,7 @@ ifeq ($(OS),Windows_NT)
 $(error Windows is not supported)
 endif
 
-VERSION := 0.3.0
+VERSION := 0.3.1
 
 # repository
 SRC_DIR := src

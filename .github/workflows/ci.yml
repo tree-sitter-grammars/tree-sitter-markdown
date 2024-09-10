@@ -42,6 +42,7 @@ jobs:
         uses: tree-sitter/parser-test-action@v2
         with:
           test-rust: true
+          test-parser-cmd: npm test
       - name: Rebuild with default extensions
         run: npm run build
       - name: Verify grammar consistency

@@ -7,7 +7,7 @@ use crate::{INLINE_LANGUAGE, LANGUAGE};
 
 /// A parser that produces [`MarkdownTree`]s.
 ///
-/// This is a convenience wrapper around [`language`] and [`inline_language`].
+/// This is a convenience wrapper around [`LANGUAGE`] and [`INLINE_LANGUAGE`].
 pub struct MarkdownParser {
     parser: Parser,
     block_language: Language,
@@ -33,7 +33,7 @@ impl<'a> MarkdownCursor<'a> {
         }
     }
 
-    /// Returns `true` if the current node is from the (inline language)[inline_language]
+    /// Returns `true` if the current node is from the (inline language)[INLINE_LANGUAGE]
     ///
     /// This information is needed to handle "tree-sitter internal" data like
     /// [`field_id`](Self::field_id) correctly.
@@ -180,6 +180,7 @@ impl<'a> MarkdownCursor<'a> {
     }
 }
 
+/// An object that holds a combined markdown tree.
 #[derive(Debug, Clone)]
 pub struct MarkdownTree {
     block_tree: Tree,

@@ -1,6 +1,6 @@
 {
   "name": "@tree-sitter-grammars/tree-sitter-markdown",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Markdown grammar for tree-sitter",
   "repository": "github:tree-sitter-grammars/tree-sitter-markdown",
   "author": "MDeiml (https://github.com/MDeiml)",
@@ -24,11 +24,11 @@
     "common/html_entities.json"
   ],
   "dependencies": {
-    "node-addon-api": "^8.0.0",
-    "node-gyp-build": "^4.8.0"
+    "node-addon-api": "^8.1.0",
+    "node-gyp-build": "^4.8.1"
   },
   "devDependencies": {
-    "prebuildify": "^6.0.0",
+    "prebuildify": "^6.0.1",
     "tree-sitter-cli": "^0.23.0"
   },
   "peerDependencies": {
