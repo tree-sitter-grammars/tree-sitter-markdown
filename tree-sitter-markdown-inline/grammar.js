@@ -4,7 +4,7 @@
 
 /// <reference types="tree-sitter-cli/dsl" />
 
-const common = require('../common/grammar.js');
+const common = require('../common/common');
 
 // Levels used for dynmic precedence. Ideally
 // n * PRECEDENCE_LEVEL_EMPHASIS > PRECEDENCE_LEVEL_LINK for any n, so maybe the

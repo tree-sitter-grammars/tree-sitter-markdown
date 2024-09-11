@@ -59,16 +59,16 @@
       "highlights": "tree-sitter-markdown/queries/highlights.scm",
       "injections": "tree-sitter-markdown/queries/injections.scm",
       "external-files": [
-        "common/grammar.js"
+        "common/common.js"
       ]
     },
     {
       "scope": "text.markdown_inline",
       "path": "tree-sitter-markdown-inline",
-      "highlights": "tree-sitter-markdown_inline/queries/highlights.scm",
-      "injections": "tree-sitter-markdown_inline/queries/injections.scm",
+      "highlights": "tree-sitter-markdown-inline/queries/highlights.scm",
+      "injections": "tree-sitter-markdown-inline/queries/injections.scm",
       "external-files": [
-        "common/grammar.js"
+        "common/common.js"
       ]
     }
   ]
