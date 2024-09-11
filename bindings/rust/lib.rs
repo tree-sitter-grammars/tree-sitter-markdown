@@ -6,9 +6,9 @@
 //! It also supplies [`MarkdownParser`] as a convenience wrapper around the two grammars.
 //! [`MarkdownParser::parse`] returns a [`MarkdownTree`] instread of a [`Tree`][Tree]. This struct
 //! contains a block tree and an inline tree for each node in the block tree that has inline
-//! content
+//! content.
 //!
-//! [Language]: https://docs.rs/tree-sitter/*/tree_sitter/struct.Language.html
+//! [LanguageFn]: https://docs.rs/tree-sitter-language/*/tree_sitter_language/struct.LanguageFn.html
 //! [Tree]: https://docs.rs/tree-sitter/*/tree_sitter/struct.Tree.html
 //! [tree-sitter]: https://tree-sitter.github.io/
 
@@ -21,10 +21,10 @@ extern "C" {
     fn tree_sitter_markdown_inline() -> *const ();
 }
 
-/// The tree-sitter [`LanguageFn`] for the block grammar.
+/// The tree-sitter [`LanguageFn`][LanguageFn] for the block grammar.
 pub const LANGUAGE: LanguageFn = unsafe { LanguageFn::from_raw(tree_sitter_markdown) };
 
-/// The tree-sitter [`LanguageFn`] for the inline grammar.
+/// The tree-sitter [`LanguageFn`][LanguageFn] for the inline grammar.
 pub const INLINE_LANGUAGE: LanguageFn =
     unsafe { LanguageFn::from_raw(tree_sitter_markdown_inline) };
 
