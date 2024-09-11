@@ -50,3 +50,4 @@ debug = true
 
 [package.metadata.docs.rs]
 features = ["parser"]
+rustdoc-args = ["--cfg", "docsrs"]

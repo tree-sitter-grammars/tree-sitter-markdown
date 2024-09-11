@@ -12,6 +12,8 @@
 //! [Tree]: https://docs.rs/tree-sitter/*/tree_sitter/struct.Tree.html
 //! [tree-sitter]: https://tree-sitter.github.io/
 
+#![cfg_attr(docsrs, feature(doc_cfg))]
+
 use tree_sitter_language::LanguageFn;
 
 extern "C" {
@@ -54,9 +56,11 @@ pub const NODE_TYPES_INLINE: &str =
     include_str!("../../tree-sitter-markdown-inline/src/node-types.json");
 
 #[cfg(feature = "parser")]
+#[cfg_attr(docsrs, doc(cfg(feature = "parser")))]
 mod parser;
 
 #[cfg(feature = "parser")]
+#[cfg_attr(docsrs, doc(cfg(feature = "parser")))]
 pub use parser::*;
 
 #[cfg(test)]
