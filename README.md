@@ -5,6 +5,7 @@
 [![matrix][matrix]](https://matrix.to/#/#tree-sitter-chat:matrix.org)
 [![npm][npm]](https://www.npmjs.com/package/@tree-sitter-grammars/tree-sitter-markdown)
 [![crates][crates]](https://crates.io/crates/tree-sitter-md)
+[![pypi][pypi]](https://pypi.org/project/tree-sitter-markdown/)
 
 A Markdown parser for [tree-sitter].
 
@@ -78,3 +79,4 @@ Unfortunately using this parser with WASM/web-tree-sitter does not work out of t
 [matrix]: https://img.shields.io/matrix/tree-sitter-chat%3Amatrix.org?logo=matrix&label=matrix
 [npm]: https://img.shields.io/npm/v/%40tree-sitter-grammars%2Ftree-sitter-markdown?logo=npm
 [crates]: https://img.shields.io/crates/v/tree-sitter-md?logo=rust
+[pypi]: https://img.shields.io/pypi/v/tree-sitter-markdown?logo=pypi&logoColor=ffd242

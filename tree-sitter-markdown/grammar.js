@@ -4,7 +4,7 @@
 
 /// <reference types="tree-sitter-cli/dsl" />
 
-const common = require('../common/grammar.js');
+const common = require('../common/common');
 
 const PRECEDENCE_LEVEL_LINK = common.PRECEDENCE_LEVEL_LINK;
 

@@ -1,6 +1,6 @@
 {
   "name": "@tree-sitter-grammars/tree-sitter-markdown",
-  "version": "0.2.3",
+  "version": "0.3.2",
   "description": "Markdown grammar for tree-sitter",
   "repository": "github:tree-sitter-grammars/tree-sitter-markdown",
   "author": "MDeiml (https://github.com/MDeiml)",
@@ -24,12 +24,12 @@
     "common/html_entities.json"
   ],
   "dependencies": {
-    "node-addon-api": "^8.0.0",
-    "node-gyp-build": "^4.8.0"
+    "node-addon-api": "^8.1.0",
+    "node-gyp-build": "^4.8.1"
   },
   "devDependencies": {
-    "prebuildify": "^6.0.0",
-    "tree-sitter-cli": "^0.22.2"
+    "prebuildify": "^6.0.1",
+    "tree-sitter-cli": "^0.23.0"
   },
   "peerDependencies": {
     "tree-sitter": "^0.21.1"
@@ -59,16 +59,16 @@
       "highlights": "tree-sitter-markdown/queries/highlights.scm",
       "injections": "tree-sitter-markdown/queries/injections.scm",
       "external-files": [
-        "common/grammar.js"
+        "common/common.js"
       ]
     },
     {
       "scope": "text.markdown_inline",
       "path": "tree-sitter-markdown-inline",
-      "highlights": "tree-sitter-markdown_inline/queries/highlights.scm",
-      "injections": "tree-sitter-markdown_inline/queries/injections.scm",
+      "highlights": "tree-sitter-markdown-inline/queries/highlights.scm",
+      "injections": "tree-sitter-markdown-inline/queries/injections.scm",
       "external-files": [
-        "common/grammar.js"
+        "common/common.js"
       ]
     }
   ]

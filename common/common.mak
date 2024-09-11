@@ -1,4 +1,8 @@
-VERSION := 0.2.3
+ifeq ($(OS),Windows_NT)
+$(error Windows is not supported)
+endif
+
+VERSION := 0.3.2
 
 # repository
 SRC_DIR := src
@@ -15,47 +19,47 @@ endif
 
 TS ?= tree-sitter
 
-# ABI versioning
-SONAME_MAJOR := $(word 1,$(subst ., ,$(VERSION)))
-SONAME_MINOR := $(word 2,$(subst ., ,$(VERSION)))
-
 # install directory layout
 PREFIX ?= /usr/local
 INCLUDEDIR ?= $(PREFIX)/include
 LIBDIR ?= $(PREFIX)/lib
 PCLIBDIR ?= $(LIBDIR)/pkgconfig
 
-# object files
-OBJS := $(patsubst %.c,%.o,$(wildcard $(SRC_DIR)/*.c))
+# source/object files
+PARSER := $(SRC_DIR)/parser.c
+EXTRAS := $(filter-out $(PARSER),$(wildcard $(SRC_DIR)/*.c))
+OBJS := $(patsubst %.c,%.o,$(PARSER) $(EXTRAS))
 
 # flags
 ARFLAGS := rcs
 override CFLAGS += -I$(SRC_DIR) -std=c11 -fPIC
 
+# ABI versioning
+SONAME_MAJOR := $(word 1,$(subst ., ,$(VERSION)))
+SONAME_MINOR := $(shell sed -n 's/#define LANGUAGE_VERSION //p' $(PARSER))
+
 # OS-specific bits
-ifeq ($(OS),Windows_NT)
-	$(error "Windows is not supported")
-else ifeq ($(shell uname),Darwin)
+ifeq ($(shell uname),Darwin)
 	SOEXT = dylib
-	SOEXTVER_MAJOR = $(SONAME_MAJOR).dylib
-	SOEXTVER = $(SONAME_MAJOR).$(SONAME_MINOR).dylib
+	SOEXTVER_MAJOR = $(SONAME_MAJOR).$(SOEXT)
+	SOEXTVER = $(SONAME_MAJOR).$(SONAME_MINOR).$(SOEXT)
 	LINKSHARED := $(LINKSHARED)-dynamiclib -Wl,
 	ifneq ($(ADDITIONAL_LIBS),)
 	LINKSHARED := $(LINKSHARED)$(ADDITIONAL_LIBS),
 	endif
-	LINKSHARED := $(LINKSHARED)-install_name,$(LIBDIR)/lib$(LANGUAGE_NAME).$(SONAME_MAJOR).dylib,-rpath,@executable_path/../Frameworks
+	LINKSHARED := $(LINKSHARED)-install_name,$(LIBDIR)/lib$(LANGUAGE_NAME).$(SOEXTVER),-rpath,@executable_path/../Frameworks
 else
 	SOEXT = so
-	SOEXTVER_MAJOR = so.$(SONAME_MAJOR)
-	SOEXTVER = so.$(SONAME_MAJOR).$(SONAME_MINOR)
+	SOEXTVER_MAJOR = $(SOEXT).$(SONAME_MAJOR)
+	SOEXTVER = $(SOEXT).$(SONAME_MAJOR).$(SONAME_MINOR)
 	LINKSHARED := $(LINKSHARED)-shared -Wl,
 	ifneq ($(ADDITIONAL_LIBS),)
 	LINKSHARED := $(LINKSHARED)$(ADDITIONAL_LIBS)
 	endif
-	LINKSHARED := $(LINKSHARED)-soname,lib$(LANGUAGE_NAME).so.$(SONAME_MAJOR)
+	LINKSHARED := $(LINKSHARED)-soname,lib$(LANGUAGE_NAME).$(SOEXTVER)
 endif
 ifneq ($(filter $(shell uname),FreeBSD NetBSD DragonFly),)
-	PCLIBDIR := $(PREFIX)/libdata/pkgconfig
+ 	PCLIBDIR := $(PREFIX)/libdata/pkgconfig
 endif
 
 all: lib$(LANGUAGE_NAME).a lib$(LANGUAGE_NAME).$(SOEXT) $(LANGUAGE_NAME).pc
@@ -79,8 +83,8 @@ $(LANGUAGE_NAME).pc: bindings/c/$(LANGUAGE_NAME).pc.in
 		-e 's|=$(PREFIX)|=$${prefix}|' \
 		-e 's|@PREFIX@|$(PREFIX)|' $< > $@
 
-$(SRC_DIR)/parser.c: grammar.js
-	$(TS) generate --no-bindings
+$(PARSER): $(SRC_DIR)/grammar.json
+	$(TS) generate --no-bindings $^
 
 install: all
 	install -Dm644 bindings/c/$(LANGUAGE_NAME).h '$(DESTDIR)$(INCLUDEDIR)'/tree_sitter/$(LANGUAGE_NAME).h
