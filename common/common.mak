@@ -2,20 +2,11 @@ ifeq ($(OS),Windows_NT)
 $(error Windows is not supported)
 endif
 
-VERSION := 0.3.2
+HOMEPAGE_URL := https://github.com/tree-sitter-grammars/tree-sitter-markdown
+VERSION := 0.4.0
 
 # repository
 SRC_DIR := src
-
-PARSER_REPO_URL := $(shell git -C $(SRC_DIR) remote get-url origin 2>/dev/null)
-
-ifeq ($(PARSER_URL),)
-	PARSER_URL := $(subst .git,,$(PARSER_REPO_URL))
-ifeq ($(shell echo $(PARSER_URL) | grep '^[a-z][-+.0-9a-z]*://'),)
-	PARSER_URL := $(subst :,/,$(PARSER_URL))
-	PARSER_URL := $(subst git@,https://,$(PARSER_URL))
-endif
-endif
 
 TS ?= tree-sitter
 
@@ -31,36 +22,29 @@ EXTRAS := $(filter-out $(PARSER),$(wildcard $(SRC_DIR)/*.c))
 OBJS := $(patsubst %.c,%.o,$(PARSER) $(EXTRAS))
 
 # flags
-ARFLAGS := rcs
+ARFLAGS ?= rcs
 override CFLAGS += -I$(SRC_DIR) -std=c11 -fPIC
 
 # ABI versioning
-SONAME_MAJOR := $(word 1,$(subst ., ,$(VERSION)))
-SONAME_MINOR := $(shell sed -n 's/#define LANGUAGE_VERSION //p' $(PARSER))
+SONAME_MAJOR = $(shell sed -n 's/\#define LANGUAGE_VERSION //p' $(PARSER))
+SONAME_MINOR = $(word 1,$(subst ., ,$(VERSION)))
 
 # OS-specific bits
 ifeq ($(shell uname),Darwin)
 	SOEXT = dylib
 	SOEXTVER_MAJOR = $(SONAME_MAJOR).$(SOEXT)
 	SOEXTVER = $(SONAME_MAJOR).$(SONAME_MINOR).$(SOEXT)
-	LINKSHARED := $(LINKSHARED)-dynamiclib -Wl,
-	ifneq ($(ADDITIONAL_LIBS),)
-	LINKSHARED := $(LINKSHARED)$(ADDITIONAL_LIBS),
-	endif
-	LINKSHARED := $(LINKSHARED)-install_name,$(LIBDIR)/lib$(LANGUAGE_NAME).$(SOEXTVER),-rpath,@executable_path/../Frameworks
+	LINKSHARED = -dynamiclib -Wl,-install_name,$(LIBDIR)/lib$(LANGUAGE_NAME).$(SOEXTVER),-rpath,@executable_path/../Frameworks
 else
 	SOEXT = so
 	SOEXTVER_MAJOR = $(SOEXT).$(SONAME_MAJOR)
 	SOEXTVER = $(SOEXT).$(SONAME_MAJOR).$(SONAME_MINOR)
-	LINKSHARED := $(LINKSHARED)-shared -Wl,
-	ifneq ($(ADDITIONAL_LIBS),)
-	LINKSHARED := $(LINKSHARED)$(ADDITIONAL_LIBS)
-	endif
-	LINKSHARED := $(LINKSHARED)-soname,lib$(LANGUAGE_NAME).$(SOEXTVER)
+	LINKSHARED = -shared -Wl,-soname,lib$(LANGUAGE_NAME).$(SOEXTVER)
 endif
 ifneq ($(filter $(shell uname),FreeBSD NetBSD DragonFly),)
- 	PCLIBDIR := $(PREFIX)/libdata/pkgconfig
+	PCLIBDIR := $(PREFIX)/libdata/pkgconfig
 endif
+
 
 all: lib$(LANGUAGE_NAME).a lib$(LANGUAGE_NAME).$(SOEXT) $(LANGUAGE_NAME).pc
 
@@ -74,17 +58,16 @@ ifneq ($(STRIP),)
 endif
 
 $(LANGUAGE_NAME).pc: bindings/c/$(LANGUAGE_NAME).pc.in
-	sed  -e 's|@URL@|$(PARSER_URL)|' \
-		-e 's|@VERSION@|$(VERSION)|' \
-		-e 's|@LIBDIR@|$(LIBDIR)|' \
-		-e 's|@INCLUDEDIR@|$(INCLUDEDIR)|' \
-		-e 's|@REQUIRES@|$(REQUIRES)|' \
-		-e 's|@ADDITIONAL_LIBS@|$(ADDITIONAL_LIBS)|' \
-		-e 's|=$(PREFIX)|=$${prefix}|' \
-		-e 's|@PREFIX@|$(PREFIX)|' $< > $@
+	sed -e 's|@CMAKE_PROJECT_VERSION@|$(VERSION)|' \
+		-e 's|@CMAKE_INSTALL_LIBDIR@|$(LIBDIR:$(PREFIX)/%=%)|' \
+		-e 's|@CMAKE_INSTALL_INCLUDEDIR@|$(INCLUDEDIR:$(PREFIX)/%=%)|' \
+		-e 's|@PROJECT_DESCRIPTION@|$(DESCRIPTION)|' \
+		-e 's|@CMAKE_PROJECT_HOMEPAGE_URL@|$(HOMEPAGE_URL)|' \
+		-e 's|@CMAKE_INSTALL_PREFIX@|$(PREFIX)|' \
+		-e 's|@TS_REQUIRES@|$(REQUIRES)|' $< > $@
 
-$(PARSER): $(SRC_DIR)/grammar.json
-	$(TS) generate --no-bindings $^
+$(PARSER): $(SRC_DIR)/grammar.js
+	$(TS) generate $^
 
 install: all
 	install -Dm644 bindings/c/$(LANGUAGE_NAME).h '$(DESTDIR)$(INCLUDEDIR)'/tree_sitter/$(LANGUAGE_NAME).h

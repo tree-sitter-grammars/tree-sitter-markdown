@@ -1,13 +1,13 @@
 [package]
 name = "tree-sitter-md"
 description = "Markdown grammar for tree-sitter"
-version = "0.3.2"
+version = "0.4.0"
+authors = ["MDeiml"]
 license = "MIT"
 readme = "README.md"
 keywords = ["incremental", "parsing", "tree-sitter", "markdown"]
 categories = ["parsing", "text-editors"]
 repository = "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
-authors = ["MDeiml"]
 edition = "2021"
 autoexamples = false
 
@@ -31,14 +31,14 @@ parser = ["tree-sitter"]
 path = "bindings/rust/lib.rs"
 
 [dependencies]
-tree-sitter-language = "0.1.0"
-tree-sitter = { version = "0.23", optional = true }
+tree-sitter-language = "0.1"
+tree-sitter = { version = "0.24", optional = true }
 
 [dev-dependencies]
-tree-sitter = "0.23.0"
+tree-sitter = "0.24.3"
 
 [build-dependencies]
-cc = "^1.0.89"
+cc = "1.1.22"
 
 [[bin]]
 name = "benchmark"

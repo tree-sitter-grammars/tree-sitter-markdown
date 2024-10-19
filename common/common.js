@@ -1,13 +1,15 @@
-exports.EXTENSION_DEFAULT = !process.env.NO_DEFAULT_EXTENSIONS;
-exports.EXTENSION_GFM = process.env.EXTENSION_GFM || exports.EXTENSION_DEFAULT || process.env.ALL_EXTENSIONS;
-exports.EXTENSION_TASK_LIST = process.env.EXTENSION_TASK_LIST || exports.EXTENSION_GFM || process.env.ALL_EXTENSIONS;
-exports.EXTENSION_STRIKETHROUGH = process.env.EXTENSION_STRIKETHROUGH || exports.EXTENSION_GFM || process.env.ALL_EXTENSIONS;
-exports.EXTENSION_PIPE_TABLE = process.env.EXTENSION_PIPE_TABLE || exports.EXTENSION_GFM || process.env.ALL_EXTENSIONS;
-exports.EXTENSION_MINUS_METADATA = process.env.EXTENSION_MINUS_METADATA || exports.EXTENSION_DEFAULT || process.env.ALL_EXTENSIONS;
-exports.EXTENSION_PLUS_METADATA = process.env.EXTENSION_PLUS_METADATA || exports.EXTENSION_DEFAULT || process.env.ALL_EXTENSIONS;
-exports.EXTENSION_TAGS = process.env.EXTENSION_TAGS || process.env.ALL_EXTENSIONS;
-exports.EXTENSION_LATEX = process.env.EXTENSION_LATEX || exports.EXTENSION_DEFAULT || process.env.ALL_EXTENSIONS;
-exports.EXTENSION_WIKI_LINK = process.env.EXTENSION_WIKI_LINK || process.env.ALL_EXTENSIONS;
+/// <reference types="tree-sitter-cli/dsl" />
+
+module.exports.EXTENSION_DEFAULT = !process.env.NO_DEFAULT_EXTENSIONS;
+module.exports.EXTENSION_GFM = process.env.EXTENSION_GFM || module.exports.EXTENSION_DEFAULT || process.env.ALL_EXTENSIONS;
+module.exports.EXTENSION_TASK_LIST = process.env.EXTENSION_TASK_LIST || module.exports.EXTENSION_GFM || process.env.ALL_EXTENSIONS;
+module.exports.EXTENSION_STRIKETHROUGH = process.env.EXTENSION_STRIKETHROUGH || module.exports.EXTENSION_GFM || process.env.ALL_EXTENSIONS;
+module.exports.EXTENSION_PIPE_TABLE = process.env.EXTENSION_PIPE_TABLE || module.exports.EXTENSION_GFM || process.env.ALL_EXTENSIONS;
+module.exports.EXTENSION_MINUS_METADATA = process.env.EXTENSION_MINUS_METADATA || module.exports.EXTENSION_DEFAULT || process.env.ALL_EXTENSIONS;
+module.exports.EXTENSION_PLUS_METADATA = process.env.EXTENSION_PLUS_METADATA || module.exports.EXTENSION_DEFAULT || process.env.ALL_EXTENSIONS;
+module.exports.EXTENSION_TAGS = process.env.EXTENSION_TAGS || process.env.ALL_EXTENSIONS;
+module.exports.EXTENSION_LATEX = process.env.EXTENSION_LATEX || module.exports.EXTENSION_DEFAULT || process.env.ALL_EXTENSIONS;
+module.exports.EXTENSION_WIKI_LINK = process.env.EXTENSION_WIKI_LINK || process.env.ALL_EXTENSIONS;
 
 const PUNCTUATION_CHARACTERS_REGEX = '!-/:-@\\[-`\\{-~';
 const PUNCTUATION_CHARACTERS_ARRAY = [
@@ -17,11 +19,12 @@ const PUNCTUATION_CHARACTERS_ARRAY = [
 
 const PRECEDENCE_LEVEL_LINK = 10;
 
-exports.PRECEDENCE_LEVEL_LINK = PRECEDENCE_LEVEL_LINK;
+module.exports.PRECEDENCE_LEVEL_LINK = PRECEDENCE_LEVEL_LINK;
 
-exports.PUNCTUATION_CHARACTERS_REGEX = PUNCTUATION_CHARACTERS_REGEX;
+module.exports.PUNCTUATION_CHARACTERS_REGEX = PUNCTUATION_CHARACTERS_REGEX;
 
-exports.rules = {
+/** @type {Record<string, ($: GrammarSymbols<any>) => RuleOrLiteral>} */
+module.exports.rules = {
 
     // A backslash escape. This can often be part of different nodes like link labels
     //
@@ -115,7 +118,7 @@ function punctuation_without($, chars) {
     return seq(choice(...PUNCTUATION_CHARACTERS_ARRAY.filter(c => !chars.includes(c))), optional($._last_token_punctuation));
 }
 
-exports.punctuation_without = punctuation_without;
+module.exports.punctuation_without = punctuation_without;
 
 // Constructs a regex that matches all html entity references.
 function html_entity_regex() {

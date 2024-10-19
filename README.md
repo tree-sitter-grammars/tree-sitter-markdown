@@ -9,7 +9,7 @@
 
 A Markdown parser for [tree-sitter].
 
-![screenshot](https://github.com/MDeiml/tree-sitter-markdown/blob/split_parser/contrib/screenshot.png)
+![screenshot](https://github.com/MDeiml/tree-sitter-markdown/blob/split_parser/.github/screenshot.png)
 
 The parser is designed to read markdown according to the [CommonMark Spec],
 but some extensions to the spec from different sources such as [Github flavored
@@ -19,7 +19,7 @@ For specifics see [Extensions](#extensions)
 ## Goals
 
 Even though this parser has existed for some while and obvious issues are
-mostly solved, there are still lots of inaccuarcies in the output. These stem
+mostly solved, there are still lots of inaccuracies in the output. These stem
 from restricting a complex format such as markdown to the quite restricting
 tree-sitter parsing rules.
 
