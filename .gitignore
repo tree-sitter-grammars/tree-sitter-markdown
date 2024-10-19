@@ -36,3 +36,8 @@ dist/
 *.wasm
 *.obj
 *.o
+
+# Moved bindings
+bindings/c/
+bindings/swift/TreeSitterMarkdown/
+bindings/swift/TreeSitterMarkdownInline/
