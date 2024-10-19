@@ -90,3 +90,27 @@
         (list_marker_dot)
         (paragraph
           (inline))))))
+
+================================================================================
+#135 - Closing code block fence not recognized when it has trailing space
+================================================================================
+```
+// returns 2
+globalNS.method1(5, 10);
+```    
+
+@example
+
+--------------------------------------------------------------------------------
+
+(document
+  (section
+    (fenced_code_block
+      (fenced_code_block_delimiter)
+      (block_continuation)
+      (code_fence_content
+        (block_continuation)
+        (block_continuation))
+      (fenced_code_block_delimiter))
+    (paragraph
+      (inline))))
