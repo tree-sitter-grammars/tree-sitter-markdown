@@ -39,7 +39,7 @@ LaTeX inside markup
 *This bold $$should still parse $$*.
 
 -------------------------------------------------------------------------------
-(inline 
+(inline
   (emphasis
     (emphasis_delimiter)
     (latex_block
@@ -49,7 +49,7 @@ LaTeX inside markup
 ================================================================================
 LaTeX within one paragraph
 ================================================================================
-$$This should all be captured 
+$$This should all be captured
 as one instance of LaTeX.$$
 
 $$This presumably
@@ -62,4 +62,14 @@ should not, but will because we need the blocks.$$
     (latex_span_delimiter))
   (latex_block
     (latex_span_delimiter)
+    (latex_span_delimiter)))
+================================================================================
+LaTeX with escaped dollar signs
+================================================================================
+$Hello\$th*er*e$
+--------------------------------------------------------------------------------
+(inline
+  (latex_block
+    (latex_span_delimiter)
+    (backslash_escape)
     (latex_span_delimiter)))

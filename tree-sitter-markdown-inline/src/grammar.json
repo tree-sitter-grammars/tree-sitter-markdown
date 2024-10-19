@@ -1544,6 +1544,10 @@
               {
                 "type": "SYMBOL",
                 "name": "_html_tag"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "backslash_escape"
               }
             ]
           }
