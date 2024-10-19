@@ -27,6 +27,14 @@ As such it is not recommended to use this parser where correctness is
 important. The main goal for this parser is to provide syntactical information
 for syntax highlighting in parsers such as [neovim] and [helix].
 
+## Installing
+
+This package is not published to PyPI yet. Meanwhile:
+
+```bash
+pip install git+https://github.com/tree-sitter-grammars/tree-sitter-markdown
+```
+
 ## Contributing
 
 All contributions are welcome. For details refer to [CONTRIBUTING.md].
