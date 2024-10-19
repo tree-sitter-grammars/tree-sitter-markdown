@@ -1,10 +1,16 @@
+use std::env::args;
+
 use tree_sitter::{InputEdit, Point};
 use tree_sitter_md::{MarkdownParser, MarkdownTree};
 
 fn main() {
-    let mut parser = MarkdownParser::default();
-    let filename = std::env::args().nth(1).unwrap_or("README.md".to_string());
+    let filename = args()
+        .nth_back(1)
+        .take_if(|f| f != "benchmark")
+        .unwrap_or("README.md".to_string());
     let source = std::fs::read(filename).unwrap();
+
+    let mut parser = MarkdownParser::default();
     let mut tree = parser.parse(&source, None).unwrap();
     tree.edit(&InputEdit {
         start_byte: 0,
