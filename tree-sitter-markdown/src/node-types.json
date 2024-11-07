@@ -514,13 +514,9 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": true,
+      "multiple": false,
       "required": true,
       "types": [
-        {
-          "type": "block_continuation",
-          "named": true
-        },
         {
           "type": "inline",
           "named": true

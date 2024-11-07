@@ -278,7 +278,8 @@ module.exports = grammar({
         // related to paragraphs ending does not grow.
         //
         // https://github.github.com/gfm/#paragraphs
-        paragraph: $ => seq(alias(repeat1(choice($._line, $._soft_line_break)), $.inline), choice($._newline, $._eof)),
+        paragraph: $ => alias($._paragraph, $.inline),
+        _paragraph: $ => seq(repeat1(choice($._line, $._soft_line_break)), choice($._newline, $._eof)),
 
         // A blank line including the following newline.
         //

@@ -3547,28 +3547,32 @@
       ]
     },
     "paragraph": {
+      "type": "ALIAS",
+      "content": {
+        "type": "SYMBOL",
+        "name": "_paragraph"
+      },
+      "named": true,
+      "value": "inline"
+    },
+    "_paragraph": {
       "type": "SEQ",
       "members": [
         {
-          "type": "ALIAS",
+          "type": "REPEAT1",
           "content": {
-            "type": "REPEAT1",
-            "content": {
-              "type": "CHOICE",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "_line"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "_soft_line_break"
-                }
-              ]
-            }
-          },
-          "named": true,
-          "value": "inline"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "_line"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "_soft_line_break"
+              }
+            ]
+          }
         },
         {
           "type": "CHOICE",
