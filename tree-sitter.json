@@ -21,8 +21,8 @@
       "file-types": [
         "md"
       ],
-      "highlights": "queries/highlights.scm",
-      "injections": "queries/injections.scm",
+      "highlights": "tree-sitter-markdown/queries/highlights.scm",
+      "injections": "tree-sitter-markdown/queries/injections.scm",
       "external-files": [
         "common/common.js"
       ]
@@ -32,8 +32,8 @@
       "camelcase": "MarkdownInline",
       "scope": "text.markdown_inline",
       "path": "tree-sitter-markdown-inline",
-      "highlights": "queries/highlights.scm",
-      "injections": "queries/injections.scm",
+      "highlights": "tree-sitter-markdown-inline/queries/highlights.scm",
+      "injections": "tree-sitter-markdown-inline/queries/injections.scm",
       "external-files": [
         "common/common.js"
       ]
