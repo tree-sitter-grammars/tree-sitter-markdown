@@ -19,6 +19,7 @@
     "binding.gyp",
     "prebuilds/**",
     "bindings/node/*",
+    "tree-sitter.json",
     "tree-sitter-*/grammar.js",
     "tree-sitter-*/queries/*",
     "tree-sitter-*/src/**",
