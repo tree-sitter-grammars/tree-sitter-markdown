@@ -53,6 +53,8 @@ jobs:
           test-parser-cmd: node scripts/test.js
       - name: Rebuild with default extensions
         run: node scripts/build.js
+        env:
+          ALL_EXTENSIONS: 1
       - name: Verify grammar consistency
         run: git diff --exit-code -- */src/grammar.json
   fuzz:
