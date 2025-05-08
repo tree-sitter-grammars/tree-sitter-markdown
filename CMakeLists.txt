@@ -52,8 +52,9 @@ macro(add_parser name)
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/bindings/c/tree-sitter-${name}.pc.in"
                    "${CMAKE_CURRENT_BINARY_DIR}/tree-sitter-${name}.pc" @ONLY)
 
-    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/bindings/c/tree-sitter-${name}.h"
-            DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/tree_sitter")
+    install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bindings/c/tree_sitter"
+            DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+            FILES_MATCHING PATTERN "*.h")
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/tree-sitter-${name}.pc"
             DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/pkgconfig")
     install(TARGETS tree-sitter-${name}

@@ -3,7 +3,7 @@ set(TS_REQUIRES tree-sitter-markdown-inline)
 
 add_parser(markdown)
 
-add_custom_target(test "${TREE_SITTER_CLI}" test
+add_custom_target(ts-test "${TREE_SITTER_CLI}" test
                   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
                   DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/parser.c"
                   COMMENT "tree-sitter test")

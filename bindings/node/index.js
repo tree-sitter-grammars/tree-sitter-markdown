@@ -1,8 +1,11 @@
 const root = require("path").join(__dirname, "..", "..");
 
-module.exports = require("node-gyp-build")(root);
+module.exports =
+  typeof process.versions.bun === "string"
+    // Support `bun build --compile` by being statically analyzable enough to find the .node file at build-time
+    ? require(`../../prebuilds/${process.platform}-${process.arch}/tree-sitter-markdown.node`)
+    : require("node-gyp-build")(root);
 
 try {
-  module.exports.nodeTypeInfo = require("../../tree-sitter-markdown/src/node-types.json");
-  module.exports.inline.nodeTypeInfo = require("../../tree-sitter-markdown-inline/src/node-types.json");
-} catch (_) { }
+  module.exports.nodeTypeInfo = require("../../src/node-types.json");
+} catch (_) {}

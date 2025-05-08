@@ -17,7 +17,7 @@ classifiers = [
 authors = [
   {name = "MDeiml"}
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license.text = "MIT"
 readme = "README.md"
 
@@ -25,8 +25,8 @@ readme = "README.md"
 Homepage = "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
 
 [project.optional-dependencies]
-core = ["tree-sitter~=0.23"]
+core = ["tree-sitter~=0.24"]
 
 [tool.cibuildwheel]
-build = "cp39-*"
+build = "cp310-*"
 build-frontend = "build"
