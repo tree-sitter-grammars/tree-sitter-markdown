@@ -36,7 +36,6 @@ jobs:
       - name: Run tests
         uses: tree-sitter/parser-test-action@v2
         with:
-          test-rust: true
           test-parser-cmd: node scripts/test.js
 
       - name: Rebuild with default extensions
