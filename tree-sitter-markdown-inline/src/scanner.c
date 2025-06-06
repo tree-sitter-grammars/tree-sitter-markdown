@@ -26,7 +26,7 @@ typedef enum {
 } TokenType;
 
 // Determines if a character is punctuation as defined by the markdown spec.
-static bool is_punctuation(char chr) {
+static bool is_punctuation(int32_t chr) {
     return (chr >= '!' && chr <= '/') || (chr >= ':' && chr <= '@') ||
            (chr >= '[' && chr <= '`') || (chr >= '{' && chr <= '~');
 }
@@ -189,7 +189,7 @@ static bool parse_star(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
         // is whitespace punctuation or other.
         bool next_symbol_whitespace =
             line_end || lexer->lookahead == ' ' || lexer->lookahead == '\t';
-        bool next_symbol_punctuation = is_punctuation((char)lexer->lookahead);
+        bool next_symbol_punctuation = is_punctuation(lexer->lookahead);
         // Information about the last token is in valid_symbols. See grammar.js
         // for these tokens for how this is done.
         if (valid_symbols[EMPHASIS_CLOSE_STAR] &&
@@ -251,7 +251,7 @@ static bool parse_tilde(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
         // is whitespace punctuation or other.
         bool next_symbol_whitespace =
             line_end || lexer->lookahead == ' ' || lexer->lookahead == '\t';
-        bool next_symbol_punctuation = is_punctuation((char)lexer->lookahead);
+        bool next_symbol_punctuation = is_punctuation(lexer->lookahead);
         // Information about the last token is in valid_symbols. See grammar.js
         // for these tokens for how this is done.
         if (valid_symbols[STRIKETHROUGH_CLOSE] &&
@@ -314,7 +314,7 @@ static bool parse_underscore(Scanner *s, TSLexer *lexer,
         // is whitespace punctuation or other.
         bool next_symbol_whitespace =
             line_end || lexer->lookahead == ' ' || lexer->lookahead == '\t';
-        bool next_symbol_punctuation = is_punctuation((char)lexer->lookahead);
+        bool next_symbol_punctuation = is_punctuation(lexer->lookahead);
         // Information about the last token is in valid_symbols. See grammar.js
         // for these tokens for how this is done.
         if (valid_symbols[EMPHASIS_CLOSE_UNDERSCORE] &&
