@@ -1,0 +1,29 @@
+name: Fuzz
+
+on:
+  push:
+    branches: [split_parser]
+    paths:
+      - tree-sitter-markdown/src/scanner.c
+      - tree-sitter-markdown-inline/src/scanner.c
+  pull_request:
+    paths:
+      - tree-sitter-markdown/src/scanner.c
+      - tree-sitter-markdown-inline/src/scanner.c
+  workflow_dispatch:
+
+jobs:
+  fuzz:
+    name: Fuzz parsers
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        parser: [tree-sitter-markdown, tree-sitter-markdown-inline]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Fuzz ${{matrix.parser}} parser
+        uses: tree-sitter/fuzz-action@v4
+        with:
+          directory: ${{matrix.parser}}
