@@ -2269,8 +2269,12 @@
                 "type": "CHOICE",
                 "members": [
                   {
-                    "type": "SYMBOL",
-                    "name": "info_string"
+                    "type": "FIELD",
+                    "name": "info_string",
+                    "content": {
+                      "type": "SYMBOL",
+                      "name": "info_string"
+                    }
                   },
                   {
                     "type": "BLANK"
@@ -2357,8 +2361,12 @@
                 "type": "CHOICE",
                 "members": [
                   {
-                    "type": "SYMBOL",
-                    "name": "info_string"
+                    "type": "FIELD",
+                    "name": "info_string",
+                    "content": {
+                      "type": "SYMBOL",
+                      "name": "info_string"
+                    }
                   },
                   {
                     "type": "BLANK"
