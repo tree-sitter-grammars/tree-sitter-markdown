@@ -166,7 +166,7 @@ module.exports = grammar({
             seq(
                 alias($._fenced_code_block_start_backtick, $.fenced_code_block_delimiter),
                 optional($._whitespace),
-                optional($.info_string),
+                optional(field('info_string', $.info_string)),
                 $._newline,
                 optional($.code_fence_content),
                 optional(seq(alias($._fenced_code_block_end_backtick, $.fenced_code_block_delimiter), $._close_block, $._newline)),
@@ -175,7 +175,7 @@ module.exports = grammar({
             seq(
                 alias($._fenced_code_block_start_tilde, $.fenced_code_block_delimiter),
                 optional($._whitespace),
-                optional($.info_string),
+                optional(field('info_string', $.info_string)),
                 $._newline,
                 optional($.code_fence_content),
                 optional(seq(alias($._fenced_code_block_end_tilde, $.fenced_code_block_delimiter), $._close_block, $._newline)),
