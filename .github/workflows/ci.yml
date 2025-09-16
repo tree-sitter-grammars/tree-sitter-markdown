@@ -4,7 +4,12 @@ on:
   push:
     branches: [split_parser]
   pull_request:
+    branches: [split_parser]
   workflow_dispatch:
+
+concurrency:
+  group: ${{github.workflow}}-${{github.ref}}
+  cancel-in-progress: true
 
 jobs:
   test:
@@ -16,7 +21,7 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up tree-sitter
         uses: tree-sitter/setup-action@v2
@@ -34,8 +39,9 @@ jobs:
           ALL_EXTENSIONS: 1
 
       - name: Run tests
-        uses: tree-sitter/parser-test-action@v2
+        uses: tree-sitter/parser-test-action@v3
         with:
+          generate: false
           test-parser-cmd: node scripts/test.js
 
       - name: Rebuild with default extensions

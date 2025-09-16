@@ -3,13 +3,9 @@ name: Publish package
 on:
   push:
     tags: ["*"]
+  workflow_dispatch:
 
 jobs:
-  github:
-    uses: tree-sitter/workflows/.github/workflows/release.yml@main
-    permissions:
-      contents: write
-      id-token: write
   npm:
     uses: tree-sitter/workflows/.github/workflows/package-npm.yml@main
     with:
