@@ -461,10 +461,6 @@
           "named": true
         },
         {
-          "type": "latex_block",
-          "named": true
-        },
-        {
           "type": "numeric_character_reference",
           "named": true
         },

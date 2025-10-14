@@ -362,6 +362,22 @@ module.exports = grammar(add_inline_rules({
             common.EXTENSION_TAGS ? $.tag : choice(),
             $._unclosed_span,
         ))),
+        _inline_base_no_latex: $ => prec.right(repeat1(choice(
+            $.image,
+            $._soft_line_break,
+            $.backslash_escape,
+            $.hard_line_break,
+            $.uri_autolink,
+            $.email_autolink,
+            $.entity_reference,
+            $.numeric_character_reference,
+            // Note: LaTeX excluded to prevent parsing $ inside link text as LaTeX
+            $.code_span,
+            alias($._html_tag, $.html_tag),
+            $._text_base,
+            common.EXTENSION_TAGS ? $.tag : choice(),
+            $._unclosed_span,
+        ))),
         _text_base: $ => choice(
             $._word,
             common.punctuation_without($, ['[', ']']),
@@ -398,7 +414,7 @@ function add_inline_rules(grammar) {
             let suffix = suffix_delimiter + suffix_link;
             grammar.rules["_inline_element" + suffix] = $ => {
                 let elements = [
-                    $._inline_base,
+                    link ? $._inline_base : $._inline_base_no_latex,
                     alias($['_emphasis_star' + suffix_link], $.emphasis),
                     alias($['_strong_emphasis_star' + suffix_link], $.strong_emphasis),
                     alias($['_emphasis_underscore' + suffix_link], $.emphasis),
