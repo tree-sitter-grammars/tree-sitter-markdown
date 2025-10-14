@@ -49,7 +49,7 @@ module.exports.rules = {
     )), ']'),
 
     link_destination: $ => prec.dynamic(PRECEDENCE_LEVEL_LINK, choice(
-        seq('<', repeat(choice($._text_no_angle, $.backslash_escape, $.entity_reference, $.numeric_character_reference)), '>'),
+        seq('<', alias(repeat(choice($._text_no_angle, $.backslash_escape, $.entity_reference, $.numeric_character_reference)), $.link_destination), '>'),
         seq(
             choice( // first character is not a '<'
                 $._word,

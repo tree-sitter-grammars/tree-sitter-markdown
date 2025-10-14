@@ -391,6 +391,10 @@
           "named": true
         },
         {
+          "type": "link_destination",
+          "named": true
+        },
+        {
           "type": "numeric_character_reference",
           "named": true
         }

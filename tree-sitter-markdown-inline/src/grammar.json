@@ -94,28 +94,33 @@
                 "value": "<"
               },
               {
-                "type": "REPEAT",
+                "type": "ALIAS",
                 "content": {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "SYMBOL",
-                      "name": "_text_no_angle"
-                    },
-                    {
-                      "type": "SYMBOL",
-                      "name": "backslash_escape"
-                    },
-                    {
-                      "type": "SYMBOL",
-                      "name": "entity_reference"
-                    },
-                    {
-                      "type": "SYMBOL",
-                      "name": "numeric_character_reference"
-                    }
-                  ]
-                }
+                  "type": "REPEAT",
+                  "content": {
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "SYMBOL",
+                        "name": "_text_no_angle"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "backslash_escape"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "entity_reference"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "numeric_character_reference"
+                      }
+                    ]
+                  }
+                },
+                "named": true,
+                "value": "link_destination"
               },
               {
                 "type": "STRING",
