@@ -1777,7 +1777,7 @@
     },
     "wiki_link": {
       "type": "PREC_DYNAMIC",
-      "value": 20,
+      "value": 30,
       "content": {
         "type": "SEQ",
         "members": [

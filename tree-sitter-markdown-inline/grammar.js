@@ -176,7 +176,7 @@ module.exports = grammar(add_inline_rules({
             ')'
         )),
 
-        wiki_link: $ => prec.dynamic(2 * PRECEDENCE_LEVEL_LINK, seq(
+        wiki_link: $ => prec.dynamic(3 * PRECEDENCE_LEVEL_LINK, seq(
             '[', '[',
             alias($._wiki_link_destination, $.link_destination),
             optional(seq(
