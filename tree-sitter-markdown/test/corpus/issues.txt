@@ -114,3 +114,25 @@ globalNS.method1(5, 10);
       (fenced_code_block_delimiter))
     (paragraph
       (inline))))
+
+================================================================================
+#999 - TTTTT
+================================================================================
+| Header |
+|--------|
+| value. |
+
+--------------------------------------------------------------------------------
+(document
+  (section
+    (pipe_table
+      (pipe_table_header
+        (pipe_table_cell
+          (inline)
+          (inline)))
+      (pipe_table_delimiter_row
+        (pipe_table_delimiter_cell))
+      (pipe_table_row
+        (pipe_table_cell
+          (inline)
+          (inline))))))
