@@ -38,5 +38,15 @@
         "common/common.js"
       ]
     }
-  ]
+  ],
+  "bindings": {
+    "rust": true,
+    "node": true,
+    "c": true,
+    "python": true,
+    "swift": true,
+    "go": false,
+    "java": false,
+    "zig": false
+  }
 }
