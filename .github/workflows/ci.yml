@@ -21,15 +21,13 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up tree-sitter
-        uses: tree-sitter/setup-action@v2
-        with:
-          install-lib: false
+        uses: tree-sitter/setup-action/cli@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{vars.NODE_VERSION}}
 
@@ -58,7 +56,7 @@ jobs:
         parser: [tree-sitter-markdown, tree-sitter-markdown-inline]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 2
       - name: Check for scanner changes
