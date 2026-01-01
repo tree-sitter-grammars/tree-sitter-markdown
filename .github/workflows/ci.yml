@@ -72,3 +72,26 @@ jobs:
         if: steps.scanner-changes.outputs.changed == 'true'
         with:
           directory: ${{matrix.parser}}
+
+  query:
+    name: Validate queries
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        parser: [markdown, markdown-inline]
+    steps:
+      - name: Set up repository
+        uses: actions/checkout@v6
+
+      - name: Set up tree-sitter
+        uses: tree-sitter/setup-action/cli@v2
+
+      - name: Build parser
+        run: tree-sitter build tree-sitter-${{matrix.parser}}
+
+      - name: Set up ts_query_ls
+        run: curl -fL https://github.com/ribru17/ts_query_ls/releases/latest/download/ts_query_ls-x86_64-unknown-linux-gnu.tar.gz | tar -xz
+
+      - name: Check queries
+        run: ./ts_query_ls check -f tree-sitter-${{matrix.parser}}/queries/

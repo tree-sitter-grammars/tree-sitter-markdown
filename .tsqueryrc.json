@@ -1,0 +1,5 @@
+{
+  "$schema": "https://raw.githubusercontent.com/ribru17/ts_query_ls/refs/heads/master/schemas/config.json",
+  "parser_install_directories": ["."],
+  "language_retrieval_patterns": ["tree-sitter-([^/]+)/queries/[^/]+\\.scm$"]
+}
