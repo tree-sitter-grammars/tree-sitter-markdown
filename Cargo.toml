@@ -32,13 +32,13 @@ path = "bindings/rust/lib.rs"
 
 [dependencies]
 tree-sitter-language = "0.1"
-tree-sitter = { version = "0.24", optional = true }
+tree-sitter = { version = "0.26", optional = true }
 
 [dev-dependencies]
-tree-sitter = "0.24.3"
+tree-sitter = "0.26.3"
 
 [build-dependencies]
-cc = "1.1.22"
+cc = "1.2"
 
 [[bin]]
 name = "benchmark"

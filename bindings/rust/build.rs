@@ -39,11 +39,15 @@ fn main() {
     c_config.compile("tree-sitter-markdown");
 
     println!("cargo:rustc-check-cfg=cfg(with_highlights_query)");
-    if !"tree-sitter-markdown/queries/highlights.scm".is_empty() && std::path::Path::new("tree-sitter-markdown/queries/highlights.scm").exists() {
+    if !"tree-sitter-markdown/queries/highlights.scm".is_empty()
+        && std::path::Path::new("tree-sitter-markdown/queries/highlights.scm").exists()
+    {
         println!("cargo:rustc-cfg=with_highlights_query");
     }
     println!("cargo:rustc-check-cfg=cfg(with_injections_query)");
-    if !"tree-sitter-markdown/queries/injections.scm".is_empty() && std::path::Path::new("tree-sitter-markdown/queries/injections.scm").exists() {
+    if !"tree-sitter-markdown/queries/injections.scm".is_empty()
+        && std::path::Path::new("tree-sitter-markdown/queries/injections.scm").exists()
+    {
         println!("cargo:rustc-cfg=with_injections_query");
     }
     println!("cargo:rustc-check-cfg=cfg(with_locals_query)");

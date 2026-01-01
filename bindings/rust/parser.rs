@@ -1,7 +1,9 @@
 use std::collections::HashMap;
 use std::num::NonZeroU16;
 
-use tree_sitter::{InputEdit, Language, Node, Parser, Point, Range, Tree, TreeCursor};
+use tree_sitter::{
+    InputEdit, Language, Node, ParseOptions, Parser, Point, Range, Tree, TreeCursor,
+};
 
 use crate::{INLINE_LANGUAGE, LANGUAGE};
 
@@ -16,7 +18,7 @@ pub struct MarkdownParser {
 
 /// A stateful object for walking a [`MarkdownTree`] efficiently.
 ///
-/// This exposes the same methdos as [`TreeCursor`], but abstracts away the
+/// This exposes the same methods as [`TreeCursor`], but abstracts away the
 /// double block / inline structure of [`MarkdownTree`].
 pub struct MarkdownCursor<'a> {
     markdown_tree: &'a MarkdownTree,
@@ -33,7 +35,7 @@ impl<'a> MarkdownCursor<'a> {
         }
     }
 
-    /// Returns `true` if the current node is from the (inline language)[INLINE_LANGUAGE]
+    /// Returns `true` if the current node is from the [INLINE_LANGUAGE](inline language)
     ///
     /// This information is needed to handle "tree-sitter internal" data like
     /// [`field_id`](Self::field_id) correctly.
@@ -221,11 +223,33 @@ impl MarkdownTree {
     }
 
     /// Create a new [`MarkdownCursor`] starting from the root of the tree.
-    pub fn walk(&self) -> MarkdownCursor {
+    pub fn walk(&self) -> MarkdownCursor<'_> {
         MarkdownCursor {
             markdown_tree: self,
             block_cursor: self.block_tree.walk(),
             inline_cursor: None,
+        }
+    }
+}
+
+/// The options used while parsing a [`MarkdownTree`].
+///
+/// This abstracts away the double block / inline structure of [`MarkdownParser`].
+#[derive(Default)]
+pub struct MarkdownParseOptions<'a> {
+    block_options: Option<ParseOptions<'a>>,
+    inline_options: Option<ParseOptions<'a>>,
+}
+
+impl<'a> MarkdownParseOptions<'a> {
+    /// Creates a new [MarkdownParseOptions] instance.
+    pub fn new(
+        block_options: Option<ParseOptions<'a>>,
+        inline_options: Option<ParseOptions<'a>>,
+    ) -> Self {
+        MarkdownParseOptions {
+            block_options,
+            inline_options,
         }
     }
 }
@@ -252,14 +276,17 @@ impl MarkdownParser {
     ///   If the text of the document has changed since `old_tree` was
     ///   created, then you must edit `old_tree` to match the new text using
     ///   [MarkdownTree::edit].
+    /// * `options` The [options][MarkdownParseOptions] used for parsing.
+    ///   Use `MarkdownParseOptions::default()` if you don't need to pass any options.
     ///
     /// Returns a [MarkdownTree] if parsing succeeded, or `None` if:
     ///  * The timeout set with [tree_sitter::Parser::set_timeout_micros] expired
     ///  * The cancellation flag set with [tree_sitter::Parser::set_cancellation_flag] was flipped
-    pub fn parse_with<T: AsRef<[u8]>, F: FnMut(usize, Point) -> T>(
+    pub fn parse_with_options<T: AsRef<[u8]>, F: FnMut(usize, Point) -> T>(
         &mut self,
         callback: &mut F,
         old_tree: Option<&MarkdownTree>,
+        mut options: MarkdownParseOptions<'_>,
     ) -> Option<MarkdownTree> {
         let MarkdownParser {
             parser,
@@ -272,7 +299,11 @@ impl MarkdownParser {
         parser
             .set_language(block_language)
             .expect("Could not load block grammar");
-        let block_tree = parser.parse_with(callback, old_tree.map(|tree| &tree.block_tree))?;
+        let block_tree = parser.parse_with_options(
+            callback,
+            old_tree.map(|tree| &tree.block_tree),
+            options.block_options.as_mut().map(|b_opt| b_opt.reborrow()),
+        )?;
         let (mut inline_trees, mut inline_indices) = if let Some(old_tree) = old_tree {
             let len = old_tree.inline_trees.len();
             (Vec::with_capacity(len), HashMap::with_capacity(len))
@@ -322,9 +353,13 @@ impl MarkdownParser {
             }
             ranges.push(range);
             parser.set_included_ranges(&ranges).ok()?;
-            let inline_tree = parser.parse_with(
+            let inline_tree = parser.parse_with_options(
                 callback,
                 old_tree.and_then(|old_tree| old_tree.inline_trees.get(i)),
+                options
+                    .inline_options
+                    .as_mut()
+                    .map(|b_opt| b_opt.reborrow()),
             )?;
             inline_trees.push(inline_tree);
             inline_indices.insert(node.id(), i);
@@ -353,7 +388,11 @@ impl MarkdownParser {
     ///  * The timeout set with [tree_sitter::Parser::set_timeout_micros] expired
     ///  * The cancellation flag set with [tree_sitter::Parser::set_cancellation_flag] was flipped
     pub fn parse(&mut self, text: &[u8], old_tree: Option<&MarkdownTree>) -> Option<MarkdownTree> {
-        self.parse_with(&mut |byte, _| &text[byte..], old_tree)
+        self.parse_with_options(
+            &mut |byte, _| &text[byte..],
+            old_tree,
+            MarkdownParseOptions::default(),
+        )
     }
 }
 
