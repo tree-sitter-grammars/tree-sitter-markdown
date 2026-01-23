@@ -21,17 +21,17 @@ pub struct MarkdownParser {
 /// This exposes the same methods as [`TreeCursor`], but abstracts away the
 /// double block / inline structure of [`MarkdownTree`].
 #[derive(Clone)]
-pub struct MarkdownCursor<'a> {
-    markdown_tree: &'a MarkdownTree,
-    block_cursor: TreeCursor<'a>,
-    inline_cursor: Option<TreeCursor<'a>>,
+pub struct MarkdownCursor<'tree> {
+    markdown_tree: &'tree MarkdownTree,
+    block_cursor: TreeCursor<'tree>,
+    inline_cursor: Option<TreeCursor<'tree>>,
 }
 
-impl<'a> MarkdownCursor<'a> {
+impl<'tree> MarkdownCursor<'tree> {
     /// Get the cursor's current [`Node`].
     #[doc(alias = "ts_tree_cursor_current_node")]
     #[must_use]
-    pub fn node(&self) -> Node<'a> {
+    pub fn node(&self) -> Node<'tree> {
         match &self.inline_cursor {
             Some(cursor) => cursor.node(),
             None => self.block_cursor.node(),
