@@ -1,5 +1,5 @@
+use core::num::NonZeroU16;
 use std::collections::HashMap;
-use std::num::NonZeroU16;
 
 use tree_sitter::{
     InputEdit, Language, Node, ParseOptions, Parser, Point, Range, Tree, TreeCursor,
