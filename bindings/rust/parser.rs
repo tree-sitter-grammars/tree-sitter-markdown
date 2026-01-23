@@ -20,6 +20,7 @@ pub struct MarkdownParser {
 ///
 /// This exposes the same methods as [`TreeCursor`], but abstracts away the
 /// double block / inline structure of [`MarkdownTree`].
+#[derive(Clone)]
 pub struct MarkdownCursor<'a> {
     markdown_tree: &'a MarkdownTree,
     block_cursor: TreeCursor<'a>,
@@ -74,6 +75,18 @@ impl<'a> MarkdownCursor<'a> {
         }
     }
 
+    /// Get the depth of the cursor's current node.
+    #[doc(alias = "ts_tree_cursor_current_depth")]
+    #[must_use]
+    pub fn depth(&self) -> u32 {
+        self.block_cursor.depth()
+            + self
+                .inline_cursor
+                .as_ref()
+                .map(TreeCursor::depth)
+                .unwrap_or(0)
+    }
+
     fn move_to_inline_tree(&mut self) -> bool {
         let node = self.block_cursor.node();
         match node.kind() {
@@ -118,6 +131,33 @@ impl<'a> MarkdownCursor<'a> {
         }
     }
 
+    /// Move this cursor to the last child of its current node.
+    ///
+    /// This returns `true` if the cursor successfully moved, and returns
+    /// `false` if there were no children.
+    ///
+    /// Note that this function may be slower than
+    /// [`goto_first_child`](MarkdownCursor::goto_first_child) because it needs to
+    /// iterate through all the children to compute the child's position.
+    #[doc(alias = "ts_tree_cursor_goto_last_child")]
+    pub fn goto_last_child(&mut self) -> bool {
+        match &mut self.inline_cursor {
+            Some(cursor) => cursor.goto_last_child(),
+            None => {
+                if self.move_to_inline_tree() {
+                    if !self.inline_cursor.as_mut().unwrap().goto_last_child() {
+                        self.move_to_block_tree();
+                        false
+                    } else {
+                        true
+                    }
+                } else {
+                    self.block_cursor.goto_last_child()
+                }
+            }
+        }
+    }
+
     /// Move this cursor to the parent of its current node.
     ///
     /// This returns `true` if the cursor successfully moved, and returns `false` if there was no
@@ -148,6 +188,23 @@ impl<'a> MarkdownCursor<'a> {
         match &mut self.inline_cursor {
             Some(inline_cursor) => inline_cursor.goto_next_sibling(),
             None => self.block_cursor.goto_next_sibling(),
+        }
+    }
+
+    /// Move this cursor to the previous sibling of its current node.
+    ///
+    /// This returns `true` if the cursor successfully moved, and returns `false` if there was no
+    /// previous sibling node.
+    ///
+    /// Note, that this function may be slower than
+    /// [`goto_next_sibling`](MarkdownCursor::goto_next_sibling) due to how node positions are
+    /// stored. In the worst case, this will need to iterate through all the children up to the
+    /// previous sibling node to recalculate its position.
+    #[doc(alias = "ts_tree_cursor_goto_previous_sibling")]
+    pub fn goto_previous_sibling(&mut self) -> bool {
+        match &mut self.inline_cursor {
+            Some(inline_cursor) => inline_cursor.goto_previous_sibling(),
+            None => self.block_cursor.goto_previous_sibling(),
         }
     }
 
@@ -418,7 +475,11 @@ mod tests {
 
     #[test]
     fn inline_ranges() {
-        let code = "# title\n\nInline [content].\n";
+        let code = "\
+            # title\n\
+            \n\
+            Inline [content].\n\
+        ";
         let mut parser = MarkdownParser::default();
         let mut tree = parser.parse(code.as_bytes(), None).unwrap();
 
@@ -440,7 +501,11 @@ mod tests {
             "shortcut_link"
         );
 
-        let code = "# Title\n\nInline [content].\n";
+        let code = "\
+            # Title\n\
+            \n\
+            Inline [content].\n\
+        ";
         tree.edit(&InputEdit {
             start_byte: 2,
             old_end_byte: 3,
@@ -472,31 +537,95 @@ mod tests {
 
     #[test]
     fn markdown_cursor() {
-        let code = "# title\n\nInline [content].\n";
+        let code = "\
+            # title\n\
+            \n\
+            Inline [content].\n\
+        ";
         let mut parser = MarkdownParser::default();
         let tree = parser.parse(code.as_bytes(), None).unwrap();
         let mut cursor = tree.walk();
+
         assert_eq!(cursor.node().kind(), "document");
+        assert_eq!(cursor.depth(), 0);
+
         assert!(cursor.goto_first_child());
         assert_eq!(cursor.node().kind(), "section");
+        assert_eq!(cursor.depth(), 1);
+
         assert!(cursor.goto_first_child());
         assert_eq!(cursor.node().kind(), "atx_heading");
+        assert_eq!(cursor.depth(), 2);
+
         assert!(cursor.goto_next_sibling());
         assert_eq!(cursor.node().kind(), "paragraph");
+        assert_eq!(cursor.depth(), 2);
+
         assert!(cursor.goto_first_child());
         assert_eq!(cursor.node().kind(), "inline");
+        assert_eq!(cursor.depth(), 3);
+
         assert!(cursor.goto_first_child());
         assert_eq!(cursor.node().kind(), "shortcut_link");
+        assert_eq!(cursor.depth(), 4);
+
+        assert!(cursor.goto_next_sibling());
+        assert_eq!(cursor.node().kind(), ".");
+        assert_eq!(cursor.depth(), 4);
+
         assert!(cursor.goto_parent());
+        assert_eq!(cursor.depth(), 3);
+
         assert!(cursor.goto_parent());
+        assert_eq!(cursor.depth(), 2);
+
         assert!(cursor.goto_parent());
+        assert_eq!(cursor.depth(), 1);
+
         assert!(cursor.goto_parent());
         assert_eq!(cursor.node().kind(), "document");
+        assert_eq!(cursor.depth(), 0);
+
+        assert!(cursor.goto_last_child());
+        assert_eq!(cursor.node().kind(), "section");
+        assert_eq!(cursor.depth(), 1);
+
+        assert!(cursor.goto_last_child());
+        assert_eq!(cursor.node().kind(), "paragraph");
+        assert_eq!(cursor.depth(), 2);
+
+        assert!(cursor.goto_previous_sibling());
+        assert_eq!(cursor.node().kind(), "atx_heading");
+        assert_eq!(cursor.depth(), 2);
+
+        assert!(cursor.goto_next_sibling());
+
+        assert!(cursor.goto_last_child());
+        assert_eq!(cursor.node().kind(), "inline");
+        assert_eq!(cursor.depth(), 3);
+
+        assert!(cursor.goto_last_child());
+        assert_eq!(cursor.node().kind(), ".");
+        assert_eq!(cursor.depth(), 4);
+
+        assert!(cursor.goto_previous_sibling());
+        assert_eq!(cursor.node().kind(), "shortcut_link");
+        assert_eq!(cursor.depth(), 4);
+
+        let mut cursor2 = cursor.clone();
+
+        assert!(cursor2.goto_parent());
+        assert_eq!(cursor2.depth(), 3);
+        assert_eq!(cursor.depth(), 4);
     }
 
     #[test]
     fn table() {
-        let code = "| foo |\n| --- |\n| *bar*|\n";
+        let code = "\
+            | foo |\n\
+            | --- |\n\
+            | *bar*|\n\
+        ";
         let mut parser = MarkdownParser::default();
         let tree = parser.parse(code.as_bytes(), None).unwrap();
         dbg!(&tree.inline_trees());
