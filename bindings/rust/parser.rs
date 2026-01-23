@@ -28,6 +28,8 @@ pub struct MarkdownCursor<'a> {
 
 impl<'a> MarkdownCursor<'a> {
     /// Get the cursor's current [`Node`].
+    #[doc(alias = "ts_tree_cursor_current_node")]
+    #[must_use]
     pub fn node(&self) -> Node<'a> {
         match &self.inline_cursor {
             Some(cursor) => cursor.node(),
@@ -39,6 +41,7 @@ impl<'a> MarkdownCursor<'a> {
     ///
     /// This information is needed to handle "tree-sitter internal" data like
     /// [`field_id`](Self::field_id) correctly.
+    #[must_use]
     pub fn is_inline(&self) -> bool {
         self.inline_cursor.is_some()
     }
@@ -49,6 +52,8 @@ impl<'a> MarkdownCursor<'a> {
     /// current node is an inline or block node.
     ///
     /// See also [`field_name`](Self::field_name).
+    #[doc(alias = "ts_tree_cursor_current_field_id")]
+    #[must_use]
     pub fn field_id(&self) -> Option<NonZeroU16> {
         match &self.inline_cursor {
             Some(cursor) => cursor.field_id(),
@@ -60,6 +65,8 @@ impl<'a> MarkdownCursor<'a> {
     ///
     /// You will need to call [`is_inline`](Self::is_inline) to find out if the
     /// current node is an inline or block node.
+    #[doc(alias = "ts_tree_cursor_current_field_name")]
+    #[must_use]
     pub fn field_name(&self) -> Option<&'static str> {
         match &self.inline_cursor {
             Some(cursor) => cursor.field_name(),
@@ -89,8 +96,10 @@ impl<'a> MarkdownCursor<'a> {
     ///
     /// This returns `true` if the cursor successfully moved, and returns `false` if there were no
     /// children.
-    /// If the cursor is currently at a node in the block tree and it has an associated inline tree, it
-    /// will descend into the inline tree.
+    ///
+    /// If the cursor is currently at a node in the block tree and it has an associated inline tree,
+    /// it will descend into the inline tree.
+    #[doc(alias = "ts_tree_cursor_goto_first_child")]
     pub fn goto_first_child(&mut self) -> bool {
         match &mut self.inline_cursor {
             Some(cursor) => cursor.goto_first_child(),
@@ -111,10 +120,12 @@ impl<'a> MarkdownCursor<'a> {
 
     /// Move this cursor to the parent of its current node.
     ///
-    /// This returns true if the cursor successfully moved, and returns false if there was no
+    /// This returns `true` if the cursor successfully moved, and returns `false` if there was no
     /// parent node (the cursor was already on the root node).
-    /// If the cursor moves to the root node of an inline tree, the it ascents to the associated
+    ///
+    /// If the cursor moves to the root node of an inline tree, then it ascents to the associated
     /// node in the block tree.
+    #[doc(alias = "ts_tree_cursor_goto_parent")]
     pub fn goto_parent(&mut self) -> bool {
         match &mut self.inline_cursor {
             Some(inline_cursor) => {
@@ -130,8 +141,9 @@ impl<'a> MarkdownCursor<'a> {
 
     /// Move this cursor to the next sibling of its current node.
     ///
-    /// This returns true if the cursor successfully moved, and returns false if there was no next
-    /// sibling node.
+    /// This returns `true` if the cursor successfully moved, and returns `false` if there was no
+    /// next sibling node.
+    #[doc(alias = "ts_tree_cursor_goto_next_sibling")]
     pub fn goto_next_sibling(&mut self) -> bool {
         match &mut self.inline_cursor {
             Some(inline_cursor) => inline_cursor.goto_next_sibling(),
@@ -144,6 +156,7 @@ impl<'a> MarkdownCursor<'a> {
     /// This returns the index of the child node if one was found, and returns None if no such child was found.
     /// If the cursor is currently at a node in the block tree and it has an associated inline tree, it
     /// will descend into the inline tree.
+    #[doc(alias = "ts_tree_cursor_goto_first_child_for_byte")]
     pub fn goto_first_child_for_byte(&mut self, index: usize) -> Option<usize> {
         match &mut self.inline_cursor {
             Some(cursor) => cursor.goto_first_child_for_byte(index),
@@ -165,6 +178,7 @@ impl<'a> MarkdownCursor<'a> {
     /// This returns the index of the child node if one was found, and returns None if no such child was found.
     /// If the cursor is currently at a node in the block tree and it has an associated inline tree, it
     /// will descend into the inline tree.
+    #[doc(alias = "ts_tree_cursor_goto_first_child_for_point")]
     pub fn goto_first_child_for_point(&mut self, index: Point) -> Option<usize> {
         match &mut self.inline_cursor {
             Some(cursor) => cursor.goto_first_child_for_point(index),
