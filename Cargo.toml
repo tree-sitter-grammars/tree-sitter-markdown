@@ -25,7 +25,7 @@ include = [
 ]
 
 [features]
-parser = ["tree-sitter"]
+parser = ["dep:tree-sitter"]
 
 [lib]
 path = "bindings/rust/lib.rs"
