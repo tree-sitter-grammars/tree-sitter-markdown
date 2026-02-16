@@ -114,3 +114,58 @@ globalNS.method1(5, 10);
       (fenced_code_block_delimiter))
     (paragraph
       (inline))))
+
+================================================================================
+#226 (PR) - Allow ordered lists to start from any number
+================================================================================
+
+* List item
+    0) Zero
+    1) One
+    2) Two
+
+* Backwards list
+    9) Nine
+    8) Eight
+
+--------------------------------------------------------------------------------
+
+(document
+  (section
+    (list
+      (list_item
+        (list_marker_star)
+        (paragraph
+          (inline)
+          (block_continuation))
+        (list
+          (list_item
+            (list_marker_parenthesis)
+            (paragraph
+              (inline)
+              (block_continuation)))
+          (list_item
+            (list_marker_parenthesis)
+            (paragraph
+              (inline)
+              (block_continuation)))
+          (list_item
+            (list_marker_parenthesis)
+            (paragraph
+              (inline)
+              (block_continuation)))))
+      (list_item
+        (list_marker_star)
+        (paragraph
+          (inline)
+          (block_continuation))
+        (list
+          (list_item
+            (list_marker_parenthesis)
+            (paragraph
+              (inline)
+              (block_continuation)))
+          (list_item
+            (list_marker_parenthesis)
+            (paragraph
+              (inline))))))))
