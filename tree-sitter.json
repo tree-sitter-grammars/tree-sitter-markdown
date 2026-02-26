@@ -1,52 +1,54 @@
 {
-  "metadata": {
-    "version": "0.5.2",
-    "license": "MIT",
-    "authors": [
-      {
-        "name": "MDeiml"
-      }
-    ],
-    "description": "Markdown grammar for tree-sitter",
-    "links": {
-      "repository": "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
-    }
-  },
+  "$schema": "https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json",
   "grammars": [
     {
       "name": "markdown",
       "scope": "text.markdown",
       "path": "tree-sitter-markdown",
-      "injection-regex": "^(markdown|md)$",
+      "external-files": [
+        "common/common.js"
+      ],
       "file-types": [
         "md"
       ],
       "highlights": "tree-sitter-markdown/queries/highlights.scm",
       "injections": "tree-sitter-markdown/queries/injections.scm",
-      "external-files": [
-        "common/common.js"
-      ]
+      "injection-regex": "^(markdown|md)$"
     },
     {
       "name": "markdown_inline",
       "camelcase": "MarkdownInline",
       "scope": "text.markdown_inline",
       "path": "tree-sitter-markdown-inline",
-      "highlights": "tree-sitter-markdown-inline/queries/highlights.scm",
-      "injections": "tree-sitter-markdown-inline/queries/injections.scm",
       "external-files": [
         "common/common.js"
-      ]
+      ],
+      "file-types": null,
+      "highlights": "tree-sitter-markdown-inline/queries/highlights.scm",
+      "injections": "tree-sitter-markdown-inline/queries/injections.scm"
     }
   ],
+  "metadata": {
+    "version": "0.5.2",
+    "license": "MIT",
+    "description": "Markdown grammar for tree-sitter",
+    "authors": [
+      {
+        "name": "MDeiml"
+      }
+    ],
+    "links": {
+      "repository": "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
+    }
+  },
   "bindings": {
-    "rust": true,
-    "node": true,
     "c": true,
-    "python": true,
-    "swift": true,
     "go": false,
     "java": false,
+    "node": true,
+    "python": true,
+    "rust": true,
+    "swift": true,
     "zig": false
   }
 }
