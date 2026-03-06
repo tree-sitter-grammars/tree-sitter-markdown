@@ -202,3 +202,16 @@ Example 205 - https://github.github.com/gfm/#example-205
       (pipe_table_row
         (pipe_table_cell)
         (pipe_table_cell)))))
+
+==================
+Empty pipe table cells
+==================
+
+| PR1234 | lorem ipsum ||
+
+---
+
+(document
+  (section
+    (paragraph
+      (inline))))
