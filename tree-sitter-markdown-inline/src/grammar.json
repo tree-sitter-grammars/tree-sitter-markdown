@@ -6260,6 +6260,22 @@
     },
     {
       "type": "SYMBOL",
+      "name": "_superscript_open"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_superscript_close"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_subscript_open"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_subscript_close"
+    },
+    {
+      "type": "SYMBOL",
       "name": "_unclosed_span"
     }
   ],
