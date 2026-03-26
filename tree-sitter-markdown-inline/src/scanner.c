@@ -22,6 +22,8 @@ typedef enum {
     STRIKETHROUGH_CLOSE,
     LATEX_SPAN_START,
     LATEX_SPAN_CLOSE,
+    HIGHLIGHT_OPEN,
+    HIGHLIGHT_CLOSE,
     SUPERSCRIPT_OPEN,
     SUPERSCRIPT_CLOSE,
     SUBSCRIPT_OPEN,
@@ -368,6 +370,41 @@ static bool parse_underscore(Scanner *s, TSLexer *lexer,
     return false;
 }
 
+static bool parse_equal(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
+    (void)s;
+    lexer->advance(lexer, false);
+    if (lexer->lookahead != '=') {
+        return false;
+    }
+    lexer->advance(lexer, false);
+    lexer->mark_end(lexer);
+    if (lexer->lookahead == '=') {
+        return false;
+    }
+
+    bool line_end = lexer->lookahead == '\n' || lexer->lookahead == '\r' ||
+                    lexer->eof(lexer);
+    if (valid_symbols[HIGHLIGHT_OPEN] || valid_symbols[HIGHLIGHT_CLOSE]) {
+        bool next_symbol_whitespace =
+            line_end || lexer->lookahead == ' ' || lexer->lookahead == '\t';
+        bool next_symbol_punctuation = is_punctuation(lexer->lookahead);
+        if (valid_symbols[HIGHLIGHT_CLOSE] &&
+            !valid_symbols[LAST_TOKEN_WHITESPACE] &&
+            (!valid_symbols[LAST_TOKEN_PUNCTUATION] ||
+             next_symbol_punctuation || next_symbol_whitespace)) {
+            lexer->result_symbol = HIGHLIGHT_CLOSE;
+            return true;
+        }
+        if (!next_symbol_whitespace && (!next_symbol_punctuation ||
+                                        valid_symbols[LAST_TOKEN_PUNCTUATION] ||
+                                        valid_symbols[LAST_TOKEN_WHITESPACE])) {
+            lexer->result_symbol = HIGHLIGHT_OPEN;
+            return true;
+        }
+    }
+    return false;
+}
+
 static bool parse_caret(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
     lexer->advance(lexer, false);
     if (s->num_emphasis_delimiters_left > 0) {
@@ -441,6 +478,8 @@ static bool scan(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
             return parse_underscore(s, lexer, valid_symbols);
         case '~':
             return parse_tilde(s, lexer, valid_symbols);
+        case '=':
+            return parse_equal(s, lexer, valid_symbols);
         case '^':
             return parse_caret(s, lexer, valid_symbols);
     }

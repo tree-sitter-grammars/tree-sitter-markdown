@@ -56,6 +56,9 @@ module.exports = grammar(add_inline_rules({
         $._latex_span_start,
         $._latex_span_close,
 
+        $._highlight_open,
+        $._highlight_close,
+
         $._superscript_open,
         $._superscript_close,
         $._subscript_open,
@@ -412,6 +415,9 @@ function add_inline_rules(grammar) {
                 if (common.EXTENSION_STRIKETHROUGH) {
                     elements.push(alias($['_strikethrough' + suffix_link], $.strikethrough));
                 }
+                if (common.EXTENSION_HIGHLIGHT) {
+                    elements.push(alias($['_highlight' + suffix_link], $.highlight));
+                }
                 if (common.EXTENSION_SUPERSUBSCRIPT) {
                     elements.push(alias($['_superscript' + suffix_link], $.superscript));
                     elements.push(alias($['_subscript' + suffix_link], $.subscript));
@@ -454,7 +460,7 @@ function add_inline_rules(grammar) {
                 conflicts.push(['_emphasis_star' + suffix_link, '_strong_emphasis_star' + suffix_link, '_inline_element' + suffix_delimiter + suffix_link]);
             }
             if (delimiter == 'star' || delimiter == 'underscore') {
-                conflicts.push(['_strong_emphasis_' + delimiter + suffix_link, '_inline_element_no_' + delimiter]);
+                conflicts.push(['_strong_emphasis_' + delimiter + suffix_link, '_inline_element_no_' + delimiter + suffix_link]);
             }
             if (delimiter !== "underscore") {
                 conflicts.push(['_emphasis_underscore' + suffix_link, '_inline_element' + suffix_delimiter + suffix_link]);
@@ -473,6 +479,9 @@ function add_inline_rules(grammar) {
             }
         }
 
+        if (common.EXTENSION_HIGHLIGHT) {
+            grammar.rules['_highlight' + suffix_link] = $ => prec.dynamic(PRECEDENCE_LEVEL_EMPHASIS, seq(alias($._highlight_open, $.emphasis_delimiter), optional($._last_token_punctuation), $['_inline' + suffix_link], alias($._highlight_close, $.emphasis_delimiter)));
+        }
         if (common.EXTENSION_STRIKETHROUGH) {
             grammar.rules['_strikethrough' + suffix_link] = $ => prec.dynamic(PRECEDENCE_LEVEL_EMPHASIS, seq(alias($._strikethrough_open, $.emphasis_delimiter), optional($._last_token_punctuation), $['_inline' + '_no_tilde' + suffix_link], alias($._strikethrough_close, $.emphasis_delimiter)));
         }
