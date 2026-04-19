@@ -202,3 +202,26 @@ Example 205 - https://github.github.com/gfm/#example-205
       (pipe_table_row
         (pipe_table_cell)
         (pipe_table_cell)))))
+
+================================================================================
+#113 - Works with table cells that is empty
+================================================================================
+| foo | bar |
+| --- | --- |
+|| bim |
+
+--------------------------------------------------------------------------------
+
+(document
+  (section
+    (pipe_table
+      (pipe_table_header
+        (pipe_table_cell)
+        (pipe_table_cell))
+      (pipe_table_delimiter_row
+        (pipe_table_delimiter_cell)
+        (pipe_table_delimiter_cell))
+      (pipe_table_row
+        (pipe_table_cell)
+        (pipe_table_cell)))))
+
