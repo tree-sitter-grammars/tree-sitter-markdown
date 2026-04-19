@@ -54,6 +54,7 @@ typedef enum {
     PLUS_METADATA,
     PIPE_TABLE_START,
     PIPE_TABLE_LINE_ENDING,
+    PIPE_TABLE_EMPTY_CELL,
 } TokenType;
 
 // Description of a block on the block stack.
@@ -169,6 +170,7 @@ static const bool paragraph_interrupt_symbols[] = {
     false, // PLUS_METADATA,
     true,  // PIPE_TABLE_START,
     false, // PIPE_TABLE_LINE_ENDING,
+    false, // PIPE_TABLE_EMPTY_CELL,
 };
 
 // State bitflags used with `Scanner.state`
@@ -1558,6 +1560,12 @@ static bool scan(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
             lexer->result_symbol = LINE_ENDING;
             return true;
         }
+    }
+    if (valid_symbols[PIPE_TABLE_EMPTY_CELL] && lexer->lookahead == '|' &&
+            lexer->get_column(lexer) > 0) {
+        mark_end(s, lexer);
+        lexer->result_symbol = PIPE_TABLE_EMPTY_CELL;
+        return true;
     }
     return false;
 }
