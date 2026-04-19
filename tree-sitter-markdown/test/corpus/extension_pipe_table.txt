@@ -204,7 +204,7 @@ Example 205 - https://github.github.com/gfm/#example-205
         (pipe_table_cell)))))
 
 ================================================================================
-#113 - Works with table cells that is empty
+#112-2 - Works with table cells that is empty
 ================================================================================
 | foo | bar |
 | --- | --- |
