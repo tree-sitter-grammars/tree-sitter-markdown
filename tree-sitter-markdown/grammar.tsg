@@ -1,0 +1,492 @@
+// tree-sitter-markdown block grammar (native DSL).
+// Mirrors tree-sitter-markdown/grammar.js; block structure per
+// https://spec.commonmark.org/0.30/#blocks-and-inlines.
+//
+// Extension gating uses the `flags:` config + `#[cfg(NAME)]` attribute.
+
+let c = import("../common/common.tsg")
+
+grammar {
+    language: "markdown",
+    flags: {
+        enabled: ["EXTENSION_DEFAULT", "EXTENSION_GFM", "EXTENSION_TASK_LIST", "EXTENSION_STRIKETHROUGH", "EXTENSION_PIPE_TABLE", "EXTENSION_MINUS_METADATA", "EXTENSION_PLUS_METADATA", "EXTENSION_LATEX"],
+        disabled: ["EXTENSION_TAGS", "EXTENSION_WIKI_LINK"],
+    },
+    externals: [
+        _line_ending,
+        _soft_line_ending,
+        _block_close,
+        block_continuation,
+        _block_quote_start,
+        _indented_chunk_start,
+        atx_h1_marker,
+        atx_h2_marker,
+        atx_h3_marker,
+        atx_h4_marker,
+        atx_h5_marker,
+        atx_h6_marker,
+        setext_h1_underline,
+        setext_h2_underline,
+        _thematic_break,
+        _list_marker_minus,
+        _list_marker_plus,
+        _list_marker_star,
+        _list_marker_parenthesis,
+        _list_marker_dot,
+        _list_marker_minus_dont_interrupt,
+        _list_marker_plus_dont_interrupt,
+        _list_marker_star_dont_interrupt,
+        _list_marker_parenthesis_dont_interrupt,
+        _list_marker_dot_dont_interrupt,
+        _fenced_code_block_start_backtick,
+        _fenced_code_block_start_tilde,
+        _blank_line_start,
+        _fenced_code_block_end_backtick,
+        _fenced_code_block_end_tilde,
+        _html_block_1_start,
+        _html_block_1_end,
+        _html_block_2_start,
+        _html_block_3_start,
+        _html_block_4_start,
+        _html_block_5_start,
+        _html_block_6_start,
+        _html_block_7_start,
+        _close_block,
+        _no_indented_chunk,
+        _error,
+        _trigger_error,
+        _eof,
+        minus_metadata,
+        plus_metadata,
+        _pipe_table_start,
+        _pipe_table_line_ending,
+    ],
+    precedences: [
+        [_setext_heading1, _block],
+        [_setext_heading2, _block],
+        [indented_code_block, _block],
+    ],
+    conflicts: [
+        [link_reference_definition],
+        [link_label, _line],
+        [link_reference_definition, _line],
+    ],
+    extras: [],
+}
+
+rule document {
+    seq(
+        optional(choice(
+            #[cfg(EXTENSION_MINUS_METADATA)] minus_metadata,
+            #[cfg(EXTENSION_PLUS_METADATA)] plus_metadata,
+        )),
+        alias(prec_right(0, repeat(_block_not_section)), section),
+        repeat(section),
+    )
+}
+
+// Common rule wrappers - bind common helpers to block-side primitives.
+rule link_label { c::link_label_(_text_inline_no_link, _soft_line_break) }
+rule link_destination {
+    c::link_destination_(_last_token_punctuation, _word, _text_no_angle, _link_destination_parenthesis)
+}
+rule _link_destination_parenthesis {
+    c::link_destination_parenthesis_(_last_token_punctuation, _word, _link_destination_parenthesis)
+}
+rule _text_no_angle { c::text_no_angle_(_last_token_punctuation, _word, _whitespace) }
+rule link_title {
+    c::link_title_(_last_token_punctuation, _word, _whitespace, _soft_line_break, _trigger_error)
+}
+
+// BLOCK STRUCTURE
+rule _block { choice(_block_not_section, section) }
+rule _block_not_section {
+    choice(
+        alias(_setext_heading1, setext_heading),
+        alias(_setext_heading2, setext_heading),
+        paragraph,
+        indented_code_block,
+        block_quote,
+        thematic_break,
+        list,
+        fenced_code_block,
+        _blank_line,
+        html_block,
+        link_reference_definition,
+        #[cfg(EXTENSION_PIPE_TABLE)] pipe_table,
+    )
+}
+rule section { choice(_section1, _section2, _section3, _section4, _section5, _section6) }
+rule _section1 {
+    prec_right(0, seq(
+        alias(_atx_heading1, atx_heading),
+        repeat(choice(
+            alias(choice(_section6, _section5, _section4, _section3, _section2), section),
+            _block_not_section,
+        )),
+    ))
+}
+rule _section2 {
+    prec_right(0, seq(
+        alias(_atx_heading2, atx_heading),
+        repeat(choice(
+            alias(choice(_section6, _section5, _section4, _section3), section),
+            _block_not_section,
+        )),
+    ))
+}
+rule _section3 {
+    prec_right(0, seq(
+        alias(_atx_heading3, atx_heading),
+        repeat(choice(
+            alias(choice(_section6, _section5, _section4), section),
+            _block_not_section,
+        )),
+    ))
+}
+rule _section4 {
+    prec_right(0, seq(
+        alias(_atx_heading4, atx_heading),
+        repeat(choice(
+            alias(choice(_section6, _section5), section),
+            _block_not_section,
+        )),
+    ))
+}
+rule _section5 {
+    prec_right(0, seq(
+        alias(_atx_heading5, atx_heading),
+        repeat(choice(
+            alias(_section6, section),
+            _block_not_section,
+        )),
+    ))
+}
+rule _section6 {
+    prec_right(0, seq(
+        alias(_atx_heading6, atx_heading),
+        repeat(_block_not_section),
+    ))
+}
+
+// LEAF BLOCKS
+rule thematic_break { seq(_thematic_break, choice(_newline, _eof)) }
+
+rule _atx_heading1 {
+    prec(1, seq(atx_h1_marker, optional(_atx_heading_content), _newline))
+}
+rule _atx_heading2 {
+    prec(1, seq(atx_h2_marker, optional(_atx_heading_content), _newline))
+}
+rule _atx_heading3 {
+    prec(1, seq(atx_h3_marker, optional(_atx_heading_content), _newline))
+}
+rule _atx_heading4 {
+    prec(1, seq(atx_h4_marker, optional(_atx_heading_content), _newline))
+}
+rule _atx_heading5 {
+    prec(1, seq(atx_h5_marker, optional(_atx_heading_content), _newline))
+}
+rule _atx_heading6 {
+    prec(1, seq(atx_h6_marker, optional(_atx_heading_content), _newline))
+}
+rule _atx_heading_content {
+    prec(1, seq(optional(_whitespace), field(heading_content, alias(_line, inline))))
+}
+
+rule _setext_heading1 {
+    seq(field(heading_content, paragraph), setext_h1_underline, choice(_newline, _eof))
+}
+rule _setext_heading2 {
+    seq(field(heading_content, paragraph), setext_h2_underline, choice(_newline, _eof))
+}
+
+rule indented_code_block {
+    prec_right(0, seq(_indented_chunk, repeat(choice(_indented_chunk, _blank_line))))
+}
+rule _indented_chunk {
+    seq(_indented_chunk_start, repeat(choice(_line, _newline)), _block_close, optional(block_continuation))
+}
+
+rule fenced_code_block {
+    prec_right(0, choice(
+        seq(
+            alias(_fenced_code_block_start_backtick, fenced_code_block_delimiter),
+            optional(_whitespace),
+            optional(info_string),
+            _newline,
+            optional(code_fence_content),
+            optional(seq(alias(_fenced_code_block_end_backtick, fenced_code_block_delimiter), _close_block, _newline)),
+            _block_close,
+        ),
+        seq(
+            alias(_fenced_code_block_start_tilde, fenced_code_block_delimiter),
+            optional(_whitespace),
+            optional(info_string),
+            _newline,
+            optional(code_fence_content),
+            optional(seq(alias(_fenced_code_block_end_tilde, fenced_code_block_delimiter), _close_block, _newline)),
+            _block_close,
+        ),
+    ))
+}
+rule code_fence_content { repeat1(choice(_newline, _line)) }
+rule info_string {
+    choice(
+        seq(language, repeat(choice(_line, backslash_escape, entity_reference, numeric_character_reference))),
+        seq(
+            repeat1(choice("{", "}")),
+            optional(choice(
+                seq(language, repeat(choice(_line, backslash_escape, entity_reference, numeric_character_reference))),
+                seq(_whitespace, repeat(choice(_line, backslash_escape, entity_reference, numeric_character_reference))),
+            )),
+        ),
+    )
+}
+rule language {
+    prec_right(0, repeat1(choice(_word, c::punct_no_brace_comma(_last_token_punctuation), backslash_escape, entity_reference, numeric_character_reference)))
+}
+
+// HTML blocks. Mirror build_html_block($, open, close, interrupt_paragraph).
+// `interrupt_paragraph` is unused in the JS body so we drop it.
+macro build_html_block(open: rule_t, close: rule_t) rule_t {
+    seq(
+        open,
+        repeat(choice(
+            _line,
+            _newline,
+            seq(close, _close_block),
+        )),
+        _block_close,
+        optional(block_continuation),
+    )
+}
+rule html_block {
+    prec(1, seq(optional(_whitespace), choice(
+        _html_block_1, _html_block_2, _html_block_3, _html_block_4,
+        _html_block_5, _html_block_6, _html_block_7,
+    )))
+}
+rule _html_block_1 { build_html_block(_html_block_1_start, _html_block_1_end) }
+rule _html_block_2 { build_html_block(_html_block_2_start, "-->") }
+rule _html_block_3 { build_html_block(_html_block_3_start, "?>") }
+rule _html_block_4 { build_html_block(_html_block_4_start, ">") }
+rule _html_block_5 { build_html_block(_html_block_5_start, "]]>") }
+rule _html_block_6 { build_html_block(_html_block_6_start, seq(_newline, _blank_line)) }
+rule _html_block_7 { build_html_block(_html_block_7_start, seq(_newline, _blank_line)) }
+
+// PRECEDENCE_LEVEL_LINK = 10; 2*PRECEDENCE_LEVEL_LINK = 20.
+rule link_reference_definition {
+    prec_dynamic(10, seq(
+        optional(_whitespace),
+        link_label,
+        ":",
+        optional(seq(optional(_whitespace), optional(seq(_soft_line_break, optional(_whitespace))))),
+        link_destination,
+        optional(prec_dynamic(20, seq(
+            choice(
+                seq(_whitespace, optional(seq(_soft_line_break, optional(_whitespace)))),
+                seq(_soft_line_break, optional(_whitespace)),
+            ),
+            optional(_no_indented_chunk),
+            link_title,
+        ))),
+        choice(_newline, _soft_line_break, _eof),
+    ))
+}
+rule _text_inline_no_link {
+    choice(_word, _whitespace, c::punct_no_bracket(_last_token_punctuation))
+}
+
+rule paragraph {
+    seq(alias(repeat1(choice(_line, _soft_line_break)), inline), choice(_newline, _eof))
+}
+
+rule _blank_line { seq(_blank_line_start, choice(_newline, _eof)) }
+
+// CONTAINER BLOCKS
+rule block_quote {
+    seq(
+        alias(_block_quote_start, block_quote_marker),
+        optional(block_continuation),
+        repeat(_block),
+        _block_close,
+        optional(block_continuation),
+    )
+}
+
+rule list {
+    prec_right(0, choice(_list_plus, _list_minus, _list_star, _list_dot, _list_parenthesis))
+}
+rule _list_plus { prec_right(0, repeat1(alias(_list_item_plus, list_item))) }
+rule _list_minus { prec_right(0, repeat1(alias(_list_item_minus, list_item))) }
+rule _list_star { prec_right(0, repeat1(alias(_list_item_star, list_item))) }
+rule _list_dot { prec_right(0, repeat1(alias(_list_item_dot, list_item))) }
+rule _list_parenthesis { prec_right(0, repeat1(alias(_list_item_parenthesis, list_item))) }
+rule list_marker_plus { choice(_list_marker_plus, _list_marker_plus_dont_interrupt) }
+rule list_marker_minus { choice(_list_marker_minus, _list_marker_minus_dont_interrupt) }
+rule list_marker_star { choice(_list_marker_star, _list_marker_star_dont_interrupt) }
+rule list_marker_dot { choice(_list_marker_dot, _list_marker_dot_dont_interrupt) }
+rule list_marker_parenthesis { choice(_list_marker_parenthesis, _list_marker_parenthesis_dont_interrupt) }
+rule _list_item_plus {
+    seq(
+        list_marker_plus,
+        optional(block_continuation),
+        _list_item_content,
+        _block_close,
+        optional(block_continuation),
+    )
+}
+rule _list_item_minus {
+    seq(
+        list_marker_minus,
+        optional(block_continuation),
+        _list_item_content,
+        _block_close,
+        optional(block_continuation),
+    )
+}
+rule _list_item_star {
+    seq(
+        list_marker_star,
+        optional(block_continuation),
+        _list_item_content,
+        _block_close,
+        optional(block_continuation),
+    )
+}
+rule _list_item_dot {
+    seq(
+        list_marker_dot,
+        optional(block_continuation),
+        _list_item_content,
+        _block_close,
+        optional(block_continuation),
+    )
+}
+rule _list_item_parenthesis {
+    seq(
+        list_marker_parenthesis,
+        optional(block_continuation),
+        _list_item_content,
+        _block_close,
+        optional(block_continuation),
+    )
+}
+rule _list_item_content {
+    choice(
+        prec(1, seq(
+            _blank_line,
+            _blank_line,
+            _close_block,
+            optional(block_continuation),
+        )),
+        repeat1(_block),
+        #[cfg(EXTENSION_TASK_LIST)] prec(1, seq(
+            choice(task_list_marker_checked, task_list_marker_unchecked),
+            _whitespace,
+            paragraph,
+            repeat(_block),
+        )),
+    )
+}
+
+rule _newline { seq(_line_ending, optional(block_continuation)) }
+rule _soft_line_break { seq(_soft_line_ending, optional(block_continuation)) }
+rule _line {
+    prec_right(0, repeat1(choice(_word, _whitespace, c::punct_no_none(_last_token_punctuation))))
+}
+rule _word {
+    choice(
+        regexp(r"[^!-/:-@\[-`\{-~ \t\n\r]+"),
+        #[cfg(EXTENSION_TASK_LIST)] choice(
+            regexp(r"\[[xX]\]"),
+            regexp(r"\[[ \t]\]"),
+        ),
+    )
+}
+rule _whitespace { regexp(r"[ \t]+") }
+
+// `_last_token_punctuation` is referenced by the punct_no_X macros from
+// common. In block markdown it is a rule that matches nothing (the inline
+// grammar uses an external token of the same name).
+rule _last_token_punctuation { choice() }
+
+#[cfg(EXTENSION_TASK_LIST)]
+rule task_list_marker_checked { prec(1, regexp(r"\[[xX]\]")) }
+#[cfg(EXTENSION_TASK_LIST)]
+rule task_list_marker_unchecked { prec(1, regexp(r"\[[ \t]\]")) }
+
+#[cfg(EXTENSION_PIPE_TABLE)]
+rule pipe_table {
+    prec_right(0, seq(
+        _pipe_table_start,
+        alias(pipe_table_row, pipe_table_header),
+        _newline,
+        pipe_table_delimiter_row,
+        repeat(seq(_pipe_table_newline, optional(pipe_table_row))),
+        choice(_newline, _eof),
+    ))
+}
+#[cfg(EXTENSION_PIPE_TABLE)]
+rule _pipe_table_newline {
+    seq(_pipe_table_line_ending, optional(block_continuation))
+}
+#[cfg(EXTENSION_PIPE_TABLE)]
+rule pipe_table_delimiter_row {
+    seq(
+        optional(seq(optional(_whitespace), "|")),
+        repeat1(prec_right(0, seq(
+            optional(_whitespace),
+            pipe_table_delimiter_cell,
+            optional(_whitespace),
+            "|",
+        ))),
+        optional(_whitespace),
+        optional(seq(pipe_table_delimiter_cell, optional(_whitespace))),
+    )
+}
+#[cfg(EXTENSION_PIPE_TABLE)]
+rule pipe_table_delimiter_cell {
+    seq(
+        optional(alias(":", pipe_table_align_left)),
+        repeat1("-"),
+        optional(alias(":", pipe_table_align_right)),
+    )
+}
+#[cfg(EXTENSION_PIPE_TABLE)]
+rule pipe_table_row {
+    seq(
+        optional(seq(optional(_whitespace), "|")),
+        choice(
+            seq(
+                repeat1(prec_right(0, seq(
+                    choice(
+                        seq(optional(_whitespace), pipe_table_cell, optional(_whitespace)),
+                        alias(_whitespace, pipe_table_cell),
+                    ),
+                    "|",
+                ))),
+                optional(_whitespace),
+                optional(seq(pipe_table_cell, optional(_whitespace))),
+            ),
+            seq(optional(_whitespace), pipe_table_cell, optional(_whitespace)),
+        ),
+    )
+}
+#[cfg(EXTENSION_PIPE_TABLE)]
+rule pipe_table_cell {
+    prec_right(0, seq(
+        choice(
+            _word,
+            _backslash_escape,
+            c::punct_no_pipe(_last_token_punctuation),
+        ),
+        repeat(choice(
+            _word,
+            _whitespace,
+            _backslash_escape,
+            c::punct_no_pipe(_last_token_punctuation),
+        )),
+    ))
+}
