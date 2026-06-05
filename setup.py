@@ -10,9 +10,12 @@ from wheel.bdist_wheel import bdist_wheel
 
 class Build(build):
     def run(self):
-        if path.isdir("queries"):
-            dest = path.join(self.build_lib, "tree_sitter_markdown", "queries")
-            self.copy_tree("queries", dest)
+        if path.isdir(block_queries := path.join("tree-sitter-markdown", "queries")):
+            dest = path.join(self.build_lib, "tree_sitter_markdown", "queries", "markdown")
+            self.copy_tree(block_queries, dest)
+        if path.isdir(inline_queries := path.join("tree-sitter-markdown-inline", "queries")):
+            dest = path.join(self.build_lib, "tree_sitter_markdown", "queries", "markdown_inline")
+            self.copy_tree(inline_queries, dest)
         super().run()
 
 
@@ -22,8 +25,10 @@ class BuildExt(build_ext):
             ext.extra_compile_args = ["-std=c11", "-fvisibility=hidden"]
         else:
             ext.extra_compile_args = ["/std:c11", "/utf-8"]
-        if path.exists("src/scanner.c"):
-            ext.sources.append("src/scanner.c")
+        if path.exists("tree-sitter-markdown/src/scanner.c"):
+            ext.sources.append("tree-sitter-markdown/src/scanner.c")
+        if path.exists("tree-sitter-markdown-inline/src/scanner.c"):
+            ext.sources.append("tree-sitter-markdown-inline/src/scanner.c")
         if ext.py_limited_api:
             ext.define_macros.append(("Py_LIMITED_API", "0x030A0000"))
         super().build_extension(ext)
@@ -41,7 +46,8 @@ class EggInfo(egg_info):
     def find_sources(self):
         super().find_sources()
         self.filelist.recursive_include("queries", "*.scm")
-        self.filelist.include("src/tree_sitter/*.h")
+        self.filelist.include("tree-sitter-markdown/src/tree_sitter/*.h")
+        self.filelist.include("tree-sitter-markdown-inline/src/tree_sitter/*.h")
 
 
 setup(
@@ -57,7 +63,8 @@ setup(
             name="_binding",
             sources=[
                 "bindings/python/tree_sitter_markdown/binding.c",
-                "src/parser.c",
+                "tree-sitter-markdown/src/parser.c",
+                "tree-sitter-markdown-inline/src/parser.c",
             ],
             define_macros=[
                 ("PY_SSIZE_T_CLEAN", None),
