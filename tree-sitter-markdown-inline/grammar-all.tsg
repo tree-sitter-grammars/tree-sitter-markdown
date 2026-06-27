@@ -1,0 +1,15 @@
+// All-extensions config of the inline grammar (mirrors `ALL_EXTENSIONS=1`).
+// Thin wrapper: inherits the default grammar and enables every extension flag.
+let base = inherit("grammar.tsg")
+grammar {
+    language: "markdown_inline",
+    inherits: base,
+    flags: {
+        enabled: [
+            "EXTENSION_DEFAULT", "EXTENSION_GFM", "EXTENSION_TASK_LIST",
+            "EXTENSION_STRIKETHROUGH", "EXTENSION_PIPE_TABLE", "EXTENSION_MINUS_METADATA",
+            "EXTENSION_PLUS_METADATA", "EXTENSION_LATEX", "EXTENSION_TAGS",
+            "EXTENSION_WIKI_LINK",
+        ],
+    },
+}
