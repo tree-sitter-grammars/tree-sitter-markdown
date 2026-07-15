@@ -82,4 +82,37 @@ mod tests {
             .set_language(&INLINE_LANGUAGE.into())
             .expect("Error loading Markdown inline grammar");
     }
+
+    // Regression: `parse_ordered_list_marker` used to pass `lexer->lookahead`
+    // (a full Unicode codepoint, e.g. U+2013 EN DASH = 8211) straight to
+    // `isdigit()`. On the Windows debug CRT that trips the assertion
+    // `c >= -1 && c <= 255` in isctype.cpp, crashing any consumer that parses
+    // markdown containing non-ASCII characters. The scanner must only treat
+    // ASCII `0`-`9` as ordered-list digits.
+    #[test]
+    fn ordered_list_marker_ignores_non_ascii_lookahead() {
+        let mut parser = tree_sitter::Parser::new();
+        parser.set_language(&LANGUAGE.into()).unwrap();
+
+        // A line starting with a non-ASCII codepoint (> 255) must parse without
+        // crashing and must NOT be interpreted as an ordered list.
+        let tree = parser
+            .parse("\u{2013} en dash, not a list\n", None)
+            .expect("parsing non-ASCII markdown should succeed");
+        let sexp = tree.root_node().to_sexp();
+        assert!(
+            !sexp.contains("list"),
+            "a line starting with a non-ASCII codepoint must not parse as a list: {sexp}"
+        );
+
+        // Sanity: an ASCII ordered-list marker still parses as a list.
+        let tree = parser
+            .parse("1. real item\n", None)
+            .expect("parsing ASCII markdown should succeed");
+        let sexp = tree.root_node().to_sexp();
+        assert!(
+            sexp.contains("list"),
+            "an ASCII `1.` marker should still parse as an ordered list: {sexp}"
+        );
+    }
 }
