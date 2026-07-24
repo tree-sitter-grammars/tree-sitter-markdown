@@ -78,3 +78,25 @@ task list item marker … the letter x in either lowercase or UPPERCASE
         (task_list_marker_checked)
         (paragraph
           (inline))))))
+
+================================================================================
+task list item marker … the letter - as pending
+================================================================================
+- [-] abc
+- [x] aaa
+
+--------------------------------------------------------------------------------
+
+(document
+  (section
+    (list
+      (list_item
+        (list_marker_minus)
+        (task_list_marker_pending)
+        (paragraph
+          (inline)))
+      (list_item
+        (list_marker_minus)
+        (task_list_marker_checked)
+        (paragraph
+          (inline))))))

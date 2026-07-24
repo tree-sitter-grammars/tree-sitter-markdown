@@ -4093,6 +4093,10 @@
                   },
                   {
                     "type": "SYMBOL",
+                    "name": "task_list_marker_pending"
+                  },
+                  {
+                    "type": "SYMBOL",
                     "name": "task_list_marker_unchecked"
                   }
                 ]
@@ -4345,6 +4349,10 @@
             },
             {
               "type": "PATTERN",
+              "value": "\\[[-]\\]"
+            },
+            {
+              "type": "PATTERN",
               "value": "\\[[ \\t]\\]"
             }
           ]
@@ -4361,6 +4369,14 @@
       "content": {
         "type": "PATTERN",
         "value": "\\[[xX]\\]"
+      }
+    },
+    "task_list_marker_pending": {
+      "type": "PREC",
+      "value": 1,
+      "content": {
+        "type": "PATTERN",
+        "value": "\\[[-]\\]"
       }
     },
     "task_list_marker_unchecked": {

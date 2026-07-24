@@ -474,6 +474,10 @@
           "named": true
         },
         {
+          "type": "task_list_marker_pending",
+          "named": true
+        },
+        {
           "type": "task_list_marker_unchecked",
           "named": true
         },
@@ -723,6 +727,11 @@
   },
   {
     "type": "task_list_marker_checked",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "task_list_marker_pending",
     "named": true,
     "fields": {}
   },

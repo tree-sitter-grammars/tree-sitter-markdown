@@ -371,7 +371,7 @@ module.exports = grammar({
             )),
             repeat1($._block),
             common.EXTENSION_TASK_LIST ? prec(1, seq(
-                choice($.task_list_marker_checked, $.task_list_marker_unchecked),
+                choice($.task_list_marker_checked, $.task_list_marker_pending, $.task_list_marker_unchecked),
                 $._whitespace,
                 $.paragraph,
                 repeat($._block)
@@ -394,6 +394,7 @@ module.exports = grammar({
             new RegExp('[^' + PUNCTUATION_CHARACTERS_REGEX + ' \\t\\n\\r]+'),
             common.EXTENSION_TASK_LIST ? choice(
                 /\[[xX]\]/,
+                /\[[-]\]/,
                 /\[[ \t]\]/,
             ) : choice()
         ),
@@ -402,6 +403,7 @@ module.exports = grammar({
 
         ...(common.EXTENSION_TASK_LIST ? {
             task_list_marker_checked: $ => prec(1, /\[[xX]\]/),
+            task_list_marker_pending: $ => prec(1, /\[[-]\]/),
             task_list_marker_unchecked: $ => prec(1, /\[[ \t]\]/),
         } : {}),
 
