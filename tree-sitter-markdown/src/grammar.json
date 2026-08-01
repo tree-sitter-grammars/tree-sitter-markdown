@@ -4709,8 +4709,16 @@
                             {
                               "type": "ALIAS",
                               "content": {
-                                "type": "SYMBOL",
-                                "name": "_whitespace"
+                                "type": "CHOICE",
+                                "members": [
+                                  {
+                                    "type": "SYMBOL",
+                                    "name": "_whitespace"
+                                  },
+                                  {
+                                    "type": "BLANK"
+                                  }
+                                ]
                               },
                               "named": true,
                               "value": "pipe_table_cell"
