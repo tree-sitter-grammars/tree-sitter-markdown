@@ -735,6 +735,7 @@ static bool parse_ordered_list_marker(Scanner *s, TSLexer *lexer,
          valid_symbols[LIST_MARKER_PARENTHESIS_DONT_INTERRUPT] ||
          valid_symbols[LIST_MARKER_DOT_DONT_INTERRUPT])) {
         size_t digits = 1;
+        // A list may only interrupt a paragraph if it starts with 1.
         bool dont_interrupt = lexer->lookahead != '1';
         advance(s, lexer);
         while (isdigit(lexer->lookahead)) {
