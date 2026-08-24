@@ -237,3 +237,45 @@ A paragraph,
       (inline))
     (paragraph
       (inline))))
+
+================================================================================
+#257 - Non-1 nested ordered markers do not interrupt list-item paragraphs
+================================================================================
+
+* List item
+    0) Zero
+    1) One
+    2) Two
+
+* Backwards list
+    9) Nine
+    8) Eight
+
+--------------------------------------------------------------------------------
+
+(document
+  (section
+    (list
+      (list_item
+        (list_marker_star)
+        (paragraph
+          (inline
+            (block_continuation))
+          (block_continuation))
+        (list
+          (list_item
+            (list_marker_parenthesis)
+            (paragraph
+              (inline)
+              (block_continuation)))
+          (list_item
+            (list_marker_parenthesis)
+            (paragraph
+              (inline)
+              (block_continuation)))))
+      (list_item
+        (list_marker_star)
+        (paragraph
+          (inline
+            (block_continuation)
+            (block_continuation)))))))

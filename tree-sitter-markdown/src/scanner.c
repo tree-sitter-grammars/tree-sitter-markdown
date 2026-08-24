@@ -735,12 +735,13 @@ static bool parse_ordered_list_marker(Scanner *s, TSLexer *lexer,
          valid_symbols[LIST_MARKER_PARENTHESIS_DONT_INTERRUPT] ||
          valid_symbols[LIST_MARKER_DOT_DONT_INTERRUPT])) {
         size_t digits = 1;
-        // Only a marker whose number is exactly 1 may interrupt a paragraph,
-        // so any other start number implies `dont_interrupt`. See
-        // https://spec.commonmark.org/0.31.2/#list-items, "In order for a
-        // list to interrupt a paragraph [...] it must start with 1."
-        // `lookahead` is always a digit here: this function is only reached
-        // from the '0'-'9' cases of the dispatch switch in `scan`.
+        // A list may only interrupt a paragraph if it starts with 1. See
+        // https://spec.commonmark.org/0.31.2/#list-items, list items rule 1:
+        // "if the list item is ordered, the start number must be 1".
+        // Note that `lookahead` is always a digit here, since this function is
+        // only reached from the '0'-'9' cases of the dispatch switch in
+        // `scan`, so a check such as `!isdigit(lexer->lookahead)` would be
+        // constant `false` and let every single-digit marker interrupt.
         bool dont_interrupt = lexer->lookahead != '1';
         advance(s, lexer);
         while (isdigit(lexer->lookahead)) {
