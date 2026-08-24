@@ -116,15 +116,51 @@ globalNS.method1(5, 10);
       (inline))))
 
 ================================================================================
-#226 (PR) - Allow ordered lists to start from any number
+#226 (PR) - Ordered lists can start from any number
+================================================================================
+
+2) Two
+3) Three
+
+7. Seven
+8. Eight
+
+--------------------------------------------------------------------------------
+
+(document
+  (section
+    (list
+      (list_item
+        (list_marker_parenthesis)
+        (paragraph
+          (inline)))
+      (list_item
+        (list_marker_parenthesis)
+        (paragraph
+          (inline)
+          (block_continuation))))
+    (list
+      (list_item
+        (list_marker_dot)
+        (paragraph
+          (inline)))
+      (list_item
+        (list_marker_dot)
+        (paragraph
+          (inline))))))
+
+================================================================================
+#226 (PR) - Nested ordered lists can start from any number
 ================================================================================
 
 * List item
+
     0) Zero
     1) One
     2) Two
 
 * Backwards list
+
     9) Nine
     8) Eight
 
@@ -138,6 +174,7 @@ globalNS.method1(5, 10);
         (paragraph
           (inline)
           (block_continuation))
+        (block_continuation)
         (list
           (list_item
             (list_marker_parenthesis)
@@ -159,6 +196,7 @@ globalNS.method1(5, 10);
         (paragraph
           (inline)
           (block_continuation))
+        (block_continuation)
         (list
           (list_item
             (list_marker_parenthesis)
@@ -169,3 +207,75 @@ globalNS.method1(5, 10);
             (list_marker_parenthesis)
             (paragraph
               (inline))))))))
+
+================================================================================
+#257 - Only an ordered list starting with 1 may interrupt a paragraph
+================================================================================
+
+A paragraph,
+1. and a list interrupting it.
+
+A paragraph,
+2. not a list.
+
+A paragraph,
+10. not a list either.
+
+--------------------------------------------------------------------------------
+
+(document
+  (section
+    (paragraph
+      (inline))
+    (list
+      (list_item
+        (list_marker_dot)
+        (paragraph
+          (inline)
+          (block_continuation))))
+    (paragraph
+      (inline))
+    (paragraph
+      (inline))))
+
+================================================================================
+#257 - Non-1 nested ordered markers do not interrupt list-item paragraphs
+================================================================================
+
+* List item
+    0) Zero
+    1) One
+    2) Two
+
+* Backwards list
+    9) Nine
+    8) Eight
+
+--------------------------------------------------------------------------------
+
+(document
+  (section
+    (list
+      (list_item
+        (list_marker_star)
+        (paragraph
+          (inline
+            (block_continuation))
+          (block_continuation))
+        (list
+          (list_item
+            (list_marker_parenthesis)
+            (paragraph
+              (inline)
+              (block_continuation)))
+          (list_item
+            (list_marker_parenthesis)
+            (paragraph
+              (inline)
+              (block_continuation)))))
+      (list_item
+        (list_marker_star)
+        (paragraph
+          (inline
+            (block_continuation)
+            (block_continuation)))))))
