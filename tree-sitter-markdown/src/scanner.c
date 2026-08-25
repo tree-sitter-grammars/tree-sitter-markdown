@@ -1261,10 +1261,9 @@ static bool parse_pipe_table(Scanner *s, TSLexer *lexer,
         while (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
             advance(s, lexer);
         }
+        // A delimiter cell MUST contain '-'.
         if (lexer->lookahead == '|') {
-            delimiter_cell_count++;
-            advance(s, lexer);
-            continue;
+            return false;
         }
         if (lexer->lookahead == ':') {
             advance(s, lexer);
@@ -1277,23 +1276,24 @@ static bool parse_pipe_table(Scanner *s, TSLexer *lexer,
             had_one_minus = true;
             advance(s, lexer);
         }
-        if (had_one_minus) {
-            delimiter_cell_count++;
+        if (!had_one_minus) {
+            return false;
         }
+        delimiter_cell_count++;
         if (lexer->lookahead == ':') {
-            if (!had_one_minus) {
-                return false;
-            }
             advance(s, lexer);
         }
         while (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
             advance(s, lexer);
         }
         if (lexer->lookahead == '|') {
-            if (!had_one_minus) {
-                delimiter_cell_count++;
-            }
             advance(s, lexer);
+            // Break look after last pipe
+            if (lexer->lookahead == '\r' ||
+                lexer->lookahead == '\n' ||
+                lexer->eof(lexer)) {
+                break;
+            }
             continue;
         }
         if (lexer->lookahead != '\r' && lexer->lookahead != '\n') {
