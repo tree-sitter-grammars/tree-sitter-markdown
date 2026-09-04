@@ -53,10 +53,10 @@ grammar {
         [shortcut_link, _link_text],
         [link_destination, link_title],
         [_link_destination_parenthesis, link_title],
-        #[cfg(EXTENSION_WIKI_LINK)] [wiki_link, _inline_element],
-        #[cfg(EXTENSION_WIKI_LINK)] [wiki_link, _inline_element_no_star],
-        #[cfg(EXTENSION_WIKI_LINK)] [wiki_link, _inline_element_no_underscore],
-        #[cfg(EXTENSION_WIKI_LINK)] [wiki_link, _inline_element_no_tilde],
+        [wiki_link, _inline_element],
+        [wiki_link, _inline_element_no_star],
+        [wiki_link, _inline_element_no_underscore],
+        [wiki_link, _inline_element_no_tilde],
         [_emphasis_star, _inline_element],
         [_emphasis_star, _strong_emphasis_star, _inline_element],
         [_emphasis_underscore, _inline_element],
@@ -160,7 +160,6 @@ rule inline_link {
     ))
 }
 
-#[cfg(EXTENSION_WIKI_LINK)]
 rule wiki_link {
     prec_dynamic(20, seq(
         "[", "[",
@@ -169,11 +168,9 @@ rule wiki_link {
         "]", "]",
     ))
 }
-#[cfg(EXTENSION_WIKI_LINK)]
 rule _wiki_link_destination {
     repeat1(choice(_word, c::punct_no_bracket_pipe(_last_token_punctuation), _whitespace))
 }
-#[cfg(EXTENSION_WIKI_LINK)]
 rule _wiki_link_text {
     repeat1(choice(_word, c::punct_no_bracket(_last_token_punctuation), _whitespace))
 }
