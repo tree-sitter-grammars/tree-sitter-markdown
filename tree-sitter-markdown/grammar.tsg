@@ -5,6 +5,7 @@
 // Extension gating uses the `flags:` config + `#[cfg(NAME)]` attribute.
 
 let c = import("../common/common.tsg")
+let punctuation_suffix = blank()
 
 grammar {
     language: "markdown",
@@ -85,18 +86,24 @@ rule document {
     )
 }
 
+rule backslash_escape { _backslash_escape }
+rule _backslash_escape { c::backslash_escape_pattern() }
+rule entity_reference { c::entity_reference_pattern() }
+rule numeric_character_reference { c::numeric_character_reference_pattern() }
+
 // Common rule wrappers - bind common helpers to block-side primitives.
 rule link_label { c::link_label_(_text_inline_no_link, _soft_line_break) }
 rule link_destination {
-    c::link_destination_(_last_token_punctuation, _word, _text_no_angle, _link_destination_parenthesis)
+    c::link_destination_(punctuation_suffix, _word, _text_no_angle, _link_destination_parenthesis)
 }
 rule _link_destination_parenthesis {
-    c::link_destination_parenthesis_(_last_token_punctuation, _word, _link_destination_parenthesis)
+    c::link_destination_parenthesis_(punctuation_suffix, _word, _link_destination_parenthesis)
 }
-rule _text_no_angle { c::text_no_angle_(_last_token_punctuation, _word, _whitespace) }
+rule _text_no_angle { c::text_no_angle_(punctuation_suffix, _word, _whitespace) }
 rule link_title {
-    c::link_title_(_last_token_punctuation, _word, _whitespace, _soft_line_break, _trigger_error)
+    c::link_title_(punctuation_suffix, _word, _whitespace, _soft_line_break, _trigger_error)
 }
+rule _newline_token { c::newline_token_pattern() }
 
 // BLOCK STRUCTURE
 rule _block { choice(_block_not_section, section) }
@@ -244,7 +251,7 @@ rule info_string {
     )
 }
 rule language {
-    prec_right(0, repeat1(choice(_word, c::punct_no_brace_comma(_last_token_punctuation), backslash_escape, entity_reference, numeric_character_reference)))
+    prec_right(0, repeat1(choice(_word, c::punct_no_brace_comma(punctuation_suffix), backslash_escape, entity_reference, numeric_character_reference)))
 }
 
 // HTML blocks. Mirror build_html_block($, open, close, interrupt_paragraph).
@@ -295,7 +302,7 @@ rule link_reference_definition {
     ))
 }
 rule _text_inline_no_link {
-    choice(_word, _whitespace, c::punct_no_bracket(_last_token_punctuation))
+    choice(_word, _whitespace, c::punct_no_bracket(punctuation_suffix))
 }
 
 rule paragraph {
@@ -394,7 +401,7 @@ rule _list_item_content {
 rule _newline { seq(_line_ending, optional(block_continuation)) }
 rule _soft_line_break { seq(_soft_line_ending, optional(block_continuation)) }
 rule _line {
-    prec_right(0, repeat1(choice(_word, _whitespace, c::punct_no_none(_last_token_punctuation))))
+    prec_right(0, repeat1(choice(_word, _whitespace, c::punct_no_none(punctuation_suffix))))
 }
 rule _word {
     choice(
@@ -406,11 +413,6 @@ rule _word {
     )
 }
 rule _whitespace { regexp(r"[ \t]+") }
-
-// `_last_token_punctuation` is referenced by the punct_no_X macros from
-// common. In block markdown it is a rule that matches nothing (the inline
-// grammar uses an external token of the same name).
-rule _last_token_punctuation { choice() }
 
 #[cfg(EXTENSION_TASK_LIST)]
 rule task_list_marker_checked { prec(1, regexp(r"\[[xX]\]")) }
@@ -480,13 +482,13 @@ rule pipe_table_cell {
         choice(
             _word,
             _backslash_escape,
-            c::punct_no_pipe(_last_token_punctuation),
+            c::punct_no_pipe(punctuation_suffix),
         ),
         repeat(choice(
             _word,
             _whitespace,
             _backslash_escape,
-            c::punct_no_pipe(_last_token_punctuation),
+            c::punct_no_pipe(punctuation_suffix),
         )),
     ))
 }
