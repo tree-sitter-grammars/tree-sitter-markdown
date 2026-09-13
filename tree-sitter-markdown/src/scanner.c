@@ -244,6 +244,13 @@ static unsigned serialize(Scanner *s, char *buffer) {
     buffer[size++] = (char)s->column;
     buffer[size++] = (char)s->fenced_code_block_delimiter_length;
     size_t blocks_count = s->open_blocks.size;
+    // Deeply nested documents can open more blocks than fit in the fixed size
+    // serialization buffer. Serialize nothing rather than overflow it; the
+    // scanner then deserializes with a fresh state.
+    if (size + blocks_count * sizeof(Block) >
+        TREE_SITTER_SERIALIZATION_BUFFER_SIZE) {
+        return 0;
+    }
     if (blocks_count > 0) {
         memcpy(&buffer[size], s->open_blocks.items,
                blocks_count * sizeof(Block));
