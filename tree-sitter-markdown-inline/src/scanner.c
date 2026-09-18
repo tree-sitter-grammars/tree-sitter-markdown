@@ -34,7 +34,7 @@ static bool is_punctuation(int32_t chr) {
 // State bitflags used with `Scanner.state`
 
 // TODO
-static UNUSED const uint8_t STATE_EMPHASIS_DELIMITER_MOD_3 = 0x3;
+static const uint8_t UNUSED STATE_EMPHASIS_DELIMITER_MOD_3 = 0x3;
 // Current delimiter run is opening
 static const uint8_t STATE_EMPHASIS_DELIMITER_IS_OPEN = 0x1 << 2;
 
