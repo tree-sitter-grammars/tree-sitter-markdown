@@ -177,6 +177,15 @@ static const bool paragraph_interrupt_symbols[] = {
 static const uint8_t STATE_MATCHING = 0x1 << 0;
 // Last line break was inside a paragraph
 static const uint8_t STATE_WAS_SOFT_LINE_BREAK = 0x1 << 1;
+// An ATX heading's marker was emitted and its line ending was not yet. Lets the
+// EOF branch of `scan` end the heading when the file ends without a line
+// ending: the grammar's `_atx_headingN` rules require `$._newline` and offer no
+// `$._eof`.
+static const uint8_t STATE_ATX_HEADING = 0x1 << 2;
+// A list marker was emitted and the file ends right after it (and any
+// whitespace). Lets the EOF branch of `scan` supply, once, the zero-width
+// `BLANK_LINE_START` the empty item's `_blank_line` begins with.
+static const uint8_t STATE_LIST_ITEM_AT_EOF = 0x1 << 3;
 // Block should be closed after next line break
 static const uint8_t STATE_CLOSE_BLOCK = 0x1 << 4;
 
@@ -460,6 +469,12 @@ static bool parse_fenced_code_block(Scanner *s, const char delimiter,
     return false;
 }
 
+// A list marker is being emitted: remember whether it ends the file.
+static void note_list_marker_at_eof(Scanner *s, TSLexer *lexer) {
+    if (!s->simulate && lexer->eof(lexer))
+        s->state |= STATE_LIST_ITEM_AT_EOF;
+}
+
 static bool parse_star(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
     advance(s, lexer);
     mark_end(s, lexer);
@@ -489,7 +504,10 @@ static bool parse_star(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
             break;
         }
     }
-    bool line_end = lexer->lookahead == '\n' || lexer->lookahead == '\r';
+    // The rest of the line is empty, or the file ends: CommonMark needs no
+    // line ending at the end of the input.
+    bool line_end = lexer->lookahead == '\n' || lexer->lookahead == '\r' ||
+                    lexer->eof(lexer);
     bool dont_interrupt = false;
     if (star_count == 1 && line_end) {
         extra_indentation = 1;
@@ -536,6 +554,7 @@ static bool parse_star(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
         }
         if (!s->simulate)
             push_block(s, (Block)(LIST_ITEM + extra_indentation));
+        note_list_marker_at_eof(s, lexer);
         lexer->result_symbol =
             dont_interrupt ? LIST_MARKER_STAR_DONT_INTERRUPT : LIST_MARKER_STAR;
         return true;
@@ -558,7 +577,9 @@ static bool parse_thematic_break_underscore(Scanner *s, TSLexer *lexer,
             break;
         }
     }
-    bool line_end = lexer->lookahead == '\n' || lexer->lookahead == '\r';
+    // ...or the file ends.
+    bool line_end = lexer->lookahead == '\n' || lexer->lookahead == '\r' ||
+                    lexer->eof(lexer);
     if (underscore_count >= 3 && line_end && valid_symbols[THEMATIC_BREAK]) {
         lexer->result_symbol = THEMATIC_BREAK;
         mark_end(s, lexer);
@@ -595,9 +616,12 @@ static bool parse_atx_heading(Scanner *s, TSLexer *lexer,
         }
         if (level <= 6 &&
             (lexer->lookahead == ' ' || lexer->lookahead == '\t' ||
-             lexer->lookahead == '\n' || lexer->lookahead == '\r')) {
+             lexer->lookahead == '\n' || lexer->lookahead == '\r' ||
+             lexer->eof(lexer))) {
             lexer->result_symbol = ATX_H1_MARKER + (level - 1);
             s->indentation = 0;
+            if (!s->simulate)
+                s->state |= STATE_ATX_HEADING;
             mark_end(s, lexer);
             return true;
         }
@@ -616,7 +640,11 @@ static bool parse_setext_underline(Scanner *s, TSLexer *lexer,
         while (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
             advance(s, lexer);
         }
-        if (lexer->lookahead == '\n' || lexer->lookahead == '\r') {
+        // A Setext H1 underline on the last line, with no line ending:
+        // `_setext_heading1` already offers `$._eof` after this token (unlike
+        // the ATX rules), so the underline itself just needs to be emitted.
+        if (lexer->lookahead == '\n' || lexer->lookahead == '\r' ||
+            lexer->eof(lexer)) {
             lexer->result_symbol = SETEXT_H1_UNDERLINE;
             mark_end(s, lexer);
             return true;
@@ -697,7 +725,9 @@ static bool parse_plus(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
                 extra_indentation += advance(s, lexer);
             }
             bool dont_interrupt = false;
-            if (lexer->lookahead == '\r' || lexer->lookahead == '\n') {
+            // ...or the file ends.
+            if (lexer->lookahead == '\r' || lexer->lookahead == '\n' ||
+                lexer->eof(lexer)) {
                 extra_indentation = 1;
                 dont_interrupt = true;
             }
@@ -720,6 +750,7 @@ static bool parse_plus(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
                 }
                 if (!s->simulate)
                     push_block(s, (Block)(LIST_ITEM + extra_indentation));
+                note_list_marker_at_eof(s, lexer);
                 return true;
             }
         }
@@ -757,8 +788,9 @@ static bool parse_ordered_list_marker(Scanner *s, TSLexer *lexer,
                 while (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
                     extra_indentation += advance(s, lexer);
                 }
-                bool line_end =
-                    lexer->lookahead == '\n' || lexer->lookahead == '\r';
+                // ...or the file ends.
+                bool line_end = lexer->lookahead == '\n' ||
+                                lexer->lookahead == '\r' || lexer->eof(lexer);
                 if (line_end) {
                     extra_indentation = 1;
                     dont_interrupt = true;
@@ -787,6 +819,7 @@ static bool parse_ordered_list_marker(Scanner *s, TSLexer *lexer,
                     if (!s->simulate)
                         push_block(
                             s, (Block)(LIST_ITEM + extra_indentation + digits));
+                    note_list_marker_at_eof(s, lexer);
                     return true;
                 }
             }
@@ -827,15 +860,25 @@ static bool parse_minus(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
             }
         }
         bool line_end = lexer->lookahead == '\n' || lexer->lookahead == '\r';
+        // The rest of the line is empty, or the file ends: the thematic
+        // break, the one-`-` list marker and the setext underline read this;
+        // the metadata arm below keeps `line_end`, since front matter never
+        // begins at EOF.
+        bool rest_empty = line_end || lexer->eof(lexer);
         bool dont_interrupt = false;
-        if (minus_count == 1 && line_end) {
+        if (minus_count == 1 && rest_empty) {
             extra_indentation = 1;
             dont_interrupt = true;
         }
         dont_interrupt = dont_interrupt && s->matched == s->open_blocks.size;
-        bool thematic_break = minus_count >= 3 && line_end;
+        bool thematic_break = minus_count >= 3 && rest_empty;
+        // A Setext H2 underline on the last line, with no line ending:
+        // `_setext_heading2` already offers `$._eof` after this token. Only
+        // `underline` admits EOF; `line_end`, which the thematic break, the
+        // list marker and the metadata loop also read, is left as it was.
         bool underline =
-            minus_count >= 1 && !minus_after_whitespace && line_end &&
+            minus_count >= 1 && !minus_after_whitespace &&
+            rest_empty &&
             s->matched ==
                 s->open_blocks
                     .size; // setext heading can not break lazy continuation
@@ -871,6 +914,7 @@ static bool parse_minus(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
             }
             if (!s->simulate)
                 push_block(s, (Block)(LIST_ITEM + extra_indentation));
+            note_list_marker_at_eof(s, lexer);
             lexer->result_symbol = dont_interrupt
                                        ? LIST_MARKER_MINUS_DONT_INTERRUPT
                                        : LIST_MARKER_MINUS;
@@ -1333,6 +1377,22 @@ static bool scan(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
             lexer->result_symbol = TOKEN_EOF;
             return true;
         }
+        // An ATX heading on the last line, with no line ending: emit the
+        // line ending its rule requires, zero-width, once.
+        if ((s->state & STATE_ATX_HEADING) && valid_symbols[LINE_ENDING]) {
+            s->state &= (~STATE_ATX_HEADING);
+            lexer->result_symbol = LINE_ENDING;
+            return true;
+        }
+        // A list marker that ends the file: its item is empty, and the
+        // item's `_blank_line` begins with a token only a line ending gives.
+        // Emit it, zero-width, once; the grammar's `_eof` ends the blank line.
+        if ((s->state & STATE_LIST_ITEM_AT_EOF) &&
+            valid_symbols[BLANK_LINE_START]) {
+            s->state &= (~STATE_LIST_ITEM_AT_EOF);
+            lexer->result_symbol = BLANK_LINE_START;
+            return true;
+        }
         if (s->open_blocks.size > 0) {
             lexer->result_symbol = BLOCK_CLOSE;
             if (!s->simulate)
@@ -1351,6 +1411,16 @@ static bool scan(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
             } else {
                 break;
             }
+        }
+        // Trailing whitespace after an ATX heading on the last line: the line
+        // ending takes it, as it does before a '\n'.
+        if (lexer->eof(lexer) && (s->state & STATE_ATX_HEADING) &&
+            valid_symbols[LINE_ENDING]) {
+            s->state &= (~STATE_ATX_HEADING);
+            s->indentation = 0;
+            s->column = 0;
+            lexer->result_symbol = LINE_ENDING;
+            return true;
         }
         // We are not matching. This is where the parsing logic for most
         // "normal" token is. Most importantly parsing logic for the start of
@@ -1555,6 +1625,8 @@ static bool scan(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
             }
             // reset some state variables
             s->state &= (~STATE_WAS_SOFT_LINE_BREAK);
+            s->state &= (~STATE_ATX_HEADING);
+            s->state &= (~STATE_LIST_ITEM_AT_EOF);
             lexer->result_symbol = LINE_ENDING;
             return true;
         }
