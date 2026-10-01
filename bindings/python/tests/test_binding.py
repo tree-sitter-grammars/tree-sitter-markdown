@@ -1,6 +1,7 @@
 from unittest import TestCase
 
 import tree_sitter, tree_sitter_markdown
+from tree_sitter import Language, Parser
 
 
 class TestLanguage(TestCase):
@@ -12,6 +13,6 @@ class TestLanguage(TestCase):
 
     def test_can_load_block_grammar(self):
         try:
-            Parser(Language(tree_sitter_markdown.inline_language())
+            Parser(Language(tree_sitter_markdown.inline_language()))
         except Exception:
             self.fail("Error loading Markdown inline grammar")
