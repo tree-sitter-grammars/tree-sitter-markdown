@@ -2,7 +2,7 @@
 
 from importlib.resources import files as _files
 
-from ._binding import language
+from ._binding import inline_language, language
 
 
 def _get_query(name, file):
@@ -29,6 +29,7 @@ def __getattr__(name):
 
 __all__ = [
     "language",
+    "inline_language",
     "HIGHLIGHTS_QUERY",
     "INJECTIONS_QUERY",
     "LOCALS_QUERY",
