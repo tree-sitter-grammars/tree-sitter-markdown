@@ -68,7 +68,7 @@ impl<'tree> MarkdownCursor<'tree> {
     /// current node is an inline or block node.
     #[doc(alias = "ts_tree_cursor_current_field_name")]
     #[must_use]
-    pub fn field_name(&self) -> Option<&'static str> {
+    pub fn field_name(&self) -> Option<&'tree str> {
         match &self.inline_cursor {
             Some(cursor) => cursor.field_name(),
             None => self.block_cursor.field_name(),
