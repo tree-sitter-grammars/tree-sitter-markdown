@@ -996,14 +996,25 @@ static bool parse_html_block(Scanner *s, TSLexer *lexer,
         // could be block 2
         advance(s, lexer);
         if (lexer->lookahead == '-') {
+            // Block 2 ends at the first `-->`, which may overlap the opening
+            // `<!--` as in `<!-->` and `<!--->`. For those, end the token
+            // after `<!` so that the closing `-->` is left for the block.
+            mark_end(s, lexer);
+            uint8_t column = s->column;
             advance(s, lexer);
-            if (lexer->lookahead == '-' && valid_symbols[HTML_BLOCK_2_START]) {
-                advance(s, lexer);
-                lexer->result_symbol = HTML_BLOCK_2_START;
-                if (!s->simulate)
-                    push_block(s, ANONYMOUS);
-                return true;
+            if (lexer->lookahead != '-' || !valid_symbols[HTML_BLOCK_2_START]) {
+                return false;
             }
+            advance(s, lexer);
+            if (lexer->lookahead == '>' || lexer->lookahead == '-') {
+                s->column = column;
+            } else {
+                mark_end(s, lexer);
+            }
+            lexer->result_symbol = HTML_BLOCK_2_START;
+            if (!s->simulate)
+                push_block(s, ANONYMOUS);
+            return true;
         } else if ('A' <= lexer->lookahead && lexer->lookahead <= 'Z' &&
                    valid_symbols[HTML_BLOCK_4_START]) {
             advance(s, lexer);
