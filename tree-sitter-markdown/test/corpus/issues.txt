@@ -169,3 +169,23 @@ globalNS.method1(5, 10);
             (list_marker_parenthesis)
             (paragraph
               (inline))))))))
+
+================================================================================
+#268 - HTML comment block that ends on its opening line
+================================================================================
+<!-->
+
+<!--->
+
+# after
+
+--------------------------------------------------------------------------------
+
+(document
+  (section
+    (html_block)
+    (html_block))
+  (section
+    (atx_heading
+      (atx_h1_marker)
+      (inline))))
