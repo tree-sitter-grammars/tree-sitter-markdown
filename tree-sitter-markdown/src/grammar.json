@@ -2313,8 +2313,17 @@
                         "name": "_close_block"
                       },
                       {
-                        "type": "SYMBOL",
-                        "name": "_newline"
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "SYMBOL",
+                            "name": "_newline"
+                          },
+                          {
+                            "type": "SYMBOL",
+                            "name": "_eof"
+                          }
+                        ]
                       }
                     ]
                   },
@@ -2401,8 +2410,17 @@
                         "name": "_close_block"
                       },
                       {
-                        "type": "SYMBOL",
-                        "name": "_newline"
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "SYMBOL",
+                            "name": "_newline"
+                          },
+                          {
+                            "type": "SYMBOL",
+                            "name": "_eof"
+                          }
+                        ]
                       }
                     ]
                   },
