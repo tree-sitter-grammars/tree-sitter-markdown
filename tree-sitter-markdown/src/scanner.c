@@ -471,7 +471,13 @@ static bool parse_fenced_code_block(Scanner *s, const char delimiter,
         while (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
             advance(s, lexer);
         }
-        if (lexer->lookahead == '\n' || lexer->lookahead == '\r') {
+        const bool is_eof = lexer->eof(lexer);
+        if (is_eof) {
+            // A closing fence may end the input without a line ending. Nothing
+            // follows to consume the trailing whitespace, so it joins the token.
+            mark_end(s, lexer);
+        }
+        if (lexer->lookahead == '\n' || lexer->lookahead == '\r' || is_eof) {
             s->fenced_code_block_delimiter_length = 0;
             lexer->result_symbol = delimiter == '`'
                                        ? FENCED_CODE_BLOCK_END_BACKTICK

@@ -169,7 +169,7 @@ module.exports = grammar({
                 optional($.info_string),
                 $._newline,
                 optional($.code_fence_content),
-                optional(seq(alias($._fenced_code_block_end_backtick, $.fenced_code_block_delimiter), $._close_block, $._newline)),
+                optional(seq(alias($._fenced_code_block_end_backtick, $.fenced_code_block_delimiter), $._close_block, choice($._newline, $._eof))),
                 $._block_close,
             ),
             seq(
@@ -178,7 +178,7 @@ module.exports = grammar({
                 optional($.info_string),
                 $._newline,
                 optional($.code_fence_content),
-                optional(seq(alias($._fenced_code_block_end_tilde, $.fenced_code_block_delimiter), $._close_block, $._newline)),
+                optional(seq(alias($._fenced_code_block_end_tilde, $.fenced_code_block_delimiter), $._close_block, choice($._newline, $._eof))),
                 $._block_close,
             ),
         )),

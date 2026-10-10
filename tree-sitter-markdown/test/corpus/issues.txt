@@ -189,3 +189,22 @@ globalNS.method1(5, 10);
     (atx_heading
       (atx_h1_marker)
       (inline))))
+
+================================================================================
+#266 - Closing code fence at the end of input without a line ending
+================================================================================
+```sh
+x
+```
+--------------------------------------------------------------------------------
+
+(document
+  (section
+    (fenced_code_block
+      (fenced_code_block_delimiter)
+      (info_string
+        (language))
+      (block_continuation)
+      (code_fence_content
+        (block_continuation))
+      (fenced_code_block_delimiter))))
