@@ -458,7 +458,8 @@ module.exports = grammar({
                                     $.pipe_table_cell,
                                     optional($._whitespace)
                                 ),
-                                alias($._whitespace, $.pipe_table_cell)
+                                alias($._whitespace, $.pipe_table_cell),
+                                alias($._pipe_table_empty_cell, $.pipe_table_cell)
                             ),
                             '|',
                         ))),
@@ -580,6 +581,7 @@ module.exports = grammar({
 
         $._pipe_table_start,
         $._pipe_table_line_ending,
+        $._pipe_table_empty_cell,
     ],
     precedences: $ => [
         [$._setext_heading1, $._block],
