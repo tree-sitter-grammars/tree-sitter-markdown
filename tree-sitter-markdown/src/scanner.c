@@ -445,6 +445,15 @@ static bool match(Scanner *s, TSLexer *lexer, Block block) {
 
 static bool parse_fenced_code_block(Scanner *s, const char delimiter,
                                     TSLexer *lexer, const bool *valid_symbols) {
+    // Nothing to emit for this delimiter here; bail before counting the
+    // (possibly long) run, which would otherwise be O(n^2) across a paragraph.
+    if (delimiter == '`'
+            ? (!valid_symbols[FENCED_CODE_BLOCK_START_BACKTICK] &&
+               !valid_symbols[FENCED_CODE_BLOCK_END_BACKTICK])
+            : (!valid_symbols[FENCED_CODE_BLOCK_START_TILDE] &&
+               !valid_symbols[FENCED_CODE_BLOCK_END_TILDE])) {
+        return false;
+    }
     // count the number of backticks
     uint8_t level = 0;
     while (lexer->lookahead == delimiter) {
@@ -505,6 +514,12 @@ static bool parse_fenced_code_block(Scanner *s, const char delimiter,
 }
 
 static bool parse_star(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
+    // Nothing to emit here; bail before scanning the (possibly long) run of
+    // `*`, which would otherwise be O(n^2) across a paragraph.
+    if (!valid_symbols[THEMATIC_BREAK] && !valid_symbols[LIST_MARKER_STAR] &&
+        !valid_symbols[LIST_MARKER_STAR_DONT_INTERRUPT]) {
+        return false;
+    }
     advance(s, lexer);
     mark_end(s, lexer);
     // Otherwise count the number of stars permitting whitespaces between them.
@@ -589,6 +604,10 @@ static bool parse_star(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
 
 static bool parse_thematic_break_underscore(Scanner *s, TSLexer *lexer,
                                             const bool *valid_symbols) {
+    // Same as above for a run of `_` (only THEMATIC_BREAK is emittable here).
+    if (!valid_symbols[THEMATIC_BREAK]) {
+        return false;
+    }
     advance(s, lexer);
     mark_end(s, lexer);
     size_t underscore_count = 1;
