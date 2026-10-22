@@ -1,6 +1,5 @@
 #include "tree_sitter/parser.h"
 #include <assert.h>
-#include <ctype.h>
 #include <string.h>
 #include <wchar.h>
 #include <wctype.h>
@@ -93,6 +92,11 @@ typedef enum {
 static bool is_punctuation(char chr) {
     return (chr >= '!' && chr <= '/') || (chr >= ':' && chr <= '@') ||
            (chr >= '[' && chr <= '`') || (chr >= '{' && chr <= '~');
+}
+
+// Determines if a character is an ASCII digit.
+static bool is_ascii_digit(int32_t chr) {
+    return chr >= '0' && chr <= '9';
 }
 
 // Returns the indentation level which lines of a list item should have at
@@ -775,14 +779,13 @@ static bool parse_ordered_list_marker(Scanner *s, TSLexer *lexer,
          valid_symbols[LIST_MARKER_PARENTHESIS_DONT_INTERRUPT] ||
          valid_symbols[LIST_MARKER_DOT_DONT_INTERRUPT])) {
         size_t digits = 1;
-        bool dont_interrupt = !isdigit(lexer->lookahead);
         advance(s, lexer);
-        while (isdigit(lexer->lookahead)) {
-            dont_interrupt = true;
+        while (is_ascii_digit(lexer->lookahead)) {
             digits++;
             advance(s, lexer);
         }
-        if (digits >= 1 && digits <= 9) {
+        bool dont_interrupt = digits > 1;
+        if (digits <= 9) {
             bool dot = false;
             bool parenthesis = false;
             if (lexer->lookahead == '.') {
@@ -805,16 +808,11 @@ static bool parse_ordered_list_marker(Scanner *s, TSLexer *lexer,
                 }
                 dont_interrupt =
                     dont_interrupt && s->matched == s->open_blocks.size;
-                if (extra_indentation >= 1 &&
-                    (dot ? (dont_interrupt
-                                ? valid_symbols[LIST_MARKER_DOT_DONT_INTERRUPT]
-                                : valid_symbols[LIST_MARKER_DOT])
-                         : (dont_interrupt
-                                ? valid_symbols
-                                      [LIST_MARKER_PARENTHESIS_DONT_INTERRUPT]
-                                : valid_symbols[LIST_MARKER_PARENTHESIS]))) {
-                    lexer->result_symbol =
-                        dot ? LIST_MARKER_DOT : LIST_MARKER_PARENTHESIS;
+                TokenType marker =
+                    dot ? (dont_interrupt ? LIST_MARKER_DOT_DONT_INTERRUPT : LIST_MARKER_DOT)
+                        : (dont_interrupt ? LIST_MARKER_PARENTHESIS_DONT_INTERRUPT : LIST_MARKER_PARENTHESIS);
+                if (extra_indentation >= 1 && valid_symbols[marker]) {
+                    lexer->result_symbol = marker;
                     extra_indentation--;
                     if (extra_indentation <= 3) {
                         extra_indentation += s->indentation;
