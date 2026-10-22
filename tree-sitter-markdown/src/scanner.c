@@ -54,6 +54,8 @@ typedef enum {
     PLUS_METADATA,
     PIPE_TABLE_START,
     PIPE_TABLE_LINE_ENDING,
+
+    NUM_TOKEN_TYPES,
 } TokenType;
 
 // Description of a block on the block stack.
@@ -121,7 +123,7 @@ static const char *const HTML_TAG_NAMES_RULE_7[NUM_HTML_TAG_NAMES_RULE_7] = {
     "track",    "ul"};
 
 // For explanation of the tokens see grammar.js
-static const bool paragraph_interrupt_symbols[] = {
+static const bool paragraph_interrupt_symbols[NUM_TOKEN_TYPES] = {
     false, // LINE_ENDING,
     false, // SOFT_LINE_ENDING,
     false, // BLOCK_CLOSE,
@@ -170,6 +172,40 @@ static const bool paragraph_interrupt_symbols[] = {
     true,  // PIPE_TABLE_START,
     false, // PIPE_TABLE_LINE_ENDING,
 };
+
+// Whether the token opens a new block, i.e. pushes onto `open_blocks`.
+static bool opens_block(TokenType token) {
+    switch (token) {
+        case BLOCK_QUOTE_START:
+        case INDENTED_CHUNK_START:
+        case LIST_MARKER_MINUS:
+        case LIST_MARKER_PLUS:
+        case LIST_MARKER_STAR:
+        case LIST_MARKER_PARENTHESIS:
+        case LIST_MARKER_DOT:
+        case LIST_MARKER_MINUS_DONT_INTERRUPT:
+        case LIST_MARKER_PLUS_DONT_INTERRUPT:
+        case LIST_MARKER_STAR_DONT_INTERRUPT:
+        case LIST_MARKER_PARENTHESIS_DONT_INTERRUPT:
+        case LIST_MARKER_DOT_DONT_INTERRUPT:
+        case FENCED_CODE_BLOCK_START_BACKTICK:
+        case FENCED_CODE_BLOCK_START_TILDE:
+        case HTML_BLOCK_1_START:
+        case HTML_BLOCK_2_START:
+        case HTML_BLOCK_3_START:
+        case HTML_BLOCK_4_START:
+        case HTML_BLOCK_5_START:
+        case HTML_BLOCK_6_START:
+        case HTML_BLOCK_7_START:
+            return true;
+        default:
+            return false;
+    }
+}
+
+// The serialized state is 5 bytes followed by the open blocks. No new blocks
+// are opened once there are this many.
+#define MAX_OPEN_BLOCKS ((TREE_SITTER_SERIALIZATION_BUFFER_SIZE - 5) / sizeof(Block))
 
 // State bitflags used with `Scanner.state`
 
@@ -244,6 +280,10 @@ static unsigned serialize(Scanner *s, char *buffer) {
     buffer[size++] = (char)s->column;
     buffer[size++] = (char)s->fenced_code_block_delimiter_length;
     size_t blocks_count = s->open_blocks.size;
+    size_t max_blocks_count = (TREE_SITTER_SERIALIZATION_BUFFER_SIZE - size) / sizeof(Block);
+    if (blocks_count > max_blocks_count) {
+        blocks_count = max_blocks_count;
+    }
     if (blocks_count > 0) {
         memcpy(&buffer[size], s->open_blocks.items,
                blocks_count * sizeof(Block));
@@ -1312,6 +1352,14 @@ static bool parse_pipe_table(Scanner *s, TSLexer *lexer,
 }
 
 static bool scan(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
+    // Once `MAX_OPEN_BLOCKS` blocks are open, block markers are parsed as text
+    bool limited_valid_symbols[NUM_TOKEN_TYPES];
+    if (s->open_blocks.size >= MAX_OPEN_BLOCKS) {
+        for (int i = 0; i < NUM_TOKEN_TYPES; i++) {
+            limited_valid_symbols[i] = valid_symbols[i] && !opens_block((TokenType)i);
+        }
+        valid_symbols = limited_valid_symbols;
+    }
     // A normal tree-sitter rule decided that the current branch is invalid and
     // now "requests" an error to stop the branch
     if (valid_symbols[TRIGGER_ERROR]) {
