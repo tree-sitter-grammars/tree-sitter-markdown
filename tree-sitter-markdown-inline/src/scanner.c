@@ -1,7 +1,7 @@
 #include "tree_sitter/parser.h"
 
 #ifdef _MSC_VER
-#define UNUSED __pragma(warning(suppress : 4101))
+#define UNUSED
 #else
 #define UNUSED __attribute__((unused))
 #endif
