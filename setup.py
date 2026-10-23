@@ -70,7 +70,10 @@ setup(
                 ("PY_SSIZE_T_CLEAN", None),
                 ("TREE_SITTER_HIDE_SYMBOLS", None),
             ],
-            include_dirs=["src"],
+            include_dirs=[
+                "tree-sitter-markdown/src"
+                "tree-sitter-markdown-inline/src"
+            ],
             py_limited_api=not get_config_var("Py_GIL_DISABLED"),
         )
     ],
