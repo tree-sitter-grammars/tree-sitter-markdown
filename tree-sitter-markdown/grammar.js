@@ -445,10 +445,9 @@ module.exports = grammar({
             ),
 
             pipe_table_row: $ => seq(
-                optional(seq(
-                    optional($._whitespace),
+                optional(
                     '|',
-                )),
+                ),
                 choice(
                     seq(
                         repeat1(prec.right(seq(
