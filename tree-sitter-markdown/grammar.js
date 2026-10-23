@@ -458,7 +458,7 @@ module.exports = grammar({
                                     $.pipe_table_cell,
                                     optional($._whitespace)
                                 ),
-                                alias($._whitespace, $.pipe_table_cell)
+                                alias(optional($._whitespace), $.pipe_table_cell)
                             ),
                             '|',
                         ))),
