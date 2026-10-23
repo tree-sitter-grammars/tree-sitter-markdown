@@ -208,3 +208,37 @@ x
       (code_fence_content
         (block_continuation))
       (fenced_code_block_delimiter))))
+
+================================================================================
+#275 - Fence characters after the start of a line do not close the block
+================================================================================
+```
+foo```
+    ```
+```
+
+--------------------------------------------------------------------------------
+
+(document
+  (section
+    (fenced_code_block
+      (fenced_code_block_delimiter)
+      (block_continuation)
+      (code_fence_content
+        (block_continuation)
+        (block_continuation))
+      (fenced_code_block_delimiter))))
+
+================================================================================
+#275 - Fence characters after the start of the last line do not close the block
+================================================================================
+```
+foo```
+--------------------------------------------------------------------------------
+
+(document
+  (section
+    (fenced_code_block
+      (fenced_code_block_delimiter)
+      (block_continuation)
+      (code_fence_content))))

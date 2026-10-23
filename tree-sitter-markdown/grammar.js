@@ -182,7 +182,7 @@ module.exports = grammar({
                 $._block_close,
             ),
         )),
-        code_fence_content: $ => repeat1(choice($._newline, $._line)),
+        code_fence_content: $ => repeat1(choice($._newline, seq($._line, choice($._newline, $._eof)))),
         info_string: $ => choice(
             seq($.language, repeat(choice($._line, $.backslash_escape, $.entity_reference, $.numeric_character_reference))),
             seq(
