@@ -1249,11 +1249,9 @@ static bool parse_html_block(Scanner *s, TSLexer *lexer,
     return false;
 }
 
-static bool parse_pipe_table(Scanner *s, TSLexer *lexer,
-                             const bool *valid_symbols) {
-
-    // unused
-    (void)(valid_symbols);
+// If `lone_pipe` is not NULL, it is set to true when the line holds a single
+// `|` and only spaces or tabs. GFM does not read such a line as a table row.
+static bool parse_pipe_table(Scanner *s, TSLexer *lexer, bool *lone_pipe) {
 
     // PIPE_TABLE_START is zero width
     mark_end(s, lexer);
@@ -1264,6 +1262,7 @@ static bool parse_pipe_table(Scanner *s, TSLexer *lexer,
     bool starting_pipe = false;
     bool ending_pipe = false;
     bool empty = true;
+    bool blank = true;
     if (lexer->lookahead == '|') {
         starting_pipe = true;
         advance(s, lexer);
@@ -1277,6 +1276,7 @@ static bool parse_pipe_table(Scanner *s, TSLexer *lexer,
         } else {
             if (lexer->lookahead != ' ' && lexer->lookahead != '\t') {
                 ending_pipe = false;
+                blank = false;
             }
             if (lexer->lookahead == '\\') {
                 advance(s, lexer);
@@ -1287,6 +1287,9 @@ static bool parse_pipe_table(Scanner *s, TSLexer *lexer,
                 advance(s, lexer);
             }
         }
+    }
+    if (lone_pipe != NULL) {
+        *lone_pipe = starting_pipe && cell_count == 0 && blank;
     }
     if (empty && cell_count == 0 && !(starting_pipe && ending_pipe)) {
         return false;
@@ -1509,7 +1512,7 @@ static bool scan(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
         }
         if (lexer->lookahead != '\r' && lexer->lookahead != '\n' &&
             valid_symbols[PIPE_TABLE_START]) {
-            return parse_pipe_table(s, lexer, valid_symbols);
+            return parse_pipe_table(s, lexer, NULL);
         }
     } else { // we are in the state of trying to match all currently open blocks
         bool partial_success = false;
@@ -1586,8 +1589,20 @@ static bool scan(Scanner *s, TSLexer *lexer, const bool *valid_symbols) {
                 }
             }
             bool all_will_be_matched = s->matched == s->open_blocks.size;
-            if (!lexer->eof(lexer) &&
-                !scan(s, lexer, paragraph_interrupt_symbols)) {
+            // Of the blocks that can interrupt a paragraph, only a table
+            // starts with `|`. So after a table row, a line that starts with
+            // `|` goes directly to `parse_pipe_table`, as `scan` would send
+            // it. A line with only a `|` ends the table like a blank line.
+            bool continues = !lexer->eof(lexer);
+            if (continues && valid_symbols[PIPE_TABLE_LINE_ENDING] &&
+                !(s->state & STATE_MATCHING) && lexer->lookahead == '|') {
+                bool lone_pipe = false;
+                continues = !parse_pipe_table(s, lexer, &lone_pipe) &&
+                            !lone_pipe;
+            } else if (continues) {
+                continues = !scan(s, lexer, paragraph_interrupt_symbols);
+            }
+            if (continues) {
                 s->matched = matched_temp;
                 // If the last line break ended a paragraph and no new block
                 // opened, the last line break should have been a soft line
