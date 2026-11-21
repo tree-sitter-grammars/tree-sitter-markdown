@@ -202,3 +202,172 @@ Example 205 - https://github.github.com/gfm/#example-205
       (pipe_table_row
         (pipe_table_cell)
         (pipe_table_cell)))))
+
+================================================================================
+A line of only a pipe ends the table at the end of the document
+================================================================================
+| a | b |
+|---|---|
+| 1 | 2 |
+|
+
+--------------------------------------------------------------------------------
+
+(document
+  (section
+    (pipe_table
+      (pipe_table_header
+        (pipe_table_cell)
+        (pipe_table_cell))
+      (pipe_table_delimiter_row
+        (pipe_table_delimiter_cell)
+        (pipe_table_delimiter_cell))
+      (pipe_table_row
+        (pipe_table_cell)
+        (pipe_table_cell)))
+    (paragraph
+      (inline))))
+
+================================================================================
+A line of only a pipe ends the table before a heading
+================================================================================
+| a | b |
+|---|---|
+| 1 | 2 |
+|
+# Heading
+
+A paragraph.
+
+--------------------------------------------------------------------------------
+
+(document
+  (section
+    (pipe_table
+      (pipe_table_header
+        (pipe_table_cell)
+        (pipe_table_cell))
+      (pipe_table_delimiter_row
+        (pipe_table_delimiter_cell)
+        (pipe_table_delimiter_cell))
+      (pipe_table_row
+        (pipe_table_cell)
+        (pipe_table_cell)))
+    (paragraph
+      (inline)))
+  (section
+    (atx_heading
+      (atx_h1_marker)
+      heading_content: (inline))
+    (paragraph
+      (inline))))
+
+================================================================================
+A line of only a pipe between spaces ends the table
+================================================================================
+| a | b |
+|---|---|
+| 1 | 2 |
+ | 
+
+--------------------------------------------------------------------------------
+
+(document
+  (section
+    (pipe_table
+      (pipe_table_header
+        (pipe_table_cell)
+        (pipe_table_cell))
+      (pipe_table_delimiter_row
+        (pipe_table_delimiter_cell)
+        (pipe_table_delimiter_cell))
+      (pipe_table_row
+        (pipe_table_cell)
+        (pipe_table_cell)))
+    (paragraph
+      (inline))))
+
+================================================================================
+Two pipes with whitespace between them are a row of an empty cell
+================================================================================
+| a | b |
+|---|---|
+| 1 | 2 |
+|  |
+
+--------------------------------------------------------------------------------
+
+(document
+  (section
+    (pipe_table
+      (pipe_table_header
+        (pipe_table_cell)
+        (pipe_table_cell))
+      (pipe_table_delimiter_row
+        (pipe_table_delimiter_cell)
+        (pipe_table_delimiter_cell))
+      (pipe_table_row
+        (pipe_table_cell)
+        (pipe_table_cell))
+      (pipe_table_row
+        (pipe_table_cell)))))
+
+================================================================================
+A line of only a pipe ends a table in a block quote
+================================================================================
+> | a | b |
+> |---|---|
+> | 1 | 2 |
+> |
+> # Heading
+
+--------------------------------------------------------------------------------
+
+(document
+  (section
+    (block_quote
+      (block_quote_marker)
+      (pipe_table
+        (pipe_table_header
+          (pipe_table_cell)
+          (pipe_table_cell))
+        (block_continuation)
+        (pipe_table_delimiter_row
+          (pipe_table_delimiter_cell)
+          (pipe_table_delimiter_cell))
+        (block_continuation)
+        (pipe_table_row
+          (pipe_table_cell)
+          (pipe_table_cell))
+        (block_continuation))
+      (paragraph
+        (inline)
+        (block_continuation))
+      (section
+        (atx_heading
+          (atx_h1_marker)
+          heading_content: (inline))))))
+
+================================================================================
+A line of only a pipe after four spaces ends the table
+================================================================================
+| a | b |
+|---|---|
+| 1 | 2 |
+    |
+
+--------------------------------------------------------------------------------
+
+(document
+  (section
+    (pipe_table
+      (pipe_table_header
+        (pipe_table_cell)
+        (pipe_table_cell))
+      (pipe_table_delimiter_row
+        (pipe_table_delimiter_cell)
+        (pipe_table_delimiter_cell))
+      (pipe_table_row
+        (pipe_table_cell)
+        (pipe_table_cell)))
+    (indented_code_block)))
